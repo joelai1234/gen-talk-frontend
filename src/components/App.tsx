@@ -1,5 +1,4 @@
-import Avatar from '@/components/Avatar'
-import logo from 'assets/logo.svg'
+import { Button } from './ui/button'
 
 const randoms = [
   [1, 2],
@@ -14,7 +13,20 @@ function App() {
         <div className="relative mx-auto max-w-7xl px-4 sm:static sm:px-6 lg:px-8">
           <div className="sm:max-w-lg">
             <div className="my-4">
-              <Avatar size="large" src={logo} />
+              <Button className="h-[46px] w-[120px]">Save</Button>
+              <Button className="h-[46px] w-[120px]" disabled>
+                Save
+              </Button>
+              <Button className="h-[46px] w-[100px]" variant="secondary">
+                Cancel
+              </Button>
+              <Button
+                className="h-[46px] w-[100px]"
+                variant="secondary"
+                disabled
+              >
+                Cancel
+              </Button>
             </div>
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
               Welcome!
