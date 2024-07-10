@@ -4,6 +4,7 @@ import { ChatRoomSender } from '@/model/chatBot'
 import { useEffect, useRef, useState } from 'react'
 import { IoMdSearch } from 'react-icons/io'
 import { IoMdAdd } from 'react-icons/io'
+import { format } from 'date-fns'
 
 const mockChatBotData = [
   {
@@ -65,19 +66,19 @@ export default function ChatBot() {
         {
           id: 1,
           text: 'Hello! How can I help you today?',
-          time: '12:00 PM',
+          time: new Date(),
           sender: ChatRoomSender.Bot
         },
         {
           id: 2,
           text: 'I am feeling really anxious lately.',
-          time: '12:01 PM',
+          time: new Date(),
           sender: ChatRoomSender.User
         },
         {
           id: 3,
           text: 'I am sorry to hear that. Can you tell me more about what is causing your anxiety?',
-          time: '12:02 PM',
+          time: new Date(),
           sender: ChatRoomSender.Bot
         }
       ]
@@ -94,11 +95,7 @@ export default function ChatBot() {
     const newMessage = {
       id: messages.length + 1,
       text: message,
-      time: new Date().toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true
-      }),
+      time: new Date(),
       sender: ChatRoomSender.User
     }
     setChatRoomMessages((prevMessages) => {
@@ -125,11 +122,7 @@ export default function ChatBot() {
         const mockBotMessage = {
           id: 1,
           text: 'I am sorry to hear that. Can you tell me more about what is causing your anxiety?',
-          time: new Date().toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-          }),
+          time: new Date(),
           sender: ChatRoomSender.Bot
         }
         if (index !== -1) {
@@ -190,16 +183,55 @@ export default function ChatBot() {
             </button>
           </div>
           <div>
-            {chatBotData.map((item) => (
-              <ChatBotItem
-                key={item.id}
-                avatar={item.avatar}
-                name={item.name}
-                time={item.time}
-                active={item.id === selectedPersonaId}
-                onClick={() => setSelectedPersonaId(item.id)}
-              />
-            ))}
+            {chatBotData
+              .sort((a, b) => {
+                const AMessagesLength =
+                  chatRoomMessages.find(
+                    (chatRoom) => chatRoom.selectedPersonaId === a.id
+                  )?.messages?.length ?? 0
+                const BMessagesLength =
+                  chatRoomMessages.find(
+                    (chatRoom) => chatRoom.selectedPersonaId === b.id
+                  )?.messages?.length ?? 0
+
+                const lastMessageTimeA =
+                  chatRoomMessages
+                    .find((chatRoom) => chatRoom.selectedPersonaId === a.id)
+                    ?.messages[AMessagesLength - 1].time.getTime() ?? 0
+
+                const lastMessageTimeB =
+                  chatRoomMessages
+                    .find((chatRoom) => chatRoom.selectedPersonaId === b.id)
+                    ?.messages[BMessagesLength - 1].time.getTime() ?? 0
+
+                return lastMessageTimeB - lastMessageTimeA
+              })
+              .map((item) => {
+                const length =
+                  chatRoomMessages.find(
+                    (chatRoom) => chatRoom.selectedPersonaId === item.id
+                  )?.messages?.length ?? 0
+                return (
+                  <ChatBotItem
+                    key={item.id}
+                    avatar={item.avatar}
+                    name={item.name}
+                    time={
+                      length > 0
+                        ? format(
+                            chatRoomMessages.find(
+                              (chatRoom) =>
+                                chatRoom.selectedPersonaId === item.id
+                            )?.messages[length - 1].time ?? new Date(),
+                            'hh:mm a'
+                          )
+                        : 'New'
+                    }
+                    active={item.id === selectedPersonaId}
+                    onClick={() => setSelectedPersonaId(item.id)}
+                  />
+                )
+              })}
           </div>
         </div>
         <div className="flex-1">
