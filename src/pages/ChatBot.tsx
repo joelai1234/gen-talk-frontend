@@ -1,7 +1,7 @@
 import ChatBotItem from '@/components/ChatBotItem'
 import ImageWithFallback from '@/components/ImageWithFallback'
 import { ChatRoomSender } from '@/model/chatBot'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { IoMdSearch } from 'react-icons/io'
 import { IoMdAdd } from 'react-icons/io'
 
@@ -55,6 +55,8 @@ export default function ChatBot() {
 
   const persona = mockChatBotData.find((item) => item.id === selectedPersonaId)
   const chatEndRef = useRef<HTMLDivElement | null>(null)
+
+  const [search, setSearch] = useState('')
 
   const [chatRoomMessages, setChatRoomMessages] = useState([
     {
@@ -158,6 +160,10 @@ export default function ChatBot() {
     }
   }, [messages.length])
 
+  const chatBotData = mockChatBotData.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  )
+
   return (
     <div className="flex h-[calc(100vh-56px)] px-16 pb-16 pt-6">
       <div
@@ -174,6 +180,8 @@ export default function ChatBot() {
                 className="w-full rounded-xl border border-[#ebebeb] py-2 pl-10 pr-4 text-sm placeholder:text-[#9a9a9a] focus:outline-none"
                 type="text"
                 placeholder="Search"
+                value={search}
+                onChange={(event) => setSearch(event.currentTarget.value)}
               />
             </div>
             <button className="flex items-center gap-1">
@@ -182,7 +190,7 @@ export default function ChatBot() {
             </button>
           </div>
           <div>
-            {mockChatBotData.map((item) => (
+            {chatBotData.map((item) => (
               <ChatBotItem
                 key={item.id}
                 avatar={item.avatar}
