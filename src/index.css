@@ -5,6 +5,6 @@
 @tailwind utilities;
 
 
-body {
+body ,input{
   font-family: 'Lato', sans-serif;
 }
