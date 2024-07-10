@@ -64,19 +64,19 @@ export default function ChatBot() {
           id: 1,
           text: 'Hello! How can I help you today?',
           time: '12:00 PM',
-          sender: ChatRoomSender.User
+          sender: ChatRoomSender.Bot
         },
         {
           id: 2,
           text: 'I am feeling really anxious lately.',
           time: '12:01 PM',
-          sender: ChatRoomSender.Bot
+          sender: ChatRoomSender.User
         },
         {
           id: 3,
           text: 'I am sorry to hear that. Can you tell me more about what is causing your anxiety?',
           time: '12:02 PM',
-          sender: ChatRoomSender.User
+          sender: ChatRoomSender.Bot
         }
       ]
     }
