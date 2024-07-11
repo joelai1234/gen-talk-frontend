@@ -1,128 +1,70 @@
 import ChatBotItem from '@/components/ChatBotItem'
 import ImageWithFallback from '@/components/ImageWithFallback'
-import { ChatRoomSender } from '@/model/chatBot'
 import { useEffect, useRef, useState } from 'react'
 import { IoMdSearch } from 'react-icons/io'
 import { IoMdAdd } from 'react-icons/io'
 import { format } from 'date-fns'
-
-const mockChatBotData = [
-  {
-    id: 1,
-    avatar: '/images/avatar1.png',
-    name: 'Counselor',
-    time: 'New',
-    description:
-      'This persona is empathetic and patient, often allowing individuals to explore their feelings and fears at their own pace. They provide a safe space for individuals to express their concerns.'
-  },
-  {
-    id: 2,
-    avatar: '/images/avatar2.png',
-    name: 'Educator',
-    time: 'New',
-    description:
-      'This persona is knowledgeable and informative, providing individuals with the tools and resources they need to make informed decisions. They are often seen as a trusted source of information.'
-  },
-  {
-    id: 3,
-    avatar: '/images/avatar3.png',
-    name: 'Peer',
-    time: 'New',
-    description:
-      'This persona is relatable and supportive, often sharing their own experiences and offering advice based on personal knowledge. They are seen as a friend and confidant.'
-  },
-  {
-    id: 4,
-    avatar: '/images/avatar4.png',
-    name: 'Coach',
-    time: 'New',
-    description:
-      'This persona is motivational and goal-oriented, helping individuals to identify their strengths and weaknesses and set achievable goals. They are often seen as a mentor and role model.'
-  },
-  {
-    id: 5,
-    avatar: '/images/avatar5.png',
-    name: 'Cheerleader',
-    time: 'New',
-    description:
-      'This persona is positive and encouraging, providing individuals with emotional support and motivation to overcome challenges. They are often seen as a source of inspiration and motivation'
-  }
-]
+import { ChatRoomSender } from '@/enum/persona'
+import { mockPersonaMessagesList, mockPersonasData } from '@/data/mockData'
+import { ChatRoomMessage } from '@/model/persona'
 
 export default function ChatBot() {
   const [selectedPersonaId, setSelectedPersonaId] = useState<
-    number | undefined
+    number | string | undefined
   >()
 
-  const persona = mockChatBotData.find((item) => item.id === selectedPersonaId)
+  const persona = mockPersonasData.find(
+    (persona) => persona.id === selectedPersonaId
+  )
   const chatEndRef = useRef<HTMLDivElement | null>(null)
 
   const [search, setSearch] = useState('')
 
-  const [chatRoomMessages, setChatRoomMessages] = useState([
+  const [personaMessagesList, setPersonaMessagesList] = useState<
     {
-      selectedPersonaId: 1,
-      messages: [
-        {
-          id: 1,
-          text: 'Hello! How can I help you today?',
-          time: new Date(),
-          sender: ChatRoomSender.Bot
-        },
-        {
-          id: 2,
-          text: 'I am feeling really anxious lately.',
-          time: new Date(),
-          sender: ChatRoomSender.User
-        },
-        {
-          id: 3,
-          text: 'I am sorry to hear that. Can you tell me more about what is causing your anxiety?',
-          time: new Date(),
-          sender: ChatRoomSender.Bot
-        }
-      ]
-    }
-  ])
+      personaId: number | string
+      messages: ChatRoomMessage[]
+    }[]
+  >(mockPersonaMessagesList)
 
   const messages =
-    chatRoomMessages.find(
-      (item) => item.selectedPersonaId === selectedPersonaId
-    )?.messages ?? []
+    personaMessagesList.find((item) => item.personaId === selectedPersonaId)
+      ?.messages ?? []
 
   const handleSendMessage = (message: string) => {
     if (selectedPersonaId === undefined) return
-    const newMessage = {
+    const newMessage: ChatRoomMessage = {
       id: messages.length + 1,
-      text: message,
-      time: new Date(),
+      message,
+      timestamp: new Date(),
       sender: ChatRoomSender.User
     }
-    setChatRoomMessages((prevMessages) => {
+    setPersonaMessagesList((prevMessages) => {
       const newMessages = [...prevMessages]
       const index = newMessages.findIndex(
-        (item) => item.selectedPersonaId === selectedPersonaId
+        (item) => item.personaId === selectedPersonaId
       )
       if (index !== -1) {
         newMessages[index].messages.push(newMessage)
       } else {
         newMessages.push({
-          selectedPersonaId,
+          personaId: selectedPersonaId,
           messages: [newMessage]
         })
       }
       return newMessages
     })
     setTimeout(() => {
-      setChatRoomMessages((prevMessages) => {
+      setPersonaMessagesList((prevMessages) => {
         const newMessages = [...prevMessages]
         const index = newMessages.findIndex(
-          (item) => item.selectedPersonaId === selectedPersonaId
+          (item) => item.personaId === selectedPersonaId
         )
-        const mockBotMessage = {
+        const mockBotMessage: ChatRoomMessage = {
           id: 1,
-          text: 'I am sorry to hear that. Can you tell me more about what is causing your anxiety?',
-          time: new Date(),
+          message:
+            'I am sorry to hear that. Can you tell me more about what is causing your anxiety?',
+          timestamp: new Date(),
           sender: ChatRoomSender.Bot
         }
         if (index !== -1) {
@@ -132,7 +74,7 @@ export default function ChatBot() {
           })
         } else {
           newMessages.push({
-            selectedPersonaId,
+            personaId: selectedPersonaId,
             messages: [mockBotMessage]
           })
         }
@@ -153,7 +95,7 @@ export default function ChatBot() {
     }
   }, [messages.length])
 
-  const chatBotData = mockChatBotData.filter((item) =>
+  const chatBotData = mockPersonasData.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
   )
 
@@ -186,30 +128,30 @@ export default function ChatBot() {
             {chatBotData
               .sort((a, b) => {
                 const AMessagesLength =
-                  chatRoomMessages.find(
-                    (chatRoom) => chatRoom.selectedPersonaId === a.id
+                  personaMessagesList.find(
+                    (chatRoom) => chatRoom.personaId === a.id
                   )?.messages?.length ?? 0
                 const BMessagesLength =
-                  chatRoomMessages.find(
-                    (chatRoom) => chatRoom.selectedPersonaId === b.id
+                  personaMessagesList.find(
+                    (chatRoom) => chatRoom.personaId === b.id
                   )?.messages?.length ?? 0
 
                 const lastMessageTimeA =
-                  chatRoomMessages
-                    .find((chatRoom) => chatRoom.selectedPersonaId === a.id)
-                    ?.messages[AMessagesLength - 1].time.getTime() ?? 0
+                  personaMessagesList
+                    .find((chatRoom) => chatRoom.personaId === a.id)
+                    ?.messages[AMessagesLength - 1].timestamp.getTime() ?? 0
 
                 const lastMessageTimeB =
-                  chatRoomMessages
-                    .find((chatRoom) => chatRoom.selectedPersonaId === b.id)
-                    ?.messages[BMessagesLength - 1].time.getTime() ?? 0
+                  personaMessagesList
+                    .find((chatRoom) => chatRoom.personaId === b.id)
+                    ?.messages[BMessagesLength - 1].timestamp.getTime() ?? 0
 
                 return lastMessageTimeB - lastMessageTimeA
               })
               .map((item) => {
                 const length =
-                  chatRoomMessages.find(
-                    (chatRoom) => chatRoom.selectedPersonaId === item.id
+                  personaMessagesList.find(
+                    (chatRoom) => chatRoom.personaId === item.id
                   )?.messages?.length ?? 0
                 return (
                   <ChatBotItem
@@ -219,10 +161,9 @@ export default function ChatBot() {
                     time={
                       length > 0
                         ? format(
-                            chatRoomMessages.find(
-                              (chatRoom) =>
-                                chatRoom.selectedPersonaId === item.id
-                            )?.messages[length - 1].time ?? new Date(),
+                            personaMessagesList.find(
+                              (chatRoom) => chatRoom.personaId === item.id
+                            )?.messages[length - 1].timestamp ?? new Date(),
                             'hh:mm a'
                           )
                         : 'New'
@@ -256,7 +197,7 @@ export default function ChatBot() {
                         <ImageWithFallback
                           className="size-[22px] object-contain"
                           src={persona.avatar}
-                          fallbackSrc={mockChatBotData[0].avatar}
+                          fallbackSrc={mockPersonasData[0].avatar}
                           alt={persona.name}
                         />
                       </div>
@@ -272,26 +213,26 @@ export default function ChatBot() {
                 {messages.length > 0 && (
                   <div className="w-full  overflow-auto px-6">
                     <div className="mx-auto flex  w-full max-w-3xl  flex-col space-y-2 overflow-auto pb-4">
-                      {messages.map((message) => {
-                        if (message.sender === ChatRoomSender.User) {
+                      {messages.map((data) => {
+                        if (data.sender === ChatRoomSender.User) {
                           return (
                             <div
-                              key={message.id}
+                              key={data.id}
                               className="ml-20 w-fit self-end rounded-3xl bg-[#ebebeb] px-4 py-2"
                             >
                               <p className="text-base text-[#4c4c4c]">
-                                {message.text}
+                                {data.message}
                               </p>
                             </div>
                           )
                         } else {
                           return (
                             <div
-                              key={message.id}
+                              key={data.id}
                               className="mr-20 w-fit rounded-3xl bg-white px-4 py-2"
                             >
                               <p className="text-base text-[#4c4c4c]">
-                                {message.text}
+                                {data.message}
                               </p>
                             </div>
                           )

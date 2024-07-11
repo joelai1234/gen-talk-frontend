@@ -1,0 +1,92 @@
+import {
+  ChatRoomSender,
+  PersonaLanguage,
+  PersonaStyle,
+  PersonaTone
+} from '@/enum/persona'
+import { PersonaData, PersonaMessages } from '@/model/persona'
+
+export const mockPersonasData: PersonaData[] = [
+  {
+    id: 1,
+    avatar: '/images/avatar1.png',
+    name: 'Counselor',
+    description:
+      'This persona is empathetic and patient, often allowing individuals to explore their feelings and fears at their own pace. They provide a safe space for individuals to express their concerns.',
+    tone: PersonaTone.Empathetic,
+    language: PersonaLanguage.Informal,
+    style: PersonaStyle.Storytelling,
+    messageColor: '#EBEBEB'
+  },
+  {
+    id: 2,
+    avatar: '/images/avatar2.png',
+    name: 'Educator',
+    description:
+      'This persona is knowledgeable and informative, providing individuals with the tools and resources they need to make informed decisions. They are often seen as a trusted source of information.',
+    tone: PersonaTone.Authoritative,
+    language: PersonaLanguage.Technical,
+    style: PersonaStyle.Analytical,
+    messageColor: '#F5F5F5'
+  },
+  {
+    id: 3,
+    avatar: '/images/avatar3.png',
+    name: 'Peer',
+    description:
+      'This persona is relatable and supportive, often sharing their own experiences and offering advice based on personal knowledge. They are seen as a friend and confidant.',
+    tone: PersonaTone.Casual,
+    language: PersonaLanguage.Simple,
+    style: PersonaStyle.Reflective,
+    messageColor: '#F0F0F0'
+  },
+  {
+    id: 4,
+    avatar: '/images/avatar4.png',
+    name: 'Coach',
+    description:
+      'This persona is motivational and goal-oriented, helping individuals to identify their strengths and weaknesses and set achievable goals. They are often seen as a mentor and role model.',
+    tone: PersonaTone.Sincere,
+    language: PersonaLanguage.Motivational,
+    style: PersonaStyle.Direct,
+    messageColor: '#F8F8F8'
+  },
+  {
+    id: 5,
+    avatar: '/images/avatar5.png',
+    name: 'Cheerleader',
+    description:
+      'This persona is positive and encouraging, providing individuals with emotional support and motivation to overcome challenges. They are often seen as a source of inspiration and motivation',
+    tone: PersonaTone.Cheerful,
+    language: PersonaLanguage.Formal,
+    style: PersonaStyle.Indirect,
+    messageColor: '#F3F3F3'
+  }
+]
+
+export const mockPersonaMessagesList: PersonaMessages[] = [
+  {
+    personaId: 1,
+    messages: [
+      {
+        id: 1,
+        message: 'Hello! How can I help you today?',
+        timestamp: new Date(),
+        sender: ChatRoomSender.Bot
+      },
+      {
+        id: 2,
+        message: 'I am feeling really anxious lately.',
+        timestamp: new Date(),
+        sender: ChatRoomSender.User
+      },
+      {
+        id: 3,
+        message:
+          'I am sorry to hear that. Can you tell me more about what is causing your anxiety?',
+        timestamp: new Date(),
+        sender: ChatRoomSender.Bot
+      }
+    ]
+  }
+]
