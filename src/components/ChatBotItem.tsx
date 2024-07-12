@@ -1,7 +1,10 @@
 import { cn } from '@/lib/utils'
 import ImageWithFallback from './ImageWithFallback'
+import { MdOutlineEdit } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
 
 interface ChatBotItemProps {
+  id: string | number
   avatar: string
   name: string
   time: string
@@ -10,16 +13,18 @@ interface ChatBotItemProps {
 }
 
 export default function ChatBotItem({
+  id,
   avatar,
   name,
   time,
   active,
   onClick
 }: ChatBotItemProps) {
+  const navigate = useNavigate()
   return (
     <div
       className={cn(
-        'flex w-full cursor-pointer items-center justify-between border-l-[6px] border-t border-l-transparent border-t-[#EBEBEB] py-4 pl-[18px] pr-6 transition hover:border-l-pale hover:bg-pale/40',
+        'flex w-full group cursor-pointer items-center justify-between border-l-[6px] border-t border-l-transparent border-t-[#EBEBEB] py-4 pl-[18px] pr-6 transition',
         {
           'border-l-pale bg-pale/40': active
         }
@@ -37,7 +42,15 @@ export default function ChatBotItem({
         </div>
         <p className="text-[#4c4c4c]">{name}</p>
       </div>
-      <p className="text-xs text-[#9a9a9a]">{time}</p>
+      <button
+        className="hidden size-6 group-hover:block"
+        onClick={() => {
+          navigate(`/persona/${id}/edit`)
+        }}
+      >
+        <MdOutlineEdit className=" text-earth-green" />
+      </button>
+      <p className="text-xs text-[#9a9a9a] group-hover:hidden">{time}</p>
     </div>
   )
 }

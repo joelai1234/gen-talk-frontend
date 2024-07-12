@@ -1,23 +1,32 @@
 import Chip from '@/components/Chip'
 import ImageWithFallback from '@/components/ImageWithFallback'
 import InputColor from '@/components/InputColor'
-import { mockPersonasData } from '@/data/mockData'
+import { Button } from '@/components/ui/button'
 import {
   personaLanguageOptions,
   personaStyleOptions,
   personaToneOptions
 } from '@/data/persona'
+import { useMockDataStore } from '@/store/useMockDataStore'
 import { useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa'
 import { useNavigate, useParams } from 'react-router-dom'
 
 export default function EditPersona() {
   const navigate = useNavigate()
+  const { mockPersonasData, setMockPersonasData } = useMockDataStore()
 
   const { personaId } = useParams()
   const [persona, setPersona] = useState(
     mockPersonasData.find((persona) => persona.id == personaId)!
   )
+
+  const handleSave = () => {
+    setMockPersonasData(
+      mockPersonasData.map((item) => (item.id === persona.id ? persona : item))
+    )
+    navigate('/')
+  }
 
   if (!persona) {
     return <div>Error</div>
@@ -161,7 +170,19 @@ export default function EditPersona() {
                   />
                 </div>
               </div>
-              <div></div>
+              <div className=" mt-10 flex justify-end space-x-4">
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    navigate('/')
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button className=" w-[120px]" onClick={handleSave}>
+                  Save
+                </Button>
+              </div>
             </div>
           </div>
           <div className="w-28"></div>

@@ -27,7 +27,7 @@ export const mockPersonasData: PersonaData[] = [
     tone: PersonaTone.Authoritative,
     language: PersonaLanguage.Technical,
     style: PersonaStyle.Analytical,
-    messageColor: '#F5F5F5'
+    messageColor: '#EBEBEB'
   },
   {
     id: 3,
@@ -38,7 +38,7 @@ export const mockPersonasData: PersonaData[] = [
     tone: PersonaTone.Casual,
     language: PersonaLanguage.Simple,
     style: PersonaStyle.Reflective,
-    messageColor: '#F0F0F0'
+    messageColor: '#EBEBEB'
   },
   {
     id: 4,
@@ -49,7 +49,7 @@ export const mockPersonasData: PersonaData[] = [
     tone: PersonaTone.Sincere,
     language: PersonaLanguage.Motivational,
     style: PersonaStyle.Direct,
-    messageColor: '#F8F8F8'
+    messageColor: '#EBEBEB'
   },
   {
     id: 5,
@@ -60,7 +60,7 @@ export const mockPersonasData: PersonaData[] = [
     tone: PersonaTone.Cheerful,
     language: PersonaLanguage.Formal,
     style: PersonaStyle.Indirect,
-    messageColor: '#F3F3F3'
+    messageColor: '#EBEBEB'
   }
 ]
 

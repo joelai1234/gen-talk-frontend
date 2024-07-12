@@ -13,7 +13,6 @@ const buttonVariants = cva(
           'bg-earth-green text-white hover:bg-[#4D674E] disabled:bg-[#7E907E] disabled:text-[#C9C9C9]',
         secondary:
           'bg-transparent text-[#4C4C4C] hover:bg-[#EBEBEB] disabled:bg-transparent disabled:text-[#9A9A9A]',
-        chip: 'hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50',
         warning:
           'text-slate-900 underline-offset-4 hover:underline dark:text-slate-50',
         'waring-secondary':

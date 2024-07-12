@@ -5,20 +5,18 @@ import { IoMdSearch } from 'react-icons/io'
 import { IoMdAdd } from 'react-icons/io'
 import { format } from 'date-fns'
 import { ChatRoomSender } from '@/enum/persona'
-import { mockPersonaMessagesList, mockPersonasData } from '@/data/mockData'
 import { ChatRoomMessage } from '@/model/persona'
+import { useMockDataStore } from '@/store/useMockDataStore'
 
 export default function ChatBot() {
+  const {
+    mockPersonasData,
+    mockPersonaMessagesList,
+    setMockPersonaMessagesList
+  } = useMockDataStore()
   const [selectedPersonaId, setSelectedPersonaId] = useState<
     number | string | undefined
   >()
-
-  const persona = mockPersonasData.find(
-    (persona) => persona.id === selectedPersonaId
-  )
-  const chatEndRef = useRef<HTMLDivElement | null>(null)
-
-  const [search, setSearch] = useState('')
 
   const [personaMessagesList, setPersonaMessagesList] = useState<
     {
@@ -27,9 +25,20 @@ export default function ChatBot() {
     }[]
   >(mockPersonaMessagesList)
 
+  const persona = mockPersonasData.find(
+    (persona) => persona.id === selectedPersonaId
+  )
+  const chatEndRef = useRef<HTMLDivElement | null>(null)
+
+  const [search, setSearch] = useState('')
+
   const messages =
     personaMessagesList.find((item) => item.personaId === selectedPersonaId)
       ?.messages ?? []
+
+  useEffect(() => {
+    setMockPersonaMessagesList(personaMessagesList)
+  }, [personaMessagesList, setMockPersonaMessagesList])
 
   const handleSendMessage = (message: string) => {
     if (selectedPersonaId === undefined) return
@@ -156,6 +165,7 @@ export default function ChatBot() {
                 return (
                   <ChatBotItem
                     key={item.id}
+                    id={item.id}
                     avatar={item.avatar}
                     name={item.name}
                     time={
@@ -218,7 +228,10 @@ export default function ChatBot() {
                           return (
                             <div
                               key={data.id}
-                              className="ml-20 w-fit self-end rounded-3xl bg-[#ebebeb] px-4 py-2"
+                              className="ml-20 w-fit self-end rounded-3xl px-4 py-2"
+                              style={{
+                                backgroundColor: persona.messageColor
+                              }}
                             >
                               <p className="text-base text-[#4c4c4c]">
                                 {data.message}
