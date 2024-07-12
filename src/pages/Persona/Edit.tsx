@@ -136,7 +136,7 @@ export default function EditPersona() {
                         onClick={() => {
                           setPersona((prev) => ({
                             ...prev,
-                            stype: option.value
+                            style: option.value
                           }))
                         }}
                       />
