@@ -7,11 +7,13 @@ import { format } from 'date-fns'
 import { ChatRoomSender } from '@/enum/persona'
 import { ChatRoomMessage } from '@/model/persona'
 import { useMockDataStore } from '@/store/useMockDataStore'
+import { Link } from 'react-router-dom'
 
 export default function ChatBot() {
   const {
     mockPersonasData,
     mockPersonaMessagesList,
+    setMockPersonasData,
     setMockPersonaMessagesList
   } = useMockDataStore()
   const [selectedPersonaId, setSelectedPersonaId] = useState<
@@ -63,6 +65,17 @@ export default function ChatBot() {
       }
       return newMessages
     })
+    setMockPersonasData(
+      mockPersonasData.map((item) => {
+        if (item.id === selectedPersonaId) {
+          return {
+            ...item,
+            updated: new Date()
+          }
+        }
+        return item
+      })
+    )
     setTimeout(() => {
       setPersonaMessagesList((prevMessages) => {
         const newMessages = [...prevMessages]
@@ -89,9 +102,19 @@ export default function ChatBot() {
         }
         return newMessages
       })
+      setMockPersonasData(
+        mockPersonasData.map((item) => {
+          if (item.id === selectedPersonaId) {
+            return {
+              ...item,
+              updated: new Date()
+            }
+          }
+          return item
+        })
+      )
     }, 500)
   }
-
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'auto' })
@@ -130,32 +153,18 @@ export default function ChatBot() {
             </div>
             <button className="flex items-center gap-1">
               <IoMdAdd className="text-earth-green" />
-              <p className="text-sm text-earth-green">New Persona</p>
+              <Link className="text-sm text-earth-green" to="/persona/create">
+                New Persona
+              </Link>
             </button>
           </div>
           <div>
             {chatBotData
+              .reverse()
               .sort((a, b) => {
-                const AMessagesLength =
-                  personaMessagesList.find(
-                    (chatRoom) => chatRoom.personaId === a.id
-                  )?.messages?.length ?? 0
-                const BMessagesLength =
-                  personaMessagesList.find(
-                    (chatRoom) => chatRoom.personaId === b.id
-                  )?.messages?.length ?? 0
-
-                const lastMessageTimeA =
-                  personaMessagesList
-                    .find((chatRoom) => chatRoom.personaId === a.id)
-                    ?.messages[AMessagesLength - 1].timestamp.getTime() ?? 0
-
-                const lastMessageTimeB =
-                  personaMessagesList
-                    .find((chatRoom) => chatRoom.personaId === b.id)
-                    ?.messages[BMessagesLength - 1].timestamp.getTime() ?? 0
-
-                return lastMessageTimeB - lastMessageTimeA
+                const aTime = a.updated?.getTime() ?? 0
+                const bTime = b.updated?.getTime() ?? 0
+                return bTime - aTime
               })
               .map((item) => {
                 const length =

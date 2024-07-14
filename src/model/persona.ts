@@ -6,6 +6,8 @@ import {
 } from '@/enum/persona'
 
 export interface PersonaData {
+  created?: Date
+  updated?: Date
   id: string | number
   avatar: string
   name: string
@@ -14,6 +16,7 @@ export interface PersonaData {
   language: PersonaLanguage
   style: PersonaStyle
   messageColor: string
+  isPreset?: boolean
 }
 
 export interface ChatRoomMessage {

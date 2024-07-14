@@ -16,11 +16,15 @@ export default function ImageWithFallback({
   const [imgSrc, setImgSrc] = useState(src)
 
   const handleError = () => {
+    console.error('Image loading failed:', src)
     setImgSrc(fallbackSrc)
   }
 
   useEffect(() => {
-    setImgSrc(src)
+    const image = new Image()
+    image.src = src
+    image.onload = () => setImgSrc(src)
+    image.onerror = handleError
   }, [src])
 
   return (

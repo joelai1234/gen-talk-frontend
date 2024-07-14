@@ -3,6 +3,7 @@ import Components from '@/pages/Components'
 import Layout from '@/components/Layout'
 import ChatBot from '@/pages/ChatBot'
 import EditPersona from '@/pages/Persona/Edit'
+import CreatePersona from '@/pages/Persona/Create'
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ export const router = createBrowserRouter([
       {
         path: '/persona/:personaId/edit',
         element: <EditPersona />
+      },
+      {
+        path: '/persona/create',
+        element: <CreatePersona />
       }
     ]
   }

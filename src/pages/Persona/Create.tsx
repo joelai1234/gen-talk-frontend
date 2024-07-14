@@ -8,30 +8,36 @@ import {
   personaStyleOptions,
   personaToneOptions
 } from '@/data/persona'
+import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
+import { PersonaData } from '@/model/persona'
 import { useMockDataStore } from '@/store/useMockDataStore'
 import { useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa'
-import { useNavigate, useParams } from 'react-router-dom'
-import { RiDeleteBin5Line } from 'react-icons/ri'
+import { useNavigate } from 'react-router-dom'
 
-export default function EditPersona() {
+export default function CreatePersona() {
   const navigate = useNavigate()
-  const { mockPersonasData, setMockPersonasData } = useMockDataStore()
 
-  const { personaId } = useParams()
-  const [persona, setPersona] = useState(
-    mockPersonasData.find((persona) => persona.id == personaId)!
-  )
+  const { addMockPersonaData } = useMockDataStore()
 
-  const handleSave = () => {
-    setMockPersonasData(
-      mockPersonasData.map((item) => (item.id === persona.id ? persona : item))
-    )
+  const [persona, setPersona] = useState<PersonaData>({
+    id: Date.now(),
+    avatar: defaultPersonaIcon,
+    name: '',
+    description: '',
+    tone: PersonaTone.Empathetic,
+    language: PersonaLanguage.Formal,
+    style: PersonaStyle.Direct,
+    messageColor: '#EBEBEB'
+  })
+
+  const handleCreate = () => {
+    addMockPersonaData({
+      ...persona,
+      created: new Date(),
+      updated: new Date()
+    })
     navigate('/')
-  }
-
-  if (!persona) {
-    return <div>Error</div>
   }
 
   return (
@@ -61,7 +67,9 @@ export default function EditPersona() {
                   alt={persona.name}
                 />
               </div>
-              <h3 className="text-2xl text-[#4c4c4c]">{persona.name}</h3>
+              <h3 className="text-2xl text-[#4c4c4c]">
+                {persona.name || 'New'}
+              </h3>
             </div>
             <div className="mt-8">
               <div className="space-y-8">
@@ -80,7 +88,6 @@ export default function EditPersona() {
                     </div>
                     <input
                       className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-                      disabled={persona.isPreset}
                       type="text"
                       placeholder="Name"
                       value={persona.name}
@@ -101,9 +108,6 @@ export default function EditPersona() {
                         key={option.value}
                         label={option.label}
                         selected={persona.tone === option.value}
-                        disabled={
-                          persona.isPreset && persona.tone !== option.value
-                        }
                         onClick={() => {
                           setPersona((prev) => ({
                             ...prev,
@@ -122,9 +126,6 @@ export default function EditPersona() {
                         key={option.value}
                         label={option.label}
                         selected={persona.language === option.value}
-                        disabled={
-                          persona.isPreset && persona.language !== option.value
-                        }
                         onClick={() => {
                           setPersona((prev) => ({
                             ...prev,
@@ -143,9 +144,6 @@ export default function EditPersona() {
                         key={option.value}
                         label={option.label}
                         selected={persona.style === option.value}
-                        disabled={
-                          persona.isPreset && persona.style !== option.value
-                        }
                         onClick={() => {
                           setPersona((prev) => ({
                             ...prev,
@@ -160,9 +158,8 @@ export default function EditPersona() {
                   <p className="text-base text-[#4c4c4c]">Description</p>
                   <textarea
                     className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-                    disabled={persona.isPreset}
-                    placeholder="Enter the description of this persona"
                     rows={3}
+                    placeholder="Enter the description of this persona"
                     value={persona.description}
                     onChange={(e) => {
                       setPersona((prev) => ({
@@ -185,17 +182,7 @@ export default function EditPersona() {
                   />
                 </div>
               </div>
-              <div className="mt-10 flex justify-end space-x-4">
-                <Button
-                  className="mr-auto text-[#EA4663]"
-                  variant="secondary"
-                  onClick={() => {
-                    navigate('/')
-                  }}
-                >
-                  <RiDeleteBin5Line className="mr-1" />
-                  <span>Delete</span>
-                </Button>
+              <div className=" mt-10 flex justify-end space-x-4">
                 <Button
                   variant="secondary"
                   onClick={() => {
@@ -204,8 +191,8 @@ export default function EditPersona() {
                 >
                   Cancel
                 </Button>
-                <Button className=" w-[120px]" onClick={handleSave}>
-                  Save
+                <Button className=" w-[120px]" onClick={handleCreate}>
+                  Create
                 </Button>
               </div>
             </div>
