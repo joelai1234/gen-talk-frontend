@@ -9,7 +9,7 @@ import { PersonaData, PersonaMessages } from '@/model/persona'
 export const mockPersonasData: PersonaData[] = [
   {
     id: 1,
-    avatar: '/images/avatar1.png',
+    avatar: '🌳',
     name: 'Counselor',
     description:
       'This persona is empathetic and patient, often allowing individuals to explore their feelings and fears at their own pace. They provide a safe space for individuals to express their concerns.',
@@ -21,7 +21,7 @@ export const mockPersonasData: PersonaData[] = [
   },
   {
     id: 2,
-    avatar: '/images/avatar2.png',
+    avatar: '🎋',
     name: 'Educator',
     description:
       'This persona is knowledgeable and informative, providing individuals with the tools and resources they need to make informed decisions. They are often seen as a trusted source of information.',
@@ -33,7 +33,7 @@ export const mockPersonasData: PersonaData[] = [
   },
   {
     id: 3,
-    avatar: '/images/avatar3.png',
+    avatar: '😊',
     name: 'Peer',
     description:
       'This persona is relatable and supportive, often sharing their own experiences and offering advice based on personal knowledge. They are seen as a friend and confidant.',
@@ -45,7 +45,7 @@ export const mockPersonasData: PersonaData[] = [
   },
   {
     id: 4,
-    avatar: '/images/avatar4.png',
+    avatar: '🎄',
     name: 'Coach',
     description:
       'This persona is motivational and goal-oriented, helping individuals to identify their strengths and weaknesses and set achievable goals. They are often seen as a mentor and role model.',
@@ -57,7 +57,7 @@ export const mockPersonasData: PersonaData[] = [
   },
   {
     id: 5,
-    avatar: '/images/avatar5.png',
+    avatar: '🫥',
     name: 'Cheerleader',
     description:
       'This persona is positive and encouraging, providing individuals with emotional support and motivation to overcome challenges. They are often seen as a source of inspiration and motivation',

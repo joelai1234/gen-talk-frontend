@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils'
-import ImageWithFallback from './ImageWithFallback'
 import { MdOutlineEdit } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 
@@ -32,13 +31,8 @@ export default function ChatBotItem({
       onClick={onClick}
     >
       <div className="flex items-center gap-2">
-        <div className="flex size-8 items-center justify-center rounded-full border border-[#EBEBEB] bg-white">
-          <ImageWithFallback
-            className="size-[18px] object-contain"
-            src={avatar}
-            fallbackSrc="/images/avatar1.png"
-            alt={name}
-          />
+        <div className="flex size-8 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl">
+          {avatar}
         </div>
         <p className="text-[#4c4c4c]">{name}</p>
       </div>

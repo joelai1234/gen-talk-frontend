@@ -1,6 +1,6 @@
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 
-export const defaultPersonaIcon = '/images/avatar1.png'
+export const defaultPersonaIcon = '😊'
 
 export const personaToneOptions = [
   {

@@ -1,5 +1,4 @@
 import ChatBotItem from '@/components/ChatBotItem'
-import ImageWithFallback from '@/components/ImageWithFallback'
 import { useEffect, useRef, useState } from 'react'
 import { IoMdSearch } from 'react-icons/io'
 import { IoMdAdd } from 'react-icons/io'
@@ -212,13 +211,8 @@ export default function ChatBot() {
                 {messages.length === 0 && (
                   <div className="flex w-full flex-1 items-center justify-center">
                     <div className="flex w-[265px] -translate-y-6 flex-col items-center justify-center space-y-1">
-                      <div className="flex size-12 items-center justify-center rounded-full border border-[#EBEBEB] bg-white">
-                        <ImageWithFallback
-                          className="size-[22px] object-contain"
-                          src={persona.avatar}
-                          fallbackSrc={mockPersonasData[0].avatar}
-                          alt={persona.name}
-                        />
+                      <div className="flex size-12 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-3xl">
+                        {persona.avatar}
                       </div>
                       <p className="text-center text-base text-[#4c4c4c]">
                         {persona.name}
