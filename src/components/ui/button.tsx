@@ -13,10 +13,8 @@ const buttonVariants = cva(
           'bg-earth-green text-white hover:bg-[#4D674E] disabled:bg-[#7E907E] disabled:text-[#C9C9C9]',
         secondary:
           'bg-transparent text-[#4C4C4C] hover:bg-[#EBEBEB] disabled:bg-transparent disabled:text-[#9A9A9A]',
-        warning:
-          'text-slate-900 underline-offset-4 hover:underline dark:text-slate-50',
-        'waring-secondary':
-          'text-slate-900 underline-offset-4 hover:underline dark:text-slate-50'
+        warning: 'bg-[#EA4663] text-white hover:bg-[#B73149]',
+        'waring-secondary': 'bg-[#EBEBEB] text-black hover:bg-[#DFDFDF]'
       },
       size: {
         default: 'p-[10px]',

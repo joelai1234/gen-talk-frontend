@@ -13,10 +13,23 @@ import { useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa'
 import { useNavigate, useParams } from 'react-router-dom'
 import { RiDeleteBin5Line } from 'react-icons/ri'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog'
 
 export default function EditPersona() {
   const navigate = useNavigate()
-  const { mockPersonasData, setMockPersonasData } = useMockDataStore()
+  const { mockPersonasData, setMockPersonasData, deleteMockPersonaData } =
+    useMockDataStore()
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   const { personaId } = useParams()
   const [persona, setPersona] = useState(
@@ -27,6 +40,11 @@ export default function EditPersona() {
     setMockPersonasData(
       mockPersonasData.map((item) => (item.id === persona.id ? persona : item))
     )
+    navigate('/')
+  }
+
+  const handleDelete = () => {
+    deleteMockPersonaData(persona.id)
     navigate('/')
   }
 
@@ -186,16 +204,60 @@ export default function EditPersona() {
                 </div>
               </div>
               <div className="mt-10 flex justify-end space-x-4">
-                <Button
-                  className="mr-auto text-[#EA4663]"
-                  variant="secondary"
-                  onClick={() => {
-                    navigate('/')
-                  }}
-                >
-                  <RiDeleteBin5Line className="mr-1" />
-                  <span>Delete</span>
-                </Button>
+                {!persona.isPreset && (
+                  <AlertDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                  >
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        className="mr-auto text-[#EA4663]"
+                        variant="secondary"
+                      >
+                        <RiDeleteBin5Line className="mr-1" />
+                        <span>Delete</span>
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="w-[414px]">
+                      <AlertDialogHeader className="hidden">
+                        <AlertDialogTitle>Delete Persona</AlertDialogTitle>
+                      </AlertDialogHeader>
+                      <div>
+                        <div className="flex flex-col items-center gap-2">
+                          <div className=" flex size-8 items-center justify-center rounded-full bg-[#FFEEF2]">
+                            <RiDeleteBin5Line className=" text-xl text-[#EA4663]" />
+                          </div>
+                          <p className="text-center text-xl text-[#ea4663]">
+                            Delete Persona
+                          </p>
+                        </div>
+                        <p className="mt-3 text-base text-[#4c4c4c]">
+                          This action cannot be undone. All conversations
+                          associated with this persona will be lost.
+                        </p>
+                        <div className="mt-8 flex justify-end gap-6">
+                          <Button
+                            className="px-6"
+                            variant="waring-secondary"
+                            onClick={() => {
+                              setDeleteDialogOpen(false)
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            className="px-6"
+                            variant="warning"
+                            onClick={handleDelete}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+
                 <Button
                   variant="secondary"
                   onClick={() => {
