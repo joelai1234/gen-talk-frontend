@@ -79,15 +79,15 @@ export default function EditPersona() {
                     Persona Icon &amp; Name
                   </p>
                   <div className="flex space-x-1">
-                    <div className="relative flex size-[46px] shrink-0 items-center justify-center rounded-lg border border-[#ebebeb] bg-white">
-                      <button
-                        className=" text-2xl"
-                        onClick={() => {
-                          setEmojiPickerOpen(true)
-                        }}
-                      >
+                    <button
+                      className="relative flex size-[46px] shrink-0 items-center justify-center rounded-lg border border-[#ebebeb] bg-white"
+                      onClick={() => {
+                        setEmojiPickerOpen(true)
+                      }}
+                    >
+                      <div className="flex size-full items-center justify-center text-2xl">
                         {persona.avatar}
-                      </button>
+                      </div>
                       {emojiPickerOpen && (
                         <div className="absolute size-full">
                           <EmojiPicker
@@ -105,7 +105,7 @@ export default function EditPersona() {
                           />
                         </div>
                       )}
-                    </div>
+                    </button>
                     <input
                       className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
                       disabled={persona.isPreset}
