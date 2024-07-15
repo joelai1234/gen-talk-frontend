@@ -14,7 +14,8 @@ const buttonVariants = cva(
         secondary:
           'bg-transparent text-[#4C4C4C] hover:bg-[#EBEBEB] disabled:bg-transparent disabled:text-[#9A9A9A]',
         warning: 'bg-[#EA4663] text-white hover:bg-[#B73149]',
-        'waring-secondary': 'bg-[#EBEBEB] text-black hover:bg-[#DFDFDF]'
+        'waring-secondary': 'bg-[#EBEBEB] text-black hover:bg-[#DFDFDF]',
+        white: 'bg-white text-earth-green hover:bg-[#eeeeee]'
       },
       size: {
         default: 'p-[10px]',
