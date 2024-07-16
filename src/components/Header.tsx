@@ -90,7 +90,7 @@ export default function Header() {
                   </button>
                   <img
                     className="mx-auto mb-4 w-[153px]"
-                    src="/public/images/sign-up.svg"
+                    src="/images/sign-up.svg"
                     alt=""
                   />
                   <div className="space-y-6">
@@ -165,7 +165,7 @@ export default function Header() {
                   </button>
                   <img
                     className="mx-auto mb-4 w-[153px]"
-                    src="/public/images/sign-up.svg"
+                    src="/images/sign-up.svg"
                     alt=""
                   />
                   <div className="space-y-6">
@@ -233,7 +233,7 @@ export default function Header() {
                   </button>
                   <img
                     className="mx-auto mb-4 w-[153px]"
-                    src="/public/images/verify-email.svg"
+                    src="/images/verify-email.svg"
                     alt=""
                   />
                   <div className="space-y-6">
@@ -272,7 +272,7 @@ export default function Header() {
                   </button>
                   <img
                     className="mx-auto mb-4 w-[153px]"
-                    src="/public/images/forget-password.svg"
+                    src="/images/forget-password.svg"
                     alt="forget-password"
                   />
                   <div className="space-y-6">
@@ -338,7 +338,7 @@ export default function Header() {
                   </button>
                   <img
                     className="mx-auto mb-4 w-[153px]"
-                    src="/public/images/forget-password.svg"
+                    src="/images/forget-password.svg"
                     alt="forget-password"
                   />
                   <div className="space-y-6">

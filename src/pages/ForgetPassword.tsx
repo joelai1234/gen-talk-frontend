@@ -17,7 +17,7 @@ export default function ForgetPassword() {
           <div className="flex flex-col pt-6">
             <img
               className="mx-auto mb-4 w-[153px]"
-              src="/public/images/forget-password.svg"
+              src="/images/forget-password.svg"
               alt=""
             />
             <div className="space-y-6">
