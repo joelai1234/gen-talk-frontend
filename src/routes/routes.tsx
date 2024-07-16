@@ -4,6 +4,8 @@ import Layout from '@/components/Layout'
 import ChatBot from '@/pages/ChatBot'
 import EditPersona from '@/pages/Persona/Edit'
 import CreatePersona from '@/pages/Persona/Create'
+import ForgetPassword from '@/pages/ForgetPassword'
+import AuthLayout from '@/components/AuthLayout'
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +30,15 @@ export const router = createBrowserRouter([
       {
         path: '/persona/create',
         element: <CreatePersona />
+      }
+    ]
+  },
+  {
+    element: <AuthLayout />,
+    children: [
+      {
+        path: '/auth/forget-password',
+        element: <ForgetPassword />
       }
     ]
   }
