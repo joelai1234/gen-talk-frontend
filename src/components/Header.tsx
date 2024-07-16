@@ -89,7 +89,7 @@ export default function Header() {
                     <IoMdClose />
                   </button>
                   <img
-                    className="mx-auto mb-4 w-[153px]"
+                    className="mx-auto mb-4 h-[83px] w-[153px]"
                     src="/images/sign-up.svg"
                     alt=""
                   />
@@ -164,7 +164,7 @@ export default function Header() {
                     <IoMdClose />
                   </button>
                   <img
-                    className="mx-auto mb-4 w-[153px]"
+                    className="mx-auto mb-4 h-[83px] w-[153px]"
                     src="/images/sign-up.svg"
                     alt=""
                   />
@@ -232,7 +232,7 @@ export default function Header() {
                     <IoMdClose />
                   </button>
                   <img
-                    className="mx-auto mb-4 w-[153px]"
+                    className="mx-auto mb-4 h-[83px] w-[153px]"
                     src="/images/verify-email.svg"
                     alt=""
                   />
@@ -271,7 +271,7 @@ export default function Header() {
                     <IoMdClose />
                   </button>
                   <img
-                    className="mx-auto mb-4 w-[153px]"
+                    className="mx-auto mb-4 h-[83px] w-[153px]"
                     src="/images/forget-password.svg"
                     alt="forget-password"
                   />
@@ -337,7 +337,7 @@ export default function Header() {
                     <IoMdClose />
                   </button>
                   <img
-                    className="mx-auto mb-4 w-[153px]"
+                    className="mx-auto mb-4 h-[83px] w-[153px]"
                     src="/images/forget-password.svg"
                     alt="forget-password"
                   />
