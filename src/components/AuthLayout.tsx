@@ -9,7 +9,7 @@ export default function AuthLayout() {
       }}
     >
       <div>
-        <header className="flex items-center justify-between px-6 py-2">
+        <header className="flex h-[60px] items-center justify-between px-6 py-2">
           <Link to="/chatbot">
             <div className="flex items-center gap-2">
               <img src="/images/logo.png" alt="logo" />

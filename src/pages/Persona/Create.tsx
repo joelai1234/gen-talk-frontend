@@ -41,7 +41,7 @@ export default function CreatePersona() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-56px)] px-16 pb-16 pt-6">
+    <div className="flex h-[calc(100vh-60px)] px-16 pb-16 pt-6">
       <div
         className="box-border flex flex-1 justify-center overflow-hidden rounded-[20px] bg-[#f7f7f7] py-10"
         style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}

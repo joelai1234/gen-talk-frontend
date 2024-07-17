@@ -19,10 +19,12 @@ export default function Header() {
     | 'none'
     | 'login'
     | 'signUp'
-    | 'verifyEmail'
+    | 'resendSignUpVerificationEmail'
     | 'forgetPassword'
-    | 'forgetPasswordResetEmail'
-  >('none')
+    | 'forgetPasswordSentEmail'
+    | 'verifyEmailSuccess'
+    | 'resendVerifyEmail'
+  >('resendVerifyEmail')
   const isLogin = false
 
   return (
@@ -132,7 +134,7 @@ export default function Header() {
                     <Button
                       className="w-full"
                       onClick={() => {
-                        setAuthAction('verifyEmail')
+                        setAuthAction('resendSignUpVerificationEmail')
                       }}
                     >
                       Continue
@@ -221,7 +223,7 @@ export default function Header() {
                   </p>
                 </div>
               )}
-              {authAction === 'verifyEmail' && (
+              {authAction === 'resendSignUpVerificationEmail' && (
                 <div className="flex flex-col">
                   <button
                     className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
@@ -295,7 +297,7 @@ export default function Header() {
                       <Button
                         className="w-full"
                         onClick={() => {
-                          setAuthAction('forgetPasswordResetEmail')
+                          setAuthAction('forgetPasswordSentEmail')
                         }}
                       >
                         Continue
@@ -311,22 +313,9 @@ export default function Header() {
                       </Button>
                     </div>
                   </div>
-                  <p className="mt-6 text-center text-base">
-                    <span className="text-[#4c4c4c]">
-                      Already have an account?{' '}
-                    </span>
-                    <span
-                      className="cursor-pointer text-earth-green"
-                      onClick={() => {
-                        setAuthAction('signUp')
-                      }}
-                    >
-                      Sign up
-                    </span>
-                  </p>
                 </div>
               )}
-              {authAction === 'forgetPasswordResetEmail' && (
+              {authAction === 'forgetPasswordSentEmail' && (
                 <div className="flex flex-col">
                   <button
                     className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
@@ -366,6 +355,83 @@ export default function Header() {
                       }}
                     >
                       Got it
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {authAction === 'verifyEmailSuccess' && (
+                <div className="flex flex-col">
+                  <button
+                    className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
+                    onClick={() => {
+                      setAuthAction('none')
+                    }}
+                  >
+                    <IoMdClose />
+                  </button>
+                  <img
+                    className="mx-auto mb-4 h-[83px] w-[153px]"
+                    src="/images/verify-email-success.svg"
+                    alt="verify-email-success"
+                  />
+                  <div className="space-y-6">
+                    <h4 className="text-center text-2xl font-medium text-[#4c4c4c]">
+                      Your email has been verified
+                    </h4>
+                    <div>
+                      <p className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
+                        <span className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
+                          Your email address has been verified. You’re all set
+                          to interact with the chatbots and customize personas.
+                        </span>
+                      </p>
+                    </div>
+                    <Button
+                      className="w-full"
+                      onClick={() => {
+                        setAuthAction('none')
+                      }}
+                    >
+                      Get Started
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {authAction === 'resendVerifyEmail' && (
+                <div className="flex flex-col">
+                  <button
+                    className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
+                    onClick={() => {
+                      setAuthAction('none')
+                    }}
+                  >
+                    <IoMdClose />
+                  </button>
+                  <img
+                    className="mx-auto mb-4 h-[83px] w-[153px]"
+                    src="/images/resend-verify-email.svg"
+                    alt="resend-verify-email"
+                  />
+                  <div className="space-y-6">
+                    <h4 className="text-center text-2xl font-medium text-[#4c4c4c]">
+                      Verify Your Email
+                    </h4>
+                    <div>
+                      <p className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
+                        <span className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
+                          All new sign-ups need to be verified for security
+                          purposes. A verification email has been sent to
+                          john@email.com.
+                        </span>
+                      </p>
+                    </div>
+                    <Button
+                      className="w-full"
+                      onClick={() => {
+                        setAuthAction('none')
+                      }}
+                    >
+                      Resend verification email
                     </Button>
                   </div>
                 </div>
