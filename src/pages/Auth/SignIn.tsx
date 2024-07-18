@@ -1,8 +1,12 @@
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/services/useAuth'
 import { MdOutlineEmail, MdOutlinePassword } from 'react-icons/md'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function SignIn() {
+  const navigate = useNavigate()
+  const { signIn } = useAuth()
+
   return (
     <div className="flex h-[calc(100vh-60px)] items-center justify-center px-16 pb-16 pt-6">
       <div className="relative w-[414px] rounded-[28px] bg-white p-6">
@@ -45,7 +49,15 @@ export default function SignIn() {
                 </Link>
               </div>
             </div>
-            <Button className="w-full">Login</Button>
+            <Button
+              className="w-full"
+              onClick={() => {
+                signIn()
+                navigate('/')
+              }}
+            >
+              Login
+            </Button>
           </div>
           <p className="mt-6 text-center text-base">
             <span className="text-[#4c4c4c]">Already have an account? </span>

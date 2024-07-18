@@ -1,5 +1,5 @@
 import { FaUserCircle } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Button } from './ui/button'
 import {
   AlertDialog,
@@ -13,8 +13,20 @@ import { MdOutlineEmail } from 'react-icons/md'
 import { MdOutlineAccountCircle } from 'react-icons/md'
 import { MdOutlinePassword } from 'react-icons/md'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/services/useAuth'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover'
+import { FaRegUser } from 'react-icons/fa'
+import { MdLogout } from 'react-icons/md'
 
 export default function Header() {
+  const { isLogin, signIn, signOut } = useAuth()
+  const [searchParams, setSearchParams] = useSearchParams()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const action = searchParams.get('action') as any
   const [authAction, setAuthAction] = useState<
     | 'none'
     | 'login'
@@ -24,8 +36,7 @@ export default function Header() {
     | 'forgetPasswordSentEmail'
     | 'verifyEmailSuccess'
     | 'resendVerifyEmail'
-  >('resendVerifyEmail')
-  const isLogin = false
+  >(action || 'none')
 
   return (
     <header className="flex items-center justify-between px-6 py-2">
@@ -206,7 +217,15 @@ export default function Header() {
                         </p>
                       </div>
                     </div>
-                    <Button className="w-full">Login</Button>
+                    <Button
+                      className="w-full"
+                      onClick={() => {
+                        signIn()
+                        setAuthAction('none')
+                      }}
+                    >
+                      Login
+                    </Button>
                   </div>
                   <p className="mt-6 text-center text-base">
                     <span className="text-[#4c4c4c]">
@@ -256,7 +275,12 @@ export default function Header() {
                         </span>
                       </p>
                     </div>
-                    <Button className="w-full">
+                    <Button
+                      className="w-full"
+                      onClick={() => {
+                        setAuthAction('none')
+                      }}
+                    >
                       Resend verification email
                     </Button>
                   </div>
@@ -365,6 +389,7 @@ export default function Header() {
                     className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
                     onClick={() => {
                       setAuthAction('none')
+                      setSearchParams({})
                     }}
                   >
                     <IoMdClose />
@@ -390,6 +415,7 @@ export default function Header() {
                       className="w-full"
                       onClick={() => {
                         setAuthAction('none')
+                        setSearchParams({})
                       }}
                     >
                       Get Started
@@ -441,9 +467,40 @@ export default function Header() {
         </div>
       )}
       {isLogin && (
-        <button className="flex size-10 items-center justify-center">
-          <FaUserCircle className="size-8 text-earth-green" />
-        </button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="flex size-10 items-center justify-center">
+              <FaUserCircle className="size-8 text-earth-green" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="mr-6 w-[200px] p-0">
+            <div className="flex items-center gap-4 px-4 pt-4">
+              <div>
+                <FaUserCircle className="size-8 text-earth-green" />
+              </div>
+              <div>
+                <p className="text-base text-[#4c4c4c]">Username</p>
+                <p className="text-sm text-[#4c4c4c]">xxxxx@email.com</p>
+              </div>
+            </div>
+            <div className="mx-4 my-[10px] h-px w-full bg-[#EBEBEB]"></div>
+            <div className="pb-4">
+              <div className="relative flex cursor-pointer items-center gap-3 px-6 py-1 hover:bg-[#ebebeb]">
+                <FaRegUser />
+                <p className="text-base text-[#4c4c4c]">Settings</p>
+              </div>
+              <div
+                className="relative flex cursor-pointer items-center gap-3 px-6 py-1 hover:bg-[#ebebeb]"
+                onClick={() => {
+                  signOut()
+                }}
+              >
+                <MdLogout />
+                <p className="text-base text-[#4c4c4c]">Logout</p>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
       )}
     </header>
   )

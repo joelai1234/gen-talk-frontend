@@ -23,7 +23,7 @@ export default function VerifySignUpEmail() {
           <Button
             className="px-6"
             variant="default"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/chatbot?action=verifyEmailSuccess')}
           >
             Verify Email
           </Button>
