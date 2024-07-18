@@ -7,6 +7,10 @@ import { ChatRoomSender } from '@/enum/persona'
 import { ChatRoomMessage } from '@/model/persona'
 import { useMockDataStore } from '@/store/useMockDataStore'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
+import { v4 as uuidv4 } from 'uuid'
+
+const VITE_OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string
 
 export default function ChatBot() {
   const {
@@ -41,14 +45,17 @@ export default function ChatBot() {
     setMockPersonaMessagesList(personaMessagesList)
   }, [personaMessagesList, setMockPersonaMessagesList])
 
-  const handleSendMessage = (message: string) => {
+  const handleSendMessage = async (message: string) => {
+    if (message.trim() === '') return
     if (selectedPersonaId === undefined) return
+
     const newMessage: ChatRoomMessage = {
-      id: messages.length + 1,
+      id: uuidv4(),
       message,
       timestamp: new Date(),
       sender: ChatRoomSender.User
     }
+
     setPersonaMessagesList((prevMessages) => {
       const newMessages = [...prevMessages]
       const index = newMessages.findIndex(
@@ -64,6 +71,7 @@ export default function ChatBot() {
       }
       return newMessages
     })
+
     setMockPersonasData(
       mockPersonasData.map((item) => {
         if (item.id === selectedPersonaId) {
@@ -75,32 +83,61 @@ export default function ChatBot() {
         return item
       })
     )
-    setTimeout(() => {
+
+    try {
+      const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: 'gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'system',
+              content: `You are a helpful assistant.
+              name: ${persona?.name}.
+              description: ${persona?.description}.
+              tone: ${persona?.tone}.
+              style: ${persona?.style}.
+              language: ${persona?.language}.
+              `
+            },
+            ...messages.map((msg) => ({
+              role: msg.sender === ChatRoomSender.User ? 'user' : 'assistant',
+              content: msg.message
+            })),
+            { role: 'user', content: message }
+          ]
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${VITE_OPENAI_API_KEY}`
+          }
+        }
+      )
+
+      const gptMessage: ChatRoomMessage = {
+        id: uuidv4(),
+        message: response.data.choices[0].message.content,
+        timestamp: new Date(),
+        sender: ChatRoomSender.Bot
+      }
+
       setPersonaMessagesList((prevMessages) => {
         const newMessages = [...prevMessages]
         const index = newMessages.findIndex(
           (item) => item.personaId === selectedPersonaId
         )
-        const mockBotMessage: ChatRoomMessage = {
-          id: 1,
-          message:
-            'I am sorry to hear that. Can you tell me more about what is causing your anxiety?',
-          timestamp: new Date(),
-          sender: ChatRoomSender.Bot
-        }
         if (index !== -1) {
-          newMessages[index].messages.push({
-            ...mockBotMessage,
-            id: newMessages[index].messages.length + 1
-          })
+          newMessages[index].messages.push(gptMessage)
         } else {
           newMessages.push({
             personaId: selectedPersonaId,
-            messages: [mockBotMessage]
+            messages: [gptMessage]
           })
         }
         return newMessages
       })
+
       setMockPersonasData(
         mockPersonasData.map((item) => {
           if (item.id === selectedPersonaId) {
@@ -112,8 +149,11 @@ export default function ChatBot() {
           return item
         })
       )
-    }, 500)
+    } catch (error) {
+      console.error('Error fetching response from ChatGPT:', error)
+    }
   }
+
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'auto' })
