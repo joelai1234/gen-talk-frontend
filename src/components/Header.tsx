@@ -8,10 +8,6 @@ import {
   AlertDialogTitle
 } from './ui/alert-dialog'
 import { useState } from 'react'
-import { IoMdClose } from 'react-icons/io'
-import { MdOutlineEmail } from 'react-icons/md'
-import { MdOutlineAccountCircle } from 'react-icons/md'
-import { MdOutlinePassword } from 'react-icons/md'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/services/useAuth'
 import {
@@ -21,22 +17,22 @@ import {
 } from '@/components/ui/popover'
 import { FaRegUser } from 'react-icons/fa'
 import { MdLogout } from 'react-icons/md'
+import { AuthStatus } from '@/enum/auth'
+import SignInBlock from './auth/SignInBlock'
+import SignUpBlock from './auth/SignUpBlock'
+import ResendSignUpVerificationEmailBlock from './auth/ResendSignUpVerificationEmailBlock'
+import ForgetPasswordBlock from './auth/ForgetPasswordBlock'
+import ForgetPasswordSentEmailBlock from './auth/forgetPasswordSentEmailBlock'
+import VerifyEmailSuccessBlock from './auth/VerifyEmailSuccessBlock'
+import ResendVerifyEmailBlock from './auth/ResendVerifyEmailBlock'
 
 export default function Header() {
   const { isLogin, signIn, signOut } = useAuth()
-  const [searchParams, setSearchParams] = useSearchParams()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const action = searchParams.get('action') as any
-  const [authAction, setAuthAction] = useState<
-    | 'none'
-    | 'login'
-    | 'signUp'
-    | 'resendSignUpVerificationEmail'
-    | 'forgetPassword'
-    | 'forgetPasswordSentEmail'
-    | 'verifyEmailSuccess'
-    | 'resendVerifyEmail'
-  >(action || 'none')
+  const [searchParams] = useSearchParams()
+  const action = searchParams.get('action') as AuthStatus
+  const [authAction, setAuthAction] = useState<AuthStatus>(
+    action || AuthStatus.none
+  )
 
   return (
     <header className="flex items-center justify-between px-6 py-2">
@@ -52,10 +48,10 @@ export default function Header() {
             className="w-[120px]"
             variant="white"
             onClick={() => {
-              if (authAction === 'login') {
-                setAuthAction('none')
+              if (authAction === AuthStatus.login) {
+                setAuthAction(AuthStatus.none)
               } else {
-                setAuthAction('login')
+                setAuthAction(AuthStatus.login)
               }
             }}
           >
@@ -64,403 +60,58 @@ export default function Header() {
           <Button
             className="w-[120px]"
             onClick={() => {
-              if (authAction === 'signUp') {
-                setAuthAction('none')
+              if (authAction === AuthStatus.signUp) {
+                setAuthAction(AuthStatus.none)
               } else {
-                setAuthAction('signUp')
+                setAuthAction(AuthStatus.signUp)
               }
             }}
           >
             Sign up
           </Button>
           <AlertDialog
-            open={authAction !== 'none'}
+            open={authAction !== AuthStatus.none}
             onOpenChange={(isOpen) => {
               if (!isOpen) {
-                setAuthAction('none')
+                setAuthAction(AuthStatus.none)
               } else {
-                setAuthAction('signUp')
+                setAuthAction(AuthStatus.signUp)
               }
             }}
           >
             <AlertDialogContent
               className={cn('w-[414px]', {
-                'p-0 hidden': authAction === 'none'
+                'p-0 hidden': authAction === AuthStatus.none
               })}
             >
               <AlertDialogHeader className="hidden">
                 <AlertDialogTitle></AlertDialogTitle>
               </AlertDialogHeader>
-              {authAction === 'signUp' && (
-                <div className="flex flex-col">
-                  <button
-                    className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
-                    onClick={() => {
-                      setAuthAction('none')
-                    }}
-                  >
-                    <IoMdClose />
-                  </button>
-                  <img
-                    className="mx-auto mb-4 h-[83px] w-[153px]"
-                    src="/images/sign-up.svg"
-                    alt=""
-                  />
-                  <div className="space-y-6">
-                    <h4 className="text-center text-2xl font-medium text-[#4c4c4c]">
-                      Sign Up
-                    </h4>
-                    <div className="space-y-3">
-                      <div className="relative">
-                        <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <MdOutlineEmail className=" text-2xl text-[#4C4C4C]" />
-                        </div>
-                        <input
-                          className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-                          type="text"
-                          placeholder="Email"
-                        />
-                      </div>
-                      <div className="relative">
-                        <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <MdOutlineAccountCircle className=" text-2xl text-[#4C4C4C]" />
-                        </div>
-                        <input
-                          className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-                          type="text"
-                          placeholder="Username"
-                        />
-                      </div>
-                      <div className="relative">
-                        <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <MdOutlinePassword className=" text-2xl text-[#4C4C4C]" />
-                        </div>
-                        <input
-                          className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-                          type="password"
-                          placeholder="Password"
-                        />
-                      </div>
-                    </div>
-                    <Button
-                      className="w-full"
-                      onClick={() => {
-                        setAuthAction('resendSignUpVerificationEmail')
-                      }}
-                    >
-                      Continue
-                    </Button>
-                  </div>
-                  <p className="mt-6 text-center text-base">
-                    <span className="text-[#4c4c4c]">
-                      Already have an account?{' '}
-                    </span>
-                    <span
-                      className="cursor-pointer text-earth-green"
-                      onClick={() => {
-                        setAuthAction('login')
-                      }}
-                    >
-                      Login
-                    </span>
-                  </p>
-                </div>
+              {authAction === AuthStatus.signUp && (
+                <SignUpBlock
+                  setAuthAction={setAuthAction}
+                  onSubmit={() => {}}
+                />
               )}
-              {authAction === 'login' && (
-                <div className="flex flex-col">
-                  <button
-                    className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
-                    onClick={() => {
-                      setAuthAction('none')
-                    }}
-                  >
-                    <IoMdClose />
-                  </button>
-                  <img
-                    className="mx-auto mb-4 h-[83px] w-[153px]"
-                    src="/images/sign-up.svg"
-                    alt=""
-                  />
-                  <div className="space-y-6">
-                    <h4 className="text-center text-2xl font-medium text-[#4c4c4c]">
-                      Login
-                    </h4>
-                    <div className="space-y-3">
-                      <div className="relative">
-                        <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <MdOutlineEmail className=" text-2xl text-[#4C4C4C]" />
-                        </div>
-                        <input
-                          className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-                          type="text"
-                          placeholder="Email"
-                        />
-                      </div>
-                      <div className="relative">
-                        <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <MdOutlinePassword className=" text-2xl text-[#4C4C4C]" />
-                        </div>
-                        <input
-                          className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-                          type="password"
-                          placeholder="Password"
-                        />
-                      </div>
-                      <div className=" flex justify-end">
-                        <p
-                          className=" inline-block cursor-pointer text-sm text-earth-green"
-                          onClick={() => {
-                            setAuthAction('forgetPassword')
-                          }}
-                        >
-                          Forgot Password?
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      className="w-full"
-                      onClick={() => {
-                        signIn()
-                        setAuthAction('none')
-                      }}
-                    >
-                      Login
-                    </Button>
-                  </div>
-                  <p className="mt-6 text-center text-base">
-                    <span className="text-[#4c4c4c]">
-                      Already have an account?{' '}
-                    </span>
-                    <span
-                      className="cursor-pointer text-earth-green"
-                      onClick={() => {
-                        setAuthAction('signUp')
-                      }}
-                    >
-                      Sign up
-                    </span>
-                  </p>
-                </div>
+              {authAction === AuthStatus.login && (
+                <SignInBlock setAuthAction={setAuthAction} onSubmit={signIn} />
               )}
-              {authAction === 'resendSignUpVerificationEmail' && (
-                <div className="flex flex-col">
-                  <button
-                    className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
-                    onClick={() => {
-                      setAuthAction('none')
-                    }}
-                  >
-                    <IoMdClose />
-                  </button>
-                  <img
-                    className="mx-auto mb-4 h-[83px] w-[153px]"
-                    src="/images/verify-email.svg"
-                    alt=""
-                  />
-                  <div className="space-y-6">
-                    <h4 className="text-center text-2xl font-medium text-[#4c4c4c]">
-                      Verify Your Email
-                    </h4>
-                    <div>
-                      <p className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
-                        <span className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
-                          All new sign-ups need to be verified for security
-                          purposes. A verification email has been sent to{' '}
-                        </span>
-                        <span className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base font-bold text-[#4c4c4c]">
-                          john@email.com
-                        </span>
-                        <span className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
-                          .{' '}
-                        </span>
-                      </p>
-                    </div>
-                    <Button
-                      className="w-full"
-                      onClick={() => {
-                        setAuthAction('none')
-                      }}
-                    >
-                      Resend verification email
-                    </Button>
-                  </div>
-                </div>
+              {authAction === AuthStatus.resendSignUpVerificationEmail && (
+                <ResendSignUpVerificationEmailBlock
+                  setAuthAction={setAuthAction}
+                />
               )}
-              {authAction === 'forgetPassword' && (
-                <div className="flex flex-col">
-                  <button
-                    className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
-                    onClick={() => {
-                      setAuthAction('none')
-                    }}
-                  >
-                    <IoMdClose />
-                  </button>
-                  <img
-                    className="mx-auto mb-4 h-[83px] w-[153px]"
-                    src="/images/forget-password.svg"
-                    alt="forget-password"
-                  />
-                  <div className="space-y-6">
-                    <h4 className="text-center text-2xl font-medium text-[#4c4c4c]">
-                      Forgot Password
-                    </h4>
-                    <div className="space-y-3">
-                      <div className="relative">
-                        <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <MdOutlineEmail className=" text-2xl text-[#4C4C4C]" />
-                        </div>
-                        <input
-                          className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-                          type="text"
-                          placeholder="Email"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <Button
-                        className="w-full"
-                        onClick={() => {
-                          setAuthAction('forgetPasswordSentEmail')
-                        }}
-                      >
-                        Continue
-                      </Button>
-                      <Button
-                        className="w-full"
-                        variant="white"
-                        onClick={() => {
-                          setAuthAction('login')
-                        }}
-                      >
-                        Back
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+              {authAction === AuthStatus.forgetPassword && (
+                <ForgetPasswordBlock setAuthAction={setAuthAction} />
               )}
-              {authAction === 'forgetPasswordSentEmail' && (
-                <div className="flex flex-col">
-                  <button
-                    className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
-                    onClick={() => {
-                      setAuthAction('none')
-                    }}
-                  >
-                    <IoMdClose />
-                  </button>
-                  <img
-                    className="mx-auto mb-4 h-[83px] w-[153px]"
-                    src="/images/forget-password.svg"
-                    alt="forget-password"
-                  />
-                  <div className="space-y-6">
-                    <h4 className="text-center text-2xl font-medium text-[#4c4c4c]">
-                      Forgot Password
-                    </h4>
-                    <div>
-                      <p className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
-                        <span className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
-                          We’ve sent instructions on how to reset your password
-                          to{' '}
-                        </span>
-                        <span className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base font-bold text-[#4c4c4c]">
-                          john@email.com
-                        </span>
-                        <span className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
-                          .{' '}
-                        </span>
-                      </p>
-                    </div>
-                    <Button
-                      className="w-full"
-                      onClick={() => {
-                        setAuthAction('none')
-                      }}
-                    >
-                      Got it
-                    </Button>
-                  </div>
-                </div>
+              {authAction === AuthStatus.forgetPasswordSentEmail && (
+                <ForgetPasswordSentEmailBlock setAuthAction={setAuthAction} />
               )}
-              {authAction === 'verifyEmailSuccess' && (
-                <div className="flex flex-col">
-                  <button
-                    className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
-                    onClick={() => {
-                      setAuthAction('none')
-                      setSearchParams({})
-                    }}
-                  >
-                    <IoMdClose />
-                  </button>
-                  <img
-                    className="mx-auto mb-4 h-[83px] w-[153px]"
-                    src="/images/verify-email-success.svg"
-                    alt="verify-email-success"
-                  />
-                  <div className="space-y-6">
-                    <h4 className="text-center text-2xl font-medium text-[#4c4c4c]">
-                      Your email has been verified
-                    </h4>
-                    <div>
-                      <p className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
-                        <span className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
-                          Your email address has been verified. You’re all set
-                          to interact with the chatbots and customize personas.
-                        </span>
-                      </p>
-                    </div>
-                    <Button
-                      className="w-full"
-                      onClick={() => {
-                        setAuthAction('none')
-                        setSearchParams({})
-                      }}
-                    >
-                      Get Started
-                    </Button>
-                  </div>
-                </div>
+              {authAction === AuthStatus.verifyEmailSuccess && (
+                <VerifyEmailSuccessBlock setAuthAction={setAuthAction} />
               )}
-              {authAction === 'resendVerifyEmail' && (
-                <div className="flex flex-col">
-                  <button
-                    className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
-                    onClick={() => {
-                      setAuthAction('none')
-                    }}
-                  >
-                    <IoMdClose />
-                  </button>
-                  <img
-                    className="mx-auto mb-4 h-[83px] w-[153px]"
-                    src="/images/resend-verify-email.svg"
-                    alt="resend-verify-email"
-                  />
-                  <div className="space-y-6">
-                    <h4 className="text-center text-2xl font-medium text-[#4c4c4c]">
-                      Verify Your Email
-                    </h4>
-                    <div>
-                      <p className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
-                        <span className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
-                          All new sign-ups need to be verified for security
-                          purposes. A verification email has been sent to
-                          john@email.com.
-                        </span>
-                      </p>
-                    </div>
-                    <Button
-                      className="w-full"
-                      onClick={() => {
-                        setAuthAction('none')
-                      }}
-                    >
-                      Resend verification email
-                    </Button>
-                  </div>
-                </div>
+              {authAction === AuthStatus.resendVerifyEmail && (
+                <ResendVerifyEmailBlock setAuthAction={setAuthAction} />
               )}
             </AlertDialogContent>
           </AlertDialog>
