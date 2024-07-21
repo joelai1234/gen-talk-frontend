@@ -22,7 +22,7 @@ import SignInBlock from './auth/SignInBlock'
 import SignUpBlock from './auth/SignUpBlock'
 import ResendSignUpVerificationEmailBlock from './auth/ResendSignUpVerificationEmailBlock'
 import ForgetPasswordBlock from './auth/ForgetPasswordBlock'
-import ForgetPasswordSentEmailBlock from './auth/forgetPasswordSentEmailBlock'
+import ForgetPasswordSentEmailBlock from './auth/ForgetPasswordSentEmailBlock'
 import VerifyEmailSuccessBlock from './auth/VerifyEmailSuccessBlock'
 import ResendVerifyEmailBlock from './auth/ResendVerifyEmailBlock'
 
