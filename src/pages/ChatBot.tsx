@@ -171,12 +171,12 @@ export default function ChatBot() {
   )
 
   return (
-    <div className="flex h-[calc(100vh-60px)] px-16 pb-16 pt-6">
+    <div className="flex h-[calc(100vh-60px)] pt-6 sm:px-16 sm:pb-16">
       <div
-        className="box-border flex flex-1 overflow-hidden rounded-[20px] bg-[#f7f7f7]"
+        className="box-border flex flex-1 overflow-hidden rounded-t-[20px] bg-[#f7f7f7] sm:rounded-b-[20px]"
         style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}
       >
-        <div className="h-full w-80 bg-white py-6">
+        <div className="hidden h-full w-80 bg-white py-6 sm:block">
           <div className="space-y-3 px-6 pb-3">
             <div className="relative rounded-xl">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5">
@@ -246,8 +246,11 @@ export default function ChatBot() {
             </div>
           )}
           {persona && (
-            <div className="size-full ">
-              <div className="mx-auto flex size-full flex-col py-6">
+            <div className="size-full">
+              <div className="mx-auto flex size-full flex-col pb-6 sm:pt-6">
+                <div className="mb-4 flex h-[56px] items-center justify-center bg-white sm:hidden">
+                  {persona.name}
+                </div>
                 {messages.length === 0 && (
                   <div className="flex w-full flex-1 items-center justify-center">
                     <div className="flex w-[265px] -translate-y-6 flex-col items-center justify-center space-y-1">
