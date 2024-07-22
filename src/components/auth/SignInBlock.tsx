@@ -52,9 +52,9 @@ export default function SignInBlock({
               placeholder="Password"
             />
           </div>
-          <div className=" flex justify-end">
+          <div className="flex justify-end">
             <p
-              className=" inline-block cursor-pointer text-sm text-earth-green"
+              className="inline-block cursor-pointer text-sm text-earth-green"
               onClick={() => {
                 setAuthAction(AuthStatus.forgetPassword)
               }}
