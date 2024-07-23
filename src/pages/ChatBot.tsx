@@ -1,6 +1,6 @@
 import ChatBotItem from '@/components/ChatBotItem'
 import { useEffect, useRef, useState } from 'react'
-import { IoMdSearch } from 'react-icons/io'
+import { IoIosArrowDown, IoMdSearch } from 'react-icons/io'
 import { IoMdAdd } from 'react-icons/io'
 import { format } from 'date-fns'
 import { ChatRoomSender } from '@/enum/persona'
@@ -9,6 +9,9 @@ import { useMockDataStore } from '@/store/useMockDataStore'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
+import { CollapsibleTrigger } from '@radix-ui/react-collapsible'
+import { cn } from '@/lib/utils'
 
 const VITE_OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string
 
@@ -170,6 +173,27 @@ export default function ChatBot() {
     item.name.toLowerCase().includes(search.toLowerCase())
   )
 
+  const chatBotOptionData = chatBotData.reverse().sort((a, b) => {
+    const aTime = a.updated?.getTime() ?? 0
+    const bTime = b.updated?.getTime() ?? 0
+    return bTime - aTime
+  })
+
+  const [isOpenMobileMenu, setIsOpenMobileMenu] = useState(false)
+
+  const [height, setHeight] = useState('0px')
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  const toggleCollapse = () => {
+    setIsOpenMobileMenu(!isOpenMobileMenu)
+  }
+
+  useEffect(() => {
+    setHeight(
+      isOpenMobileMenu ? `${contentRef.current?.scrollHeight}px` : '0px'
+    )
+  }, [isOpenMobileMenu])
+
   return (
     <div className="flex h-[calc(100vh-60px)] pt-6 sm:px-16 sm:pb-16">
       <div
@@ -198,127 +222,214 @@ export default function ChatBot() {
             </button>
           </div>
           <div>
-            {chatBotData
-              .reverse()
-              .sort((a, b) => {
-                const aTime = a.updated?.getTime() ?? 0
-                const bTime = b.updated?.getTime() ?? 0
-                return bTime - aTime
-              })
-              .map((item) => {
-                const length =
-                  personaMessagesList.find(
-                    (chatRoom) => chatRoom.personaId === item.id
-                  )?.messages?.length ?? 0
-                return (
-                  <ChatBotItem
-                    key={item.id}
-                    id={item.id}
-                    avatar={item.avatar}
-                    name={item.name}
-                    time={
-                      length > 0
-                        ? format(
-                            personaMessagesList.find(
-                              (chatRoom) => chatRoom.personaId === item.id
-                            )?.messages[length - 1].timestamp ?? new Date(),
-                            'hh:mm a'
-                          )
-                        : 'New'
-                    }
-                    active={item.id === selectedPersonaId}
-                    onClick={() => setSelectedPersonaId(item.id)}
-                  />
-                )
-              })}
+            {chatBotOptionData.map((item) => {
+              const length =
+                personaMessagesList.find(
+                  (chatRoom) => chatRoom.personaId === item.id
+                )?.messages?.length ?? 0
+              return (
+                <ChatBotItem
+                  key={item.id}
+                  id={item.id}
+                  avatar={item.avatar}
+                  name={item.name}
+                  time={
+                    length > 0
+                      ? format(
+                          personaMessagesList.find(
+                            (chatRoom) => chatRoom.personaId === item.id
+                          )?.messages[length - 1].timestamp ?? new Date(),
+                          'hh:mm a'
+                        )
+                      : 'New'
+                  }
+                  active={item.id === selectedPersonaId}
+                  onClick={() => setSelectedPersonaId(item.id)}
+                />
+              )
+            })}
           </div>
         </div>
         <div className="flex-1">
-          {!persona && (
-            <div className="flex size-full items-center justify-center">
-              <div className="flex h-[164px] w-[265px] -translate-y-6 flex-col items-center justify-center space-y-1">
-                <img src="/images/mountain.png" alt="mountain" />
-                <p className="text-center text-base text-[#4c4c4c]">Welcome!</p>
-                <p className="text-center text-sm text-[#9a9a9a]">
-                  Pick a persona from the menu and start your conversation.
-                </p>
-              </div>
-            </div>
-          )}
-          {persona && (
-            <div className="size-full">
-              <div className="mx-auto flex size-full flex-col pb-6 sm:pt-6">
-                <div className="mb-4 flex h-[56px] items-center justify-center bg-white sm:hidden">
-                  {persona.name}
-                </div>
-                {messages.length === 0 && (
-                  <div className="flex w-full flex-1 items-center justify-center">
-                    <div className="flex w-[265px] -translate-y-6 flex-col items-center justify-center space-y-1">
-                      <div className="flex size-12 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-3xl">
-                        {persona.avatar}
+          <div className="size-full">
+            <div className="mx-auto flex size-full flex-col pb-6 sm:pt-6">
+              <div className="relative mb-4 sm:hidden">
+                <div className="z-20 flex h-[56px] items-center justify-between bg-white px-4">
+                  {isOpenMobileMenu && (
+                    <div className="relative w-full rounded-xl px-2">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5">
+                        <IoMdSearch className="size-4 text-[#9a9a9a]" />
                       </div>
-                      <p className="text-center text-base text-[#4c4c4c]">
-                        {persona.name}
-                      </p>
-                      <p className="text-center text-sm text-[#9a9a9a]">
-                        {persona.description}
+                      <input
+                        className="w-full rounded-xl border border-[#ebebeb] py-2 pl-10 pr-4 text-sm placeholder:text-[#9a9a9a] focus:outline-none"
+                        type="text"
+                        placeholder="Search"
+                        value={search}
+                        onChange={(event) =>
+                          setSearch(event.currentTarget.value)
+                        }
+                      />
+                    </div>
+                  )}
+                  {!isOpenMobileMenu && (
+                    <div className="flex items-center gap-2">
+                      <div className="size-8 rounded-full border border-[#EBEBEB]">
+                        {persona ? (
+                          <div className="flex h-full items-center justify-center text-xl">
+                            {persona.avatar}
+                          </div>
+                        ) : (
+                          <img src="/images/default-persona.png" alt="icon" />
+                        )}
+                      </div>
+                      <p className="text-base text-[#4c4c4c]">
+                        {persona ? persona.name : 'Persona'}
                       </p>
                     </div>
-                  </div>
-                )}
-                {messages.length > 0 && (
-                  <div className="w-full  overflow-auto px-6">
-                    <div className="mx-auto flex  w-full max-w-3xl  flex-col space-y-2 overflow-auto pb-4">
-                      {messages.map((data) => {
-                        if (data.sender === ChatRoomSender.User) {
-                          return (
-                            <div
-                              key={data.id}
-                              className="ml-20 w-fit self-end rounded-3xl px-4 py-2"
-                              style={{
-                                backgroundColor: persona.messageColor
-                              }}
-                            >
-                              <p className="text-base text-[#4c4c4c]">
-                                {data.message}
-                              </p>
-                            </div>
-                          )
-                        } else {
-                          return (
-                            <div
-                              key={data.id}
-                              className="mr-20 w-fit rounded-3xl bg-white px-4 py-2"
-                            >
-                              <p className="text-base text-[#4c4c4c]">
-                                {data.message}
-                              </p>
-                            </div>
-                          )
-                        }
+                  )}
+
+                  <button onClick={toggleCollapse}>
+                    <IoIosArrowDown
+                      className={cn('size-5 text-[#4c4c4c]', {
+                        'transform rotate-180': isOpenMobileMenu
                       })}
-                      <div ref={chatEndRef} />
-                    </div>
-                  </div>
-                )}
-                <div className="mt-auto px-6">
-                  <div className="mx-auto  w-full max-w-3xl">
-                    <input
-                      className="w-full rounded-full bg-[#ebebeb] px-4 py-2.5 text-base placeholder:text-[#9a9a9a] focus:outline-none"
-                      type="text"
-                      placeholder="Message..."
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter') {
-                          handleSendMessage(event.currentTarget.value)
-                          event.currentTarget.value = ''
-                        }
-                      }}
                     />
+                  </button>
+                </div>
+                <div
+                  ref={contentRef}
+                  className={cn(
+                    'rounded-b-[20px] z-10 bg-white max-h-0 ease-in-out overflow-hidden absolute w-full transition-all duration-300',
+                    {
+                      'max-h-full': isOpenMobileMenu
+                    }
+                  )}
+                  style={{
+                    maxHeight: height,
+                    boxShadow: '0px 20px 20px 0 rgba(65,76,65,0.07)'
+                  }}
+                >
+                  <button className="mx-6 mb-4 mt-2 flex items-center gap-1">
+                    <IoMdAdd className="text-earth-green" />
+                    <Link
+                      className="text-sm text-earth-green"
+                      to="/persona/create"
+                    >
+                      New Persona
+                    </Link>
+                  </button>
+                  {chatBotOptionData.map((item) => {
+                    const length =
+                      personaMessagesList.find(
+                        (chatRoom) => chatRoom.personaId === item.id
+                      )?.messages?.length ?? 0
+                    return (
+                      <ChatBotItem
+                        key={item.id}
+                        id={item.id}
+                        avatar={item.avatar}
+                        name={item.name}
+                        time={
+                          length > 0
+                            ? format(
+                                personaMessagesList.find(
+                                  (chatRoom) => chatRoom.personaId === item.id
+                                )?.messages[length - 1].timestamp ?? new Date(),
+                                'hh:mm a'
+                              )
+                            : 'New'
+                        }
+                        active={item.id === selectedPersonaId}
+                        onClick={() => {
+                          setIsOpenMobileMenu(false)
+                          setSelectedPersonaId(item.id)
+                        }}
+                      />
+                    )
+                  })}
+                </div>
+              </div>
+
+              {!persona && (
+                <div className="flex size-full items-center justify-center">
+                  <div className="flex h-[164px] w-[265px] -translate-y-6 flex-col items-center justify-center space-y-1">
+                    <img src="/images/mountain.png" alt="mountain" />
+                    <p className="text-center text-base text-[#4c4c4c]">
+                      Welcome!
+                    </p>
+                    <p className="text-center text-sm text-[#9a9a9a]">
+                      Pick a persona from the menu and start your conversation.
+                    </p>
                   </div>
+                </div>
+              )}
+              {persona && messages.length === 0 && (
+                <div className="flex w-full flex-1 items-center justify-center">
+                  <div className="flex w-[265px] -translate-y-6 flex-col items-center justify-center space-y-1">
+                    <div className="flex size-12 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-3xl">
+                      {persona.avatar}
+                    </div>
+                    <p className="text-center text-base text-[#4c4c4c]">
+                      {persona.name}
+                    </p>
+                    <p className="text-center text-sm text-[#9a9a9a]">
+                      {persona.description}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {persona && messages.length > 0 && (
+                <div className="w-full  overflow-auto px-6">
+                  <div className="mx-auto flex  w-full max-w-3xl  flex-col space-y-2 overflow-auto pb-4">
+                    {messages.map((data) => {
+                      if (data.sender === ChatRoomSender.User) {
+                        return (
+                          <div
+                            key={data.id}
+                            className="ml-20 w-fit self-end rounded-3xl px-4 py-2"
+                            style={{
+                              backgroundColor: persona.messageColor
+                            }}
+                          >
+                            <p className="text-base text-[#4c4c4c]">
+                              {data.message}
+                            </p>
+                          </div>
+                        )
+                      } else {
+                        return (
+                          <div
+                            key={data.id}
+                            className="mr-20 w-fit rounded-3xl bg-white px-4 py-2"
+                          >
+                            <p className="text-base text-[#4c4c4c]">
+                              {data.message}
+                            </p>
+                          </div>
+                        )
+                      }
+                    })}
+                    <div ref={chatEndRef} />
+                  </div>
+                </div>
+              )}
+              <div className="mt-auto px-6">
+                <div className="mx-auto  w-full max-w-3xl">
+                  <input
+                    className="w-full rounded-full bg-[#ebebeb] px-4 py-2.5 text-base placeholder:text-[#9a9a9a] focus:outline-none"
+                    type="text"
+                    placeholder="Message..."
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        handleSendMessage(event.currentTarget.value)
+                        event.currentTarget.value = ''
+                      }
+                    }}
+                  />
                 </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

@@ -55,7 +55,7 @@ export default function Header() {
       {!isLogin && (
         <div className="space-x-2">
           <Button
-            className="w-[120px]"
+            className="w-[100px] sm:w-[120px]"
             variant="white"
             onClick={() => {
               if (authAction === AuthStatus.login) {
@@ -68,7 +68,7 @@ export default function Header() {
             Login
           </Button>
           <Button
-            className="w-[120px]"
+            className="w-[100px] sm:w-[120px]"
             onClick={() => {
               if (authAction === AuthStatus.signUp) {
                 setAuthAction(AuthStatus.none)
