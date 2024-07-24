@@ -9,8 +9,6 @@ import { useMockDataStore } from '@/store/useMockDataStore'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
-import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
-import { CollapsibleTrigger } from '@radix-ui/react-collapsible'
 import { cn } from '@/lib/utils'
 
 const VITE_OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string
@@ -287,7 +285,6 @@ export default function ChatBot() {
                       </p>
                     </div>
                   )}
-
                   <button onClick={toggleCollapse}>
                     <IoIosArrowDown
                       className={cn('size-5 text-[#4c4c4c]', {

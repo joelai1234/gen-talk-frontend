@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 
 export default function ResendVerificationEmail() {
   return (
-    <div className="flex h-[calc(100vh-60px)] items-center justify-center px-16 pb-16 pt-6">
+    <div className="flex h-[calc(100vh-60px)] items-center justify-center px-4 pb-16 pt-6 sm:px-16">
       <div className="relative w-[414px] rounded-[28px] bg-white p-6">
         <div className="flex flex-col pt-6">
           <img

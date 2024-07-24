@@ -49,12 +49,12 @@ export default function EditPersona() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-60px)] px-16 pb-16 pt-6">
+    <div className="flex h-[calc(100vh-60px)] pt-6 sm:px-16 sm:pb-16">
       <div
-        className="box-border flex flex-1 justify-center overflow-hidden rounded-[20px] bg-[#f7f7f7] py-10"
+        className="box-border flex flex-1 justify-center overflow-hidden rounded-t-[20px] bg-[#f7f7f7] sm:rounded-b-[20px] sm:py-10"
         style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}
       >
-        <div className="w-28">
+        <div className="hidden w-28 sm:block">
           <button
             className="flex size-10 items-center justify-center rounded-full border border-[#EBEBEB]"
             onClick={() => {
@@ -64,15 +64,25 @@ export default function EditPersona() {
             <FaArrowLeft />
           </button>
         </div>
-        <div className="flex overflow-auto">
-          <div className="w-full max-w-xl">
-            <div className="flex items-center justify-center gap-2">
+        <div className="flex w-full overflow-auto sm:w-auto">
+          <div className="w-full sm:max-w-xl">
+            <div className="relative flex h-[56px] items-center justify-center gap-2 bg-white sm:h-auto sm:bg-transparent">
+              <div className="absolute left-4 top-2 sm:hidden">
+                <button
+                  className="flex size-10 items-center justify-center"
+                  onClick={() => {
+                    navigate('/')
+                  }}
+                >
+                  <FaArrowLeft />
+                </button>
+              </div>
               <div className="flex size-8 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-lg">
                 {persona.avatar}
               </div>
               <h3 className="text-2xl text-[#4c4c4c]">{persona.name}</h3>
             </div>
-            <div className="mt-8">
+            <div className="mt-8 px-4 pb-10 sm:px-0 sm:pb-0">
               <div className="space-y-8">
                 <div className="space-y-1">
                   <p className="text-base text-[#4c4c4c]">
@@ -123,7 +133,7 @@ export default function EditPersona() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-base text-[#4c4c4c]">Tone</p>
-                  <div className="space-x-2">
+                  <div className="space-x-2 space-y-2">
                     {personaToneOptions.map((option) => (
                       <Chip
                         key={option.value}
@@ -144,7 +154,7 @@ export default function EditPersona() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-base text-[#4c4c4c]">Language</p>
-                  <div className="space-x-2">
+                  <div className="space-x-2 space-y-2">
                     {personaLanguageOptions.map((option) => (
                       <Chip
                         key={option.value}
@@ -165,7 +175,7 @@ export default function EditPersona() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-base text-[#4c4c4c]">Style</p>
-                  <div className="space-x-2">
+                  <div className="space-x-2 space-y-2">
                     {personaStyleOptions.map((option) => (
                       <Chip
                         key={option.value}
@@ -282,7 +292,7 @@ export default function EditPersona() {
               </div>
             </div>
           </div>
-          <div className="w-28"></div>
+          <div className="hidden w-28 sm:block"></div>
         </div>
       </div>
     </div>
