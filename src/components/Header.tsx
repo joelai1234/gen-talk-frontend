@@ -45,7 +45,7 @@ export default function Header() {
   const [showPassword, setShowPassword] = useState(false)
 
   return (
-    <header className="flex h-[60px] items-center justify-between px-6 py-2">
+    <header className="flex h-[60px] items-center justify-between px-4 py-2 sm:px-6">
       <Link to="/chatbot">
         <div className="flex items-center gap-2">
           <img src="/images/logo.png" alt="logo" />
