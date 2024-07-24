@@ -80,7 +80,9 @@ export default function EditPersona() {
               <div className="flex size-8 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-lg">
                 {persona.avatar}
               </div>
-              <h3 className="text-2xl text-[#4c4c4c]">{persona.name}</h3>
+              <h3 className="text-base text-[#4c4c4c] sm:text-2xl">
+                {persona.name}
+              </h3>
             </div>
             <div className="size-full overflow-auto  sm:pr-28">
               <div className="pb-10  sm:max-w-xl">

@@ -6,10 +6,11 @@ import { format } from 'date-fns'
 import { ChatRoomSender } from '@/enum/persona'
 import { ChatRoomMessage } from '@/model/persona'
 import { useMockDataStore } from '@/store/useMockDataStore'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 import { cn } from '@/lib/utils'
+import { MdOutlineEdit } from 'react-icons/md'
 
 const VITE_OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string
 
@@ -35,7 +36,7 @@ export default function ChatBot() {
     (persona) => persona.id === selectedPersonaId
   )
   const chatEndRef = useRef<HTMLDivElement | null>(null)
-
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
 
   const messages =
@@ -283,6 +284,16 @@ export default function ChatBot() {
                       <p className="text-base text-[#4c4c4c]">
                         {persona ? persona.name : 'Persona'}
                       </p>
+                      {persona && (
+                        <button
+                          className="size-6"
+                          onClick={() => {
+                            navigate(`/persona/${persona?.id}/edit`)
+                          }}
+                        >
+                          <MdOutlineEdit className=" text-earth-green" />
+                        </button>
+                      )}
                     </div>
                   )}
                   <button onClick={toggleCollapse}>
