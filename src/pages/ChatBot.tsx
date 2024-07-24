@@ -411,7 +411,11 @@ export default function ChatBot() {
                 </div>
               )}
               <div className="mt-auto px-6">
-                <div className="mx-auto  w-full max-w-3xl">
+                <div
+                  className={cn('mx-auto w-full max-w-3xl', {
+                    hidden: !persona
+                  })}
+                >
                   <input
                     className="w-full rounded-full bg-[#ebebeb] px-4 py-2.5 text-base placeholder:text-[#9a9a9a] focus:outline-none"
                     type="text"
