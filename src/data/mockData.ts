@@ -69,29 +69,4 @@ export const mockPersonasData: PersonaData[] = [
   }
 ]
 
-export const mockPersonaMessagesList: PersonaMessages[] = [
-  {
-    personaId: 1,
-    messages: [
-      {
-        id: 1,
-        message: 'Hello! How can I help you today?',
-        timestamp: new Date(),
-        sender: ChatRoomSender.Bot
-      },
-      {
-        id: 2,
-        message: 'I am feeling really anxious lately.',
-        timestamp: new Date(),
-        sender: ChatRoomSender.User
-      },
-      {
-        id: 3,
-        message:
-          'I am sorry to hear that. Can you tell me more about what is causing your anxiety?',
-        timestamp: new Date(),
-        sender: ChatRoomSender.Bot
-      }
-    ]
-  }
-]
+export const mockPersonaMessagesList: PersonaMessages[] = []
