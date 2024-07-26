@@ -100,6 +100,7 @@ export default function ChatBot() {
               tone: ${persona?.tone}.
               style: ${persona?.style}.
               language: ${persona?.language}.
+              Keep the responses short enough to easily read. You want to maximize engagement and conversation, not give a lecture.
               `
             },
             ...messages.map((msg) => ({
