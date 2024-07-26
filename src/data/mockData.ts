@@ -1,9 +1,4 @@
-import {
-  ChatRoomSender,
-  PersonaLanguage,
-  PersonaStyle,
-  PersonaTone
-} from '@/enum/persona'
+import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { PersonaData, PersonaMessages } from '@/model/persona'
 
 export const mockPersonasData: PersonaData[] = [

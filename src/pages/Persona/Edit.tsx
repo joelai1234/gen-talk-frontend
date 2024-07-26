@@ -49,7 +49,7 @@ export default function EditPersona() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-60px)] pt-6 sm:px-16 sm:pb-16">
+    <div className="flex h-[calc(calc(var(--vh)*100-60px)] pt-6 sm:px-16 sm:pb-16">
       <div
         className="box-border flex flex-1 justify-center overflow-hidden rounded-t-[20px] bg-[#f7f7f7] sm:rounded-b-[20px]"
         style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}

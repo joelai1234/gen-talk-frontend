@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 export default function VerifyResetPasswordEmail() {
   const navigate = useNavigate()
   return (
-    <div className="flex h-[calc(100vh-60px)] items-center justify-center px-4 pb-16 pt-6 sm:px-16">
+    <div className="flex h-[calc(calc(var(--vh)*100-60px)] items-center justify-center px-4 pb-16 pt-6 sm:px-16">
       <div className="relative w-[600px] rounded-[28px] bg-white px-20 py-8">
         <div className="space-y-8">
           <div className="flex items-center gap-2">
