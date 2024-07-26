@@ -24,6 +24,7 @@ export default function ChatBot() {
   const [selectedPersonaId, setSelectedPersonaId] = useState<
     number | string | undefined
   >()
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [personaMessagesList, setPersonaMessagesList] = useState<
     {
@@ -429,6 +430,7 @@ export default function ChatBot() {
                   })}
                 >
                   <input
+                    ref={inputRef}
                     className="w-full rounded-full bg-[#ebebeb] px-4 py-2.5 text-base placeholder:text-[#9a9a9a] focus:outline-none"
                     type="text"
                     placeholder="Message..."
@@ -436,6 +438,9 @@ export default function ChatBot() {
                       if (event.key === 'Enter') {
                         handleSendMessage(event.currentTarget.value)
                         event.currentTarget.value = ''
+                        if (/Mobi|Android/i.test(navigator.userAgent)) {
+                          inputRef.current?.blur()
+                        }
                       }
                     }}
                   />
