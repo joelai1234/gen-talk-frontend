@@ -3,7 +3,7 @@ import { Link, Outlet } from 'react-router-dom'
 export default function AuthLayout() {
   return (
     <div
-      className=" min-h-screen bg-pale-green bg-cover bg-center"
+      className="min-h-[var(--vh)*100] bg-pale-green bg-cover bg-center"
       style={{
         backgroundImage: 'url(/images/bg.png)'
       }}

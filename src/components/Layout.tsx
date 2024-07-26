@@ -4,7 +4,7 @@ import Header from './Header'
 export default function Layout() {
   return (
     <div
-      className=" min-h-screen bg-pale-green bg-cover bg-center"
+      className="min-h-[var(--vh)*100] bg-pale-green bg-cover bg-center"
       style={{
         backgroundImage: 'url(/images/bg.png)'
       }}
