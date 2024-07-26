@@ -29,6 +29,7 @@ export default function ChatBotItem({
         }
       )}
       onClick={onClick}
+      onTouchStart={onClick}
     >
       <div className="flex items-center gap-2">
         <div className="flex size-8 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl">
