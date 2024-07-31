@@ -1,5 +1,5 @@
 import ChatBotItem from '@/components/ChatBotItem'
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { IoIosArrowDown, IoMdSearch } from 'react-icons/io'
 import { IoMdAdd } from 'react-icons/io'
 import { format } from 'date-fns'
@@ -24,8 +24,8 @@ export default function ChatBot() {
   const [selectedPersonaId, setSelectedPersonaId] = useState<
     number | string | undefined
   >()
-  const inputRef = useRef<HTMLInputElement>(null)
-
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [text, setText] = useState<string>('')
   const [personaMessagesList, setPersonaMessagesList] = useState<
     {
       personaId: number | string
@@ -194,6 +194,13 @@ export default function ChatBot() {
       isOpenMobileMenu ? `${contentRef.current?.scrollHeight}px` : '0px'
     )
   }, [isOpenMobileMenu])
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = '20px'
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+    }
+  }, [text])
 
   return (
     <div className="flex h-[calc(var(--vh)*100-60px)] pt-6 sm:px-16 sm:pb-16">
@@ -402,7 +409,12 @@ export default function ChatBot() {
                             }}
                           >
                             <p className="text-base text-[#4c4c4c]">
-                              {data.message}
+                              {data.message.split('\n').map((line, index) => (
+                                <Fragment key={index}>
+                                  {line}
+                                  <br />
+                                </Fragment>
+                              ))}
                             </p>
                           </div>
                         )
@@ -429,18 +441,27 @@ export default function ChatBot() {
                     hidden: !persona
                   })}
                 >
-                  <input
-                    ref={inputRef}
-                    className="w-full rounded-full bg-[#ebebeb] px-4 py-2.5 text-base placeholder:text-[#9a9a9a] focus:outline-none"
-                    type="text"
+                  <textarea
+                    ref={textareaRef}
+                    className="min-h-11 w-full resize-none overflow-hidden rounded-3xl bg-[#ebebeb] px-4 py-2.5 text-base placeholder:text-[#9a9a9a] focus:outline-none"
                     placeholder="Message..."
+                    value={text}
+                    onChange={(event) => {
+                      setText(event.currentTarget.value)
+                    }}
                     onKeyDown={(event) => {
+                      if (event.key === 'Enter' && event.shiftKey) {
+                        setText((prevText) => prevText + '\n')
+                        event.preventDefault()
+                        return
+                      }
                       if (event.key === 'Enter') {
+                        setText('')
                         handleSendMessage(event.currentTarget.value)
-                        event.currentTarget.value = ''
                         if (/Mobi|Android/i.test(navigator.userAgent)) {
-                          inputRef.current?.blur()
+                          textareaRef.current?.blur()
                         }
+                        event.preventDefault()
                       }
                     }}
                   />
