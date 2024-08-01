@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { cn } from '@/lib/utils'
 import { MdOutlineEdit } from 'react-icons/md'
 import { FaArrowUp } from 'react-icons/fa'
+import TypingIndicator from '@/components/TypingIndicator'
 
 const VITE_OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string
 
@@ -26,6 +27,7 @@ export default function ChatBot() {
     number | string | undefined
   >()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [isLoadingAIMessage, setIsLoadingAIMessage] = useState(false)
   const [text, setText] = useState<string>('')
   const [personaMessagesList, setPersonaMessagesList] = useState<
     {
@@ -87,7 +89,7 @@ export default function ChatBot() {
         return item
       })
     )
-
+    setIsLoadingAIMessage(true)
     try {
       const response = await axios.post(
         'https://api.openai.com/v1/chat/completions',
@@ -154,6 +156,7 @@ export default function ChatBot() {
           return item
         })
       )
+      setIsLoadingAIMessage(false)
     } catch (error) {
       console.error('Error fetching response from ChatGPT:', error)
     }
@@ -167,7 +170,9 @@ export default function ChatBot() {
 
   useEffect(() => {
     if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' })
+      setTimeout(() => {
+        chatEndRef?.current?.scrollIntoView({ behavior: 'smooth' })
+      })
     }
   }, [messages.length])
 
@@ -442,6 +447,12 @@ export default function ChatBot() {
                         )
                       }
                     })}
+                    {isLoadingAIMessage && (
+                      <div className="mr-20 flex w-fit gap-1 rounded-3xl bg-white p-3">
+                        <TypingIndicator />
+                      </div>
+                    )}
+
                     <div ref={chatEndRef} />
                   </div>
                 </div>
