@@ -408,7 +408,14 @@ export default function ChatBot() {
                               backgroundColor: persona.messageColor
                             }}
                           >
-                            <p className="text-base text-[#4c4c4c]">
+                            <p
+                              className="text-base mix-blend-luminosity"
+                              style={{
+                                color: persona.messageColor,
+                                filter:
+                                  'invert(1) grayscale(1) brightness(1.3) contrast(9000)'
+                              }}
+                            >
                               {data.message.split('\n').map((line, index) => (
                                 <Fragment key={index}>
                                   {line}
