@@ -199,7 +199,10 @@ export default function ChatBot() {
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = '20px'
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+      textareaRef.current.style.height = `${
+        textareaRef.current.scrollHeight + 20
+      }px`
+      textareaRef.current.scrollTop = textareaRef.current.scrollHeight
     }
   }, [text])
 
@@ -454,7 +457,7 @@ export default function ChatBot() {
                 >
                   <textarea
                     ref={textareaRef}
-                    className="min-h-11 flex-1 resize-none overflow-hidden rounded-3xl bg-[#ebebeb] px-4 py-2.5 text-base placeholder:text-[#9a9a9a] focus:outline-none"
+                    className="max-h-44 min-h-11 flex-1 resize-none overflow-y-auto rounded-3xl border-[10px] border-[#ebebeb] bg-[#ebebeb] px-4 text-base placeholder:text-[#9a9a9a] focus:outline-none"
                     placeholder="Message..."
                     value={text}
                     onChange={(event) => {
