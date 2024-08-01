@@ -11,6 +11,7 @@ import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 import { cn } from '@/lib/utils'
 import { MdOutlineEdit } from 'react-icons/md'
+import { FaArrowUp } from 'react-icons/fa'
 
 const VITE_OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string
 
@@ -444,13 +445,16 @@ export default function ChatBot() {
               )}
               <div className="mt-auto px-6">
                 <div
-                  className={cn('mx-auto w-full max-w-3xl', {
-                    hidden: !persona
-                  })}
+                  className={cn(
+                    'mx-auto w-full max-w-3xl flex items-center gap-2',
+                    {
+                      hidden: !persona
+                    }
+                  )}
                 >
                   <textarea
                     ref={textareaRef}
-                    className="min-h-11 w-full resize-none overflow-hidden rounded-3xl bg-[#ebebeb] px-4 py-2.5 text-base placeholder:text-[#9a9a9a] focus:outline-none"
+                    className="min-h-11 flex-1 resize-none overflow-hidden rounded-3xl bg-[#ebebeb] px-4 py-2.5 text-base placeholder:text-[#9a9a9a] focus:outline-none"
                     placeholder="Message..."
                     value={text}
                     onChange={(event) => {
@@ -463,15 +467,29 @@ export default function ChatBot() {
                         return
                       }
                       if (event.key === 'Enter') {
-                        setText('')
-                        handleSendMessage(event.currentTarget.value)
                         if (/Mobi|Android/i.test(navigator.userAgent)) {
-                          textareaRef.current?.blur()
+                          setText((prevText) => prevText + '\n')
+                        } else {
+                          setText('')
+                          handleSendMessage(event.currentTarget.value)
                         }
                         event.preventDefault()
                       }
                     }}
                   />
+                  {text && /Mobi|Android/i.test(navigator.userAgent) && (
+                    <button
+                      onClick={() => {
+                        setText('')
+                        handleSendMessage(text)
+                        textareaRef.current?.blur()
+                      }}
+                    >
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-earth-green">
+                        <FaArrowUp className="text-white" />
+                      </div>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
