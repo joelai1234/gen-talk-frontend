@@ -1,3 +1,4 @@
+import { createPersona } from '@/apis/persona'
 import Chip from '@/components/Chip'
 import InputColor from '@/components/InputColor'
 import { Button } from '@/components/ui/button'
@@ -9,7 +10,7 @@ import {
 } from '@/data/persona'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { PersonaData } from '@/model/persona'
-import { useMockDataStore } from '@/store/useMockDataStore'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import EmojiPicker from 'emoji-picker-react'
 import { useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa'
@@ -18,7 +19,6 @@ import { useNavigate } from 'react-router-dom'
 export default function CreatePersona() {
   const navigate = useNavigate()
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
-  const { addMockPersonaData } = useMockDataStore()
 
   const [persona, setPersona] = useState<PersonaData>({
     id: Date.now(),
@@ -31,17 +31,31 @@ export default function CreatePersona() {
     messageColor: '#EBEBEB'
   })
 
+  const queryClient = useQueryClient()
+
+  const createPersonaMutation = useMutation({
+    mutationFn: () => {
+      return createPersona({
+        persona_name: persona.name,
+        tone: persona.tone,
+        lang: persona.language,
+        style: persona.style,
+        persona_description: persona.description,
+        user_id: 1
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+      navigate('/')
+    }
+  })
+
   const handleCreate = () => {
-    addMockPersonaData({
-      ...persona,
-      created: new Date(),
-      updated: new Date()
-    })
-    navigate('/')
+    createPersonaMutation.mutate()
   }
 
   return (
-    <div className="flex h-[calc(calc(var(--vh)*100-60px)] pt-6 sm:px-16 sm:pb-16">
+    <div className="h-[calc(calc(var(--vh)*100-60px)] flex pt-6 sm:px-16 sm:pb-16">
       <div
         className="box-border flex flex-1 justify-center overflow-hidden rounded-t-[20px] bg-[#f7f7f7] sm:rounded-b-[20px]"
         style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}
@@ -216,10 +230,15 @@ export default function CreatePersona() {
                       onClick={() => {
                         navigate('/')
                       }}
+                      disabled={createPersonaMutation.isPending}
                     >
                       Cancel
                     </Button>
-                    <Button className=" w-[120px]" onClick={handleCreate}>
+                    <Button
+                      className=" w-[120px]"
+                      onClick={handleCreate}
+                      isLoading={createPersonaMutation.isPending}
+                    >
                       Create
                     </Button>
                   </div>

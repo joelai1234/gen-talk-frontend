@@ -6,8 +6,7 @@ import {
   personaStyleOptions,
   personaToneOptions
 } from '@/data/persona'
-import { useMockDataStore } from '@/store/useMockDataStore'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa'
 import { useNavigate, useParams } from 'react-router-dom'
 import { RiDeleteBin5Line } from 'react-icons/ri'
@@ -19,37 +18,100 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import EmojiPicker from 'emoji-picker-react'
+import { deletePersona, getOnePersona, updatePersona } from '@/apis/persona'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { PersonaData } from '@/model/persona'
+import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
+
+const user_id = 1
 
 export default function EditPersona() {
   const navigate = useNavigate()
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
-  const { mockPersonasData, setMockPersonasData, deleteMockPersonaData } =
-    useMockDataStore()
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   const { personaId } = useParams()
-  const [persona, setPersona] = useState(
-    mockPersonasData.find((persona) => persona.id == personaId)!
-  )
+  const [persona, setPersona] = useState<PersonaData>({
+    id: 1,
+    avatar: '🌳',
+    name: '',
+    description: '',
+    tone: PersonaTone.Empathetic,
+    language: PersonaLanguage.Formal,
+    style: PersonaStyle.Direct,
+    messageColor: '#EBEBEB'
+  })
+
+  const { data: personaRes } = useQuery({
+    queryKey: ['getOnePersona', personaId],
+    queryFn: () => {
+      return getOnePersona({ persona_id: Number(personaId) })
+    }
+  })
+
+  useEffect(() => {
+    if (personaRes)
+      setPersona({
+        id: personaRes.data.persona_id,
+        avatar: '🌳',
+        name: personaRes.data.persona_name,
+        description: personaRes.data.persona_description,
+        tone: personaRes.data.tone,
+        language: personaRes.data.lang,
+        style: personaRes.data.style,
+        messageColor: '#EBEBEB'
+      })
+  }, [personaRes])
+
+  const queryClient = useQueryClient()
+
+  const updatePersonaMutation = useMutation({
+    mutationFn: () => {
+      return updatePersona({
+        persona_id: Number(personaId),
+        payload: {
+          persona_name: persona?.name,
+          tone: persona?.tone,
+          lang: persona?.language,
+          style: persona?.style,
+          persona_description: persona?.description,
+          user_id
+        }
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+      navigate('/')
+    }
+  })
+
+  const deletePersonaMutation = useMutation({
+    mutationFn: () => {
+      return deletePersona({
+        persona_id: Number(personaId)
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+      navigate('/')
+    }
+  })
 
   const handleSave = () => {
-    setMockPersonasData(
-      mockPersonasData.map((item) => (item.id === persona.id ? persona : item))
-    )
-    navigate('/')
+    updatePersonaMutation.mutate()
   }
 
   const handleDelete = () => {
-    deleteMockPersonaData(persona.id)
-    navigate('/')
+    deletePersonaMutation.mutate()
   }
 
-  if (!persona) {
-    return <div>Error</div>
-  }
+  // if (!persona) {
+  //   return <div>Error</div>
+  // }
 
   return (
-    <div className="flex h-[calc(calc(var(--vh)*100-60px)] pt-6 sm:px-16 sm:pb-16">
+    <div className="h-[calc(calc(var(--vh)*100-60px)] flex pt-6 sm:px-16 sm:pb-16">
       <div
         className="box-border flex flex-1 justify-center overflow-hidden rounded-t-[20px] bg-[#f7f7f7] sm:rounded-b-[20px]"
         style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}
@@ -269,6 +331,7 @@ export default function EditPersona() {
                                 onClick={() => {
                                   setDeleteDialogOpen(false)
                                 }}
+                                disabled={deletePersonaMutation.isPending}
                               >
                                 Cancel
                               </Button>
@@ -276,6 +339,7 @@ export default function EditPersona() {
                                 className="px-6"
                                 variant="warning"
                                 onClick={handleDelete}
+                                isLoading={deletePersonaMutation.isPending}
                               >
                                 Delete
                               </Button>
@@ -290,10 +354,15 @@ export default function EditPersona() {
                       onClick={() => {
                         navigate('/')
                       }}
+                      disabled={updatePersonaMutation.isPending}
                     >
                       Cancel
                     </Button>
-                    <Button className=" w-[120px]" onClick={handleSave}>
+                    <Button
+                      className="w-[120px]"
+                      onClick={handleSave}
+                      isLoading={updatePersonaMutation.isPending}
+                    >
                       Save
                     </Button>
                   </div>
