@@ -1,9 +1,12 @@
 {
-    "rewrites": [
-      {
-        "source": "/(.*)",
-        "destination": "/index.html"
-      }
-    ]
-  }
-  
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://5t89tmqk1m.execute-api.us-east-2.amazonaws.com/dev/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
