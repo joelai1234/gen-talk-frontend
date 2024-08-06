@@ -1,24 +1,24 @@
 import { useEffect, useState } from 'react'
 import { ChatRoomSender } from '@/enum/persona'
-import { ChatRoomMessage, PersonaData } from '@/model/persona'
+import { ChatRoomMessage } from '@/model/persona'
 import { useMockDataStore } from '@/store/useMockDataStore'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
-import { useQuery } from '@tanstack/react-query'
-import { getDefaultPersonas, getMePersonas } from '@/apis/persona'
+// import { useQuery } from '@tanstack/react-query'
+// import { getDefaultPersonas, getMePersonas } from '@/apis/persona'
 import WelcomeChatRoom from '@/components/chatRoom/WelcomeChatRoom'
 import NewChatRoom from '@/components/chatRoom/NewChatRoom'
-// import { format } from 'date-fns'
+import { format } from 'date-fns'
 import ChatRoom from '@/components/chatRoom/ChatRoom'
 import MessageTextarea from '@/components/MessageTextarea'
 import MobilePersonaNav from '@/components/chatRoom/MobilePersonaNav'
 import DesktopPersonaSider from '@/components/chatRoom/DesktopPersonaSider'
-import { formatPersona } from '@/utils/persona'
+// import { formatPersona } from '@/utils/persona'
 
 const VITE_OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string
 
-const isLogin = true
-const user_id = 1
+// const isLogin = true
+// const user_id = 1
 
 export default function ChatBot() {
   const {
@@ -38,41 +38,41 @@ export default function ChatBot() {
     }[]
   >(mockPersonaMessagesList)
 
-  // const persona = mockPersonasData.find(
-  //   (persona) => persona.id === selectedPersonaId
-  // )
+  const persona = mockPersonasData.find(
+    (persona) => persona.id === selectedPersonaId
+  )
   const [search, setSearch] = useState('')
 
-  const { data: personasRes } = useQuery({
-    queryKey: ['getMePersonas', user_id],
-    queryFn: () => {
-      if (isLogin) {
-        return getMePersonas({ user_id })
-      } else {
-        return getDefaultPersonas()
-      }
-    }
-  })
+  // const { data: personasRes } = useQuery({
+  //   queryKey: ['getMePersonas', user_id],
+  //   queryFn: () => {
+  //     if (isLogin) {
+  //       return getMePersonas({ user_id })
+  //     } else {
+  //       return getDefaultPersonas()
+  //     }
+  //   }
+  // })
 
-  const personas = personasRes?.data.map(formatPersona)
+  // const personas = personasRes?.data.map(formatPersona)
 
-  const persona: PersonaData | undefined = personas?.find(
-    (item) => item.id === selectedPersonaId
-  )
+  // const persona: PersonaData | undefined = personas?.find(
+  //   (item) => item.id === selectedPersonaId
+  // )
 
-  const personaOptions =
-    personas
-      ?.map((item) => {
-        return {
-          id: item.id,
-          avatar: item.avatar,
-          name: item.name,
-          time: 'New',
-          active: item.id === selectedPersonaId
-        }
-      })
-      .filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
-      .reverse() ?? []
+  // const personaOptions =
+  //   personas
+  //     ?.map((item) => {
+  //       return {
+  //         id: item.id,
+  //         avatar: item.avatar,
+  //         name: item.name,
+  //         time: 'New',
+  //         active: item.id === selectedPersonaId
+  //       }
+  //     })
+  //     .filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+  //     .reverse() ?? []
 
   const messages =
     personaMessagesList.find((item) => item.personaId === selectedPersonaId)
@@ -193,40 +193,36 @@ export default function ChatBot() {
     }
   }
 
-  // const chatBotData = mockPersonasData.filter((item) =>
-  //   item.name.toLowerCase().includes(search.toLowerCase())
-  // )
+  const chatBotData = mockPersonasData.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  )
 
-  // const chatBotData = mockPersonasData.filter((item) =>
-  //   item.name.toLowerCase().includes(search.toLowerCase())
-  // )
+  const chatBotOptionData = chatBotData.reverse().sort((a, b) => {
+    const aTime = a.updated?.getTime() ?? 0
+    const bTime = b.updated?.getTime() ?? 0
+    return bTime - aTime
+  })
 
-  // const chatBotOptionData = chatBotData.reverse().sort((a, b) => {
-  //   const aTime = a.updated?.getTime() ?? 0
-  //   const bTime = b.updated?.getTime() ?? 0
-  //   return bTime - aTime
-  // })
-
-  // const mockPersonaOptions = chatBotOptionData.map((item) => {
-  //   const length =
-  //     personaMessagesList.find((chatRoom) => chatRoom.personaId === item.id)
-  //       ?.messages?.length ?? 0
-  //   return {
-  //     id: item.id,
-  //     avatar: item.avatar,
-  //     name: item.name,
-  //     time:
-  //       length > 0
-  //         ? format(
-  //             personaMessagesList.find(
-  //               (chatRoom) => chatRoom.personaId === item.id
-  //             )?.messages[length - 1].timestamp ?? new Date(),
-  //             'hh:mm a'
-  //           )
-  //         : 'New',
-  //     active: item.id === selectedPersonaId
-  //   }
-  // })
+  const mockPersonaOptions = chatBotOptionData.map((item) => {
+    const length =
+      personaMessagesList.find((chatRoom) => chatRoom.personaId === item.id)
+        ?.messages?.length ?? 0
+    return {
+      id: item.id,
+      avatar: item.avatar,
+      name: item.name,
+      time:
+        length > 0
+          ? format(
+              personaMessagesList.find(
+                (chatRoom) => chatRoom.personaId === item.id
+              )?.messages[length - 1].timestamp ?? new Date(),
+              'hh:mm a'
+            )
+          : 'New',
+      active: item.id === selectedPersonaId
+    }
+  })
 
   return (
     <div className="flex h-[calc(var(--vh)*100-60px)] pt-6 sm:px-16 sm:pb-16">
@@ -239,7 +235,7 @@ export default function ChatBot() {
           onChangePersona={(id) => {
             setSelectedPersonaId(id)
           }}
-          personaOptions={personaOptions}
+          personaOptions={mockPersonaOptions}
           search={search}
           onChangeSearch={setSearch}
         />
@@ -251,7 +247,7 @@ export default function ChatBot() {
                 onChangePersona={(id) => {
                   setSelectedPersonaId(id)
                 }}
-                personaOptions={personaOptions}
+                personaOptions={mockPersonaOptions}
                 search={search}
                 onChangeSearch={setSearch}
               />

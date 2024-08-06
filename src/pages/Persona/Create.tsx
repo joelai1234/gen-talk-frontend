@@ -10,6 +10,7 @@ import {
 } from '@/data/persona'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { PersonaData } from '@/model/persona'
+import { useMockDataStore } from '@/store/useMockDataStore'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import EmojiPicker from 'emoji-picker-react'
 import { useState } from 'react'
@@ -19,7 +20,7 @@ import { useNavigate } from 'react-router-dom'
 export default function CreatePersona() {
   const navigate = useNavigate()
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
-
+  const { addMockPersonaData } = useMockDataStore()
   const [persona, setPersona] = useState<PersonaData>({
     id: Date.now(),
     avatar: defaultPersonaIcon,
@@ -51,7 +52,13 @@ export default function CreatePersona() {
   })
 
   const handleCreate = () => {
-    createPersonaMutation.mutate()
+    addMockPersonaData({
+      ...persona,
+      created: new Date(),
+      updated: new Date()
+    })
+    navigate('/')
+    // createPersonaMutation.mutate()
   }
 
   return (
