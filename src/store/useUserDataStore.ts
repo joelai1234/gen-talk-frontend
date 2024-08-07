@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware'
 interface UserData {
   accessToken: string
   refreshToken: string
+  idToken: string
   me: {
     id: number
     name: string

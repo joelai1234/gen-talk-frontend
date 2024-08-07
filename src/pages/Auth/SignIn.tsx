@@ -1,14 +1,12 @@
 import { Button } from '@/components/ui/button'
-import { useAuth } from '@/services/useAuth'
 import { MdOutlineEmail, MdOutlinePassword } from 'react-icons/md'
 import { Link, useNavigate } from 'react-router-dom'
 
 export default function SignIn() {
   const navigate = useNavigate()
-  const { signIn } = useAuth()
 
   return (
-    <div className="flex h-[calc(calc(var(--vh)*100-60px)] items-center justify-center px-4 pb-16 pt-6 sm:px-16">
+    <div className="h-[calc(calc(var(--vh)*100-60px)] flex items-center justify-center px-4 pb-16 pt-6 sm:px-16">
       <div className="relative w-[414px] rounded-[28px] bg-white p-6">
         <div className="flex flex-col pt-6">
           <img
@@ -52,7 +50,6 @@ export default function SignIn() {
             <Button
               className="w-full"
               onClick={() => {
-                signIn()
                 navigate('/')
               }}
             >

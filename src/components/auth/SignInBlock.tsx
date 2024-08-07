@@ -2,16 +2,51 @@ import { AuthStatus } from '@/enum/auth'
 import { IoMdClose } from 'react-icons/io'
 import { MdOutlineEmail, MdOutlinePassword } from 'react-icons/md'
 import { Button } from '../ui/button'
+import { useAuth } from '@/services/useAuth'
+import { SubmitHandler, useForm } from 'react-hook-form'
+
+type SignInInputs = {
+  email: string
+  password: string
+}
 
 interface SignInBlockProps {
   setAuthAction: (action: AuthStatus) => void
-  onSubmit: () => void
 }
 
-export default function SignInBlock({
-  setAuthAction,
-  onSubmit
-}: SignInBlockProps) {
+export default function SignInBlock({ setAuthAction }: SignInBlockProps) {
+  const { signInMutation, setUserData } = useAuth()
+  const {
+    getValues,
+    register,
+    handleSubmit
+    // formState: { errors }
+  } = useForm<SignInInputs>({
+    defaultValues: {
+      email: 'joelai1234567890+1@gmail.com',
+      password: 'Test1234.'
+    }
+  })
+
+  const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
+    console.log('data', data)
+    signInMutation.mutate(data, {
+      onSuccess: (data) => {
+        setAuthAction(AuthStatus.none)
+        setUserData({
+          accessToken: data.data.access_token,
+          refreshToken: data.data.refresh_token,
+          idToken: data.data.id_token,
+          me: {
+            id: 1,
+            name: 'name (dev)',
+            email: getValues('email')
+          }
+        })
+      }
+    })
+  }
+
   return (
     <div className="flex flex-col">
       <button
@@ -40,6 +75,9 @@ export default function SignInBlock({
               className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
               type="text"
               placeholder="Email"
+              {...register('email', {
+                required: 'Email is required'
+              })}
             />
           </div>
           <div className="relative">
@@ -50,6 +88,9 @@ export default function SignInBlock({
               className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
               type="password"
               placeholder="Password"
+              {...register('password', {
+                required: 'Password is required'
+              })}
             />
           </div>
           <div className="flex justify-end">
@@ -63,13 +104,7 @@ export default function SignInBlock({
             </p>
           </div>
         </div>
-        <Button
-          className="w-full"
-          onClick={() => {
-            onSubmit()
-            setAuthAction(AuthStatus.none)
-          }}
-        >
+        <Button className="w-full" onClick={handleSubmit(onSubmit)}>
           Login
         </Button>
       </div>

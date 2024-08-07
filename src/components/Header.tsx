@@ -36,7 +36,7 @@ import { MdConveyorBelt } from 'react-icons/md'
 
 export default function Header() {
   const { pathname } = useLocation()
-  const { isLogin, signIn, signOut } = useAuth()
+  const { isLogin, signOut, userData } = useAuth()
   const [searchParams] = useSearchParams()
   const action = searchParams.get('action') as AuthStatus
   const [authAction, setAuthAction] = useState<AuthStatus>(
@@ -125,7 +125,7 @@ export default function Header() {
                 />
               )}
               {authAction === AuthStatus.login && (
-                <SignInBlock setAuthAction={setAuthAction} onSubmit={signIn} />
+                <SignInBlock setAuthAction={setAuthAction} />
               )}
               {authAction === AuthStatus.resendSignUpVerificationEmail && (
                 <ResendSignUpVerificationEmailBlock
@@ -162,8 +162,12 @@ export default function Header() {
                   <FaUserCircle className="size-8 text-earth-green" />
                 </div>
                 <div>
-                  <p className="text-base text-[#4c4c4c]">Username</p>
-                  <p className="text-sm text-[#4c4c4c]">xxxxx@email.com</p>
+                  <p className="w-[125px] overflow-hidden text-ellipsis text-base text-[#4c4c4c]">
+                    Name (dev)
+                  </p>
+                  <p className="w-[125px] overflow-hidden text-ellipsis text-sm text-[#4c4c4c]">
+                    {userData?.me.email}
+                  </p>
                 </div>
               </div>
               <div className="mx-4 my-[10px] h-px w-full bg-[#EBEBEB]"></div>
@@ -225,7 +229,7 @@ export default function Header() {
                           <p className="w-[108px] shrink-0 text-base text-[#9a9a9a]">
                             Username
                           </p>
-                          <p className="text-base text-[#4c4c4c]">John</p>
+                          <p className="text-base text-[#4c4c4c]">Name (dev)</p>
                         </div>
                       </div>
                       <div className="my-6 h-px w-full bg-[#ebebeb]" />
@@ -235,7 +239,7 @@ export default function Header() {
                             Email
                           </p>
                           <p className="text-base text-[#4c4c4c]">
-                            john@email.com
+                            {userData?.me.email}
                           </p>
                         </div>
                       </div>
@@ -247,7 +251,7 @@ export default function Header() {
                           </p>
                           <div className="flex w-full items-center justify-between">
                             <p className="text-base text-[#4c4c4c]">
-                              {showPassword ? 'test1234' : '********'}
+                              {showPassword ? 'Test1234.(dev)' : '********'}
                             </p>
                             <div className="flex items-center gap-4">
                               <div

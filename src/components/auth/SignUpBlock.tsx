@@ -6,6 +6,15 @@ import {
   MdOutlinePassword
 } from 'react-icons/md'
 import { Button } from '../ui/button'
+import { useAuth } from '@/services/useAuth'
+import { useSearchParams } from 'react-router-dom'
+import { useForm, SubmitHandler } from 'react-hook-form'
+
+type SignUpInputs = {
+  email: string
+  username: string
+  password: string
+}
 
 interface SignUpBlockProps {
   setAuthAction: (action: AuthStatus) => void
@@ -13,6 +22,36 @@ interface SignUpBlockProps {
 }
 
 export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
+  const { signUpMutation } = useAuth()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const {
+    register,
+    handleSubmit
+    // formState: { errors }
+  } = useForm<SignUpInputs>({
+    defaultValues: {
+      email: 'joelai1234567890+1@gmail.com',
+      username: 'joe1',
+      password: 'Test1234.'
+    }
+  })
+
+  const setSearchParamsEmail = (email: string) => {
+    const currentParams = new URLSearchParams(searchParams)
+    currentParams.set('email', email)
+    setSearchParams(currentParams)
+  }
+
+  const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
+    console.log('data', data)
+    signUpMutation.mutate(data, {
+      onSuccess: () => {
+        setSearchParamsEmail(data.email)
+        setAuthAction(AuthStatus.resendSignUpVerificationEmail)
+      }
+    })
+  }
+
   return (
     <div className="flex flex-col">
       <button
@@ -41,7 +80,11 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
               className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
               type="text"
               placeholder="Email"
+              {...register('email', {
+                required: 'Email is required'
+              })}
             />
+            {/* <p className="text-red-500">{errors.email?.message}</p> */}
           </div>
           <div className="relative">
             <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -51,7 +94,9 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
               className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
               type="text"
               placeholder="Username"
+              {...register('username', { required: 'Username is required' })}
             />
+            {/* <p className="text-red-500">{errors.username?.message}</p> */}
           </div>
           <div className="relative">
             <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -61,15 +106,12 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
               className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
               type="password"
               placeholder="Password"
+              {...register('password', { required: 'Password is required' })}
             />
+            {/* <p className="text-red-500">{errors.password?.message}</p> */}
           </div>
         </div>
-        <Button
-          className="w-full"
-          onClick={() => {
-            setAuthAction(AuthStatus.resendSignUpVerificationEmail)
-          }}
-        >
+        <Button className="w-full" onClick={handleSubmit(onSubmit)}>
           Continue
         </Button>
       </div>
