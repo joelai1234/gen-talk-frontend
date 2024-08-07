@@ -3,8 +3,8 @@ import { IoMdClose } from 'react-icons/io'
 import { Button } from '../ui/button'
 import { MdOutlineVerifiedUser } from 'react-icons/md'
 import { useState } from 'react'
-import { useAuth } from '@/services/useAuth'
 import { useSearchParams } from 'react-router-dom'
+import { useAuth } from '@/services/auth/hooks/useAuth'
 
 interface ResendSignUpVerificationEmailBlockProps {
   setAuthAction: (action: AuthStatus) => void

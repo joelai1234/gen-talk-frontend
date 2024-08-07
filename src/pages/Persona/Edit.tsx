@@ -22,37 +22,41 @@ import { deletePersona, getOnePersona, updatePersona } from '@/apis/persona'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 // import { PersonaData } from '@/model/persona'
 // import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
-import { useMockDataStore } from '@/store/useMockDataStore'
+import { useAuth } from '@/services/auth/hooks/useAuth'
+import { PersonaData } from '@/model/persona'
+import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 
 const user_id = 1
 
 export default function EditPersona() {
+  const { authAxios } = useAuth()
   const navigate = useNavigate()
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const { mockPersonasData, setMockPersonasData, deleteMockPersonaData } =
-    useMockDataStore()
+  // const { mockPersonasData, setMockPersonasData, deleteMockPersonaData } =
+  //   useMockDataStore()
   const { personaId } = useParams()
-  const [persona, setPersona] = useState(
-    mockPersonasData.find((persona) => persona.id == personaId)!
-  )
-  // const [persona, setPersona] = useState<PersonaData>({
-  //   id: 1,
-  //   avatar: '🌳',
-  //   name: '',
-  //   description: '',
-  //   tone: PersonaTone.Empathetic,
-  //   language: PersonaLanguage.Formal,
-  //   style: PersonaStyle.Direct,
-  //   messageColor: '#EBEBEB'
-  // })
+  // const [persona, setPersona] = useState(
+  //   mockPersonasData.find((persona) => persona.id == personaId)!
+  // )
+  const [persona, setPersona] = useState<PersonaData>({
+    id: 1,
+    avatar: '',
+    name: '',
+    description: '',
+    tone: PersonaTone.Empathetic,
+    language: PersonaLanguage.Formal,
+    style: PersonaStyle.Direct,
+    messageColor: '#EBEBEB'
+  })
 
   const { data: personaRes } = useQuery({
     queryKey: ['getOnePersona', personaId],
     queryFn: () => {
-      return getOnePersona({ persona_id: Number(personaId) })
-    }
+      return getOnePersona(authAxios!)({ persona_id: Number(personaId) })
+    },
+    enabled: !!authAxios
   })
 
   useEffect(() => {
@@ -73,7 +77,7 @@ export default function EditPersona() {
 
   const updatePersonaMutation = useMutation({
     mutationFn: () => {
-      return updatePersona({
+      return updatePersona(authAxios!)({
         persona_id: Number(personaId),
         payload: {
           persona_name: persona?.name,
@@ -81,7 +85,9 @@ export default function EditPersona() {
           lang: persona?.language,
           style: persona?.style,
           persona_description: persona?.description,
-          user_id
+          user_id,
+          icon: persona?.avatar,
+          message_color: persona?.messageColor
         }
       })
     },
@@ -93,7 +99,7 @@ export default function EditPersona() {
 
   const deletePersonaMutation = useMutation({
     mutationFn: () => {
-      return deletePersona({
+      return deletePersona(authAxios!)({
         persona_id: Number(personaId)
       })
     },
@@ -103,25 +109,25 @@ export default function EditPersona() {
     }
   })
 
-  const handleSave = () => {
-    setMockPersonasData(
-      mockPersonasData.map((item) => (item.id === persona.id ? persona : item))
-    )
-    navigate('/')
-  }
-
-  const handleDelete = () => {
-    deleteMockPersonaData(persona.id)
-    navigate('/')
-  }
-
   // const handleSave = () => {
-  //   updatePersonaMutation.mutate()
+  //   setMockPersonasData(
+  //     mockPersonasData.map((item) => (item.id === persona.id ? persona : item))
+  //   )
+  //   navigate('/')
   // }
 
   // const handleDelete = () => {
-  //   deletePersonaMutation.mutate()
+  //   deleteMockPersonaData(persona.id)
+  //   navigate('/')
   // }
+
+  const handleSave = () => {
+    updatePersonaMutation.mutate()
+  }
+
+  const handleDelete = () => {
+    deletePersonaMutation.mutate()
+  }
 
   return (
     <div className="h-[calc(calc(var(--vh)*100-60px)] flex pt-6 sm:px-16 sm:pb-16">

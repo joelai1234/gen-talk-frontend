@@ -8,9 +8,8 @@ export interface PersonaAPIData {
   style: PersonaStyle
   persona_description: string
   user_id: number // TODO: get from accessToken
-
-  // persona_icon: string
-  // message_background_color: string
+  icon: string
+  message_color: string
 
   // created_at: Date | number // created persona at
   // updated_at: Date | number // updated persona at

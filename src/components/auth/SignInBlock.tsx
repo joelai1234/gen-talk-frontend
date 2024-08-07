@@ -2,8 +2,8 @@ import { AuthStatus } from '@/enum/auth'
 import { IoMdClose } from 'react-icons/io'
 import { MdOutlineEmail, MdOutlinePassword } from 'react-icons/md'
 import { Button } from '../ui/button'
-import { useAuth } from '@/services/useAuth'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import { useAuth } from '@/services/auth/hooks/useAuth'
 
 type SignInInputs = {
   email: string

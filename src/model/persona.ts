@@ -6,8 +6,9 @@ import {
 } from '@/enum/persona'
 
 export interface PersonaData {
-  created?: Date
-  updated?: Date
+  createdAt?: Date
+  updatedAt?: Date
+  lastMessageSentAt?: Date
   id: string | number
   avatar: string
   name: string

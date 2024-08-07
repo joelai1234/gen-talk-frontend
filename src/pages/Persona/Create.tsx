@@ -10,7 +10,7 @@ import {
 } from '@/data/persona'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { PersonaData } from '@/model/persona'
-import { useMockDataStore } from '@/store/useMockDataStore'
+import { useAuth } from '@/services/auth/hooks/useAuth'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import EmojiPicker from 'emoji-picker-react'
 import { useState } from 'react'
@@ -18,9 +18,10 @@ import { FaArrowLeft } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
 export default function CreatePersona() {
+  const { authAxios } = useAuth()
   const navigate = useNavigate()
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
-  const { addMockPersonaData } = useMockDataStore()
+  // const { addMockPersonaData } = useMockDataStore()
   const [persona, setPersona] = useState<PersonaData>({
     id: Date.now(),
     avatar: defaultPersonaIcon,
@@ -36,13 +37,15 @@ export default function CreatePersona() {
 
   const createPersonaMutation = useMutation({
     mutationFn: () => {
-      return createPersona({
+      return createPersona(authAxios!)({
         persona_name: persona.name,
         tone: persona.tone,
         lang: persona.language,
         style: persona.style,
         persona_description: persona.description,
-        user_id: 1
+        user_id: 1,
+        icon: persona.avatar,
+        message_color: persona.messageColor
       })
     },
     onSuccess: () => {
@@ -52,13 +55,13 @@ export default function CreatePersona() {
   })
 
   const handleCreate = () => {
-    addMockPersonaData({
-      ...persona,
-      created: new Date(),
-      updated: new Date()
-    })
-    navigate('/')
-    // createPersonaMutation.mutate()
+    // addMockPersonaData({
+    //   ...persona,
+    //   createdAt: new Date(),
+    //   updatedAt: new Date()
+    // })
+    // navigate('/')
+    createPersonaMutation.mutate()
   }
 
   return (

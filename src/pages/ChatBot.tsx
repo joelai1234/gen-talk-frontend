@@ -4,8 +4,6 @@ import { ChatRoomMessage } from '@/model/persona'
 import { useMockDataStore } from '@/store/useMockDataStore'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
-// import { useQuery } from '@tanstack/react-query'
-// import { getDefaultPersonas, getMePersonas } from '@/apis/persona'
 import WelcomeChatRoom from '@/components/chatRoom/WelcomeChatRoom'
 import NewChatRoom from '@/components/chatRoom/NewChatRoom'
 import { format } from 'date-fns'
@@ -13,16 +11,20 @@ import ChatRoom from '@/components/chatRoom/ChatRoom'
 import MessageTextarea from '@/components/MessageTextarea'
 import MobilePersonaNav from '@/components/chatRoom/MobilePersonaNav'
 import DesktopPersonaSider from '@/components/chatRoom/DesktopPersonaSider'
-// import { formatPersona } from '@/utils/persona'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { formatPersona } from '@/utils/persona'
+import { useAuth } from '@/services/auth/hooks/useAuth'
+import { getMePersonas } from '@/apis/persona'
 
 const VITE_OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string
 
-// const isLogin = true
-// const user_id = 1
+const user_id = 1
+const isLogin = false
 
 export default function ChatBot() {
+  const { authAxios } = useAuth()
   const {
-    mockPersonasData,
+    // mockPersonasData: personasData,
     mockPersonaMessagesList,
     setMockPersonasData,
     setMockPersonaMessagesList
@@ -30,7 +32,6 @@ export default function ChatBot() {
   const [selectedPersonaId, setSelectedPersonaId] = useState<
     number | string | undefined
   >()
-  const [isLoadingAIMessage, setIsLoadingAIMessage] = useState(false)
   const [personaMessagesList, setPersonaMessagesList] = useState<
     {
       personaId: number | string
@@ -38,41 +39,28 @@ export default function ChatBot() {
     }[]
   >(mockPersonaMessagesList)
 
-  const persona = mockPersonasData.find(
-    (persona) => persona.id === selectedPersonaId
-  )
   const [search, setSearch] = useState('')
 
-  // const { data: personasRes } = useQuery({
-  //   queryKey: ['getMePersonas', user_id],
+  // const { data: defaultPersonasRes } = useQuery({
+  //   queryKey: ['getMePersonas', user_id, isLogin],
   //   queryFn: () => {
-  //     if (isLogin) {
-  //       return getMePersonas({ user_id })
-  //     } else {
-  //       return getDefaultPersonas()
-  //     }
+  //     return getDefaultPersonas()
   //   }
   // })
 
-  // const personas = personasRes?.data.map(formatPersona)
+  const { data: mePersonasRes } = useQuery({
+    queryKey: ['getMePersonas', user_id, isLogin],
+    queryFn: () => {
+      return getMePersonas(authAxios!)({ user_id })
+    },
+    enabled: !!authAxios
+  })
 
-  // const persona: PersonaData | undefined = personas?.find(
-  //   (item) => item.id === selectedPersonaId
-  // )
+  const personasData = mePersonasRes?.data.map(formatPersona) ?? []
 
-  // const personaOptions =
-  //   personas
-  //     ?.map((item) => {
-  //       return {
-  //         id: item.id,
-  //         avatar: item.avatar,
-  //         name: item.name,
-  //         time: 'New',
-  //         active: item.id === selectedPersonaId
-  //       }
-  //     })
-  //     .filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
-  //     .reverse() ?? []
+  const persona = personasData.find(
+    (persona) => persona.id === selectedPersonaId
+  )
 
   const messages =
     personaMessagesList.find((item) => item.personaId === selectedPersonaId)
@@ -82,47 +70,47 @@ export default function ChatBot() {
     setMockPersonaMessagesList(personaMessagesList)
   }, [personaMessagesList, setMockPersonaMessagesList])
 
-  const handleSendMessage = async (message: string) => {
-    if (message.trim() === '') return
-    if (selectedPersonaId === undefined) return
-
-    const newMessage: ChatRoomMessage = {
-      id: uuidv4(),
-      message,
-      timestamp: new Date(),
-      sender: ChatRoomSender.User
-    }
-
-    setPersonaMessagesList((prevMessages) => {
-      const newMessages = [...prevMessages]
-      const index = newMessages.findIndex(
-        (item) => item.personaId === selectedPersonaId
-      )
-      if (index !== -1) {
-        newMessages[index].messages.push(newMessage)
-      } else {
-        newMessages.push({
-          personaId: selectedPersonaId,
-          messages: [newMessage]
-        })
+  const sendMessageMutation = useMutation({
+    mutationFn: async ({
+      personaId,
+      message
+    }: {
+      message: string
+      personaId: string | number
+    }) => {
+      const newMessage: ChatRoomMessage = {
+        id: uuidv4(),
+        message,
+        timestamp: new Date(),
+        sender: ChatRoomSender.User
       }
-      return newMessages
-    })
-
-    setMockPersonasData(
-      mockPersonasData.map((item) => {
-        if (item.id === selectedPersonaId) {
-          return {
-            ...item,
-            updated: new Date()
+      setMockPersonasData(
+        personasData.map((item) => {
+          if (item.id === personaId) {
+            return {
+              ...item,
+              lastMessageSentAt: new Date()
+            }
           }
+          return item
+        })
+      )
+      setPersonaMessagesList((prevMessages) => {
+        const newMessages = [...prevMessages]
+        const index = newMessages.findIndex(
+          (item) => item.personaId === personaId
+        )
+        if (index !== -1) {
+          newMessages[index].messages.push(newMessage)
+        } else {
+          newMessages.push({
+            personaId: personaId,
+            messages: [newMessage]
+          })
         }
-        return item
+        return newMessages
       })
-    )
-    setIsLoadingAIMessage(true)
-    try {
-      const response = await axios.post(
+      return axios.post(
         'https://api.openai.com/v1/chat/completions',
         {
           model: 'gpt-4o',
@@ -152,10 +140,14 @@ export default function ChatBot() {
           }
         }
       )
-
+    },
+    onSuccess: (data, payload) => {
+      if (!data) {
+        return
+      }
       const gptMessage: ChatRoomMessage = {
         id: uuidv4(),
-        message: response.data.choices[0].message.content,
+        message: data.data.choices[0].message.content,
         timestamp: new Date(),
         sender: ChatRoomSender.Bot
       }
@@ -163,13 +155,13 @@ export default function ChatBot() {
       setPersonaMessagesList((prevMessages) => {
         const newMessages = [...prevMessages]
         const index = newMessages.findIndex(
-          (item) => item.personaId === selectedPersonaId
+          (item) => item.personaId === payload.personaId
         )
         if (index !== -1) {
           newMessages[index].messages.push(gptMessage)
         } else {
           newMessages.push({
-            personaId: selectedPersonaId,
+            personaId: payload.personaId,
             messages: [gptMessage]
           })
         }
@@ -177,49 +169,48 @@ export default function ChatBot() {
       })
 
       setMockPersonasData(
-        mockPersonasData.map((item) => {
-          if (item.id === selectedPersonaId) {
+        personasData.map((item) => {
+          if (item.id === payload.personaId) {
             return {
               ...item,
-              updated: new Date()
+              lastMessageSentAt: new Date()
             }
           }
           return item
         })
       )
-      setIsLoadingAIMessage(false)
-    } catch (error) {
-      console.error('Error fetching response from ChatGPT:', error)
     }
-  }
-
-  const chatBotData = mockPersonasData.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase())
-  )
-
-  const chatBotOptionData = [...chatBotData].reverse().sort((a, b) => {
-    const aTime = a.updated?.getTime() ?? 0
-    const bTime = b.updated?.getTime() ?? 0
-    return bTime - aTime
   })
 
-  const mockPersonaOptions = chatBotOptionData.map((item) => {
-    const length =
-      personaMessagesList.find((chatRoom) => chatRoom.personaId === item.id)
-        ?.messages?.length ?? 0
+  const handleSendMessage = (message: string) => {
+    if (message.trim() === '') return
+    if (selectedPersonaId === undefined) return
+    sendMessageMutation.mutate({ message, personaId: selectedPersonaId })
+  }
+
+  const personaOptionsData = personasData
+    .filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+    .reverse()
+    .sort((a, b) => {
+      const aLastMessageSentAt = a.lastMessageSentAt?.getTime() ?? 0
+      const bLastMessageSentAt = b.lastMessageSentAt?.getTime() ?? 0
+      const aUpdatedAt = a.updatedAt?.getTime() ?? 0
+      const bUpdatedAt = b.updatedAt?.getTime() ?? 0
+      const aTime =
+        aLastMessageSentAt > aUpdatedAt ? aLastMessageSentAt : aUpdatedAt
+      const bTime =
+        bLastMessageSentAt > bUpdatedAt ? bLastMessageSentAt : bUpdatedAt
+      return bTime - aTime
+    })
+
+  const personaOptions = personaOptionsData.map((item) => {
     return {
       id: item.id,
       avatar: item.avatar,
       name: item.name,
-      time:
-        length > 0
-          ? format(
-              personaMessagesList.find(
-                (chatRoom) => chatRoom.personaId === item.id
-              )?.messages[length - 1].timestamp ?? new Date(),
-              'hh:mm a'
-            )
-          : 'New',
+      time: item.lastMessageSentAt
+        ? format(item.lastMessageSentAt, 'hh:mm a')
+        : 'New',
       active: item.id === selectedPersonaId
     }
   })
@@ -235,7 +226,7 @@ export default function ChatBot() {
           onChangePersona={(id) => {
             setSelectedPersonaId(id)
           }}
-          personaOptions={mockPersonaOptions}
+          personaOptions={personaOptions}
           search={search}
           onChangeSearch={setSearch}
         />
@@ -247,7 +238,7 @@ export default function ChatBot() {
                 onChangePersona={(id) => {
                   setSelectedPersonaId(id)
                 }}
-                personaOptions={mockPersonaOptions}
+                personaOptions={personaOptions}
                 search={search}
                 onChangeSearch={setSearch}
               />
@@ -265,7 +256,7 @@ export default function ChatBot() {
               {persona && messages.length > 0 && (
                 <ChatRoom
                   messageColor={persona.messageColor}
-                  isLoadingAIMessage={isLoadingAIMessage}
+                  isLoadingAIMessage={sendMessageMutation.isPending}
                   messages={messages}
                 />
               )}

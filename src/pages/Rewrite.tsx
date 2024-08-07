@@ -43,13 +43,13 @@ export default function Rewrite() {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const {
-    mockPersonasData,
+    mockPersonasData: personasData,
     setMockPersonasData,
     addMockPersonaData,
     deleteMockPersonaData
   } = useMockDataStore()
   const [persona, setPersona] = useState(
-    mockPersonasData[0] || {
+    personasData[0] || {
       id: Date.now(),
       avatar: defaultPersonaIcon,
       name: '',
@@ -75,17 +75,17 @@ export default function Rewrite() {
   }
 
   const handleSave = () => {
-    if (mockPersonasData.find((_persona) => _persona.id == persona.id)) {
+    if (personasData.find((_persona) => _persona.id == persona.id)) {
       setMockPersonasData(
-        mockPersonasData.map((item) =>
-          item.id === persona.id ? { ...persona, updated: new Date() } : item
+        personasData.map((item) =>
+          item.id === persona.id ? { ...persona, updatedAt: new Date() } : item
         )
       )
     } else {
       addMockPersonaData({
         ...persona,
-        created: new Date(),
-        updated: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       })
     }
   }
@@ -96,7 +96,7 @@ export default function Rewrite() {
 
   const handleImportPersona = (id: number | string) => {
     setPersona({
-      ...mockPersonasData.find((persona) => persona.id == id)!,
+      ...personasData.find((persona) => persona.id == id)!,
       id: Date.now(),
       isPreset: false
     })
@@ -132,21 +132,42 @@ export default function Rewrite() {
     },
     onSuccess: () => {
       setMockPersonasData(
-        mockPersonasData.map((item) =>
-          item.id === persona.id ? { ...persona, updated: new Date() } : item
+        personasData.map((item) =>
+          item.id === persona.id ? { ...persona, updatedAt: new Date() } : item
         )
       )
     }
   })
 
-  const sortedPersonasData = [...mockPersonasData]
+  const personaOptionsData = [...personasData]
     .reverse()
     .sort((a, b) => {
-      const aTime = a.updated?.getTime() ?? 0
-      const bTime = b.updated?.getTime() ?? 0
+      const aLastMessageSentAt = a.lastMessageSentAt?.getTime() ?? 0
+      const bLastMessageSentAt = b.lastMessageSentAt?.getTime() ?? 0
+      const aUpdatedAt = a.updatedAt?.getTime() ?? 0
+      const bUpdatedAt = b.updatedAt?.getTime() ?? 0
+      const aTime =
+        aLastMessageSentAt > aUpdatedAt ? aLastMessageSentAt : aUpdatedAt
+      const bTime =
+        bLastMessageSentAt > bUpdatedAt ? bLastMessageSentAt : bUpdatedAt
       return bTime - aTime
     })
     .slice(0, 5)
+
+  const personaSearchOptionsData = personasData
+    .filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+    .reverse()
+    .sort((a, b) => {
+      const aLastMessageSentAt = a.lastMessageSentAt?.getTime() ?? 0
+      const bLastMessageSentAt = b.lastMessageSentAt?.getTime() ?? 0
+      const aUpdatedAt = a.updatedAt?.getTime() ?? 0
+      const bUpdatedAt = b.updatedAt?.getTime() ?? 0
+      const aTime =
+        aLastMessageSentAt > aUpdatedAt ? aLastMessageSentAt : aUpdatedAt
+      const bTime =
+        bLastMessageSentAt > bUpdatedAt ? bLastMessageSentAt : bUpdatedAt
+      return bTime - aTime
+    })
 
   return (
     <div className="flex h-[calc(var(--vh)*100-60px)] pt-6 sm:px-16 sm:pb-16">
@@ -163,7 +184,7 @@ export default function Rewrite() {
                     <p className="text-base text-[#4c4c4c]">Rewrite with</p>
                   </div>
                   <div className="flex gap-4">
-                    {sortedPersonasData.map((data) => (
+                    {personaOptionsData.map((data) => (
                       <div
                         key={data.id}
                         className="flex w-14 cursor-pointer flex-col items-center gap-1"
@@ -194,7 +215,7 @@ export default function Rewrite() {
                       </div>
                       <p className="text-xs text-[#4c4c4c]">New</p>
                     </div>
-                    {mockPersonasData.length > 5 && (
+                    {personasData.length > 5 && (
                       <Popover>
                         <PopoverTrigger asChild>
                           <div className="flex w-14 cursor-pointer flex-col items-center gap-1">
@@ -220,31 +241,20 @@ export default function Rewrite() {
                             />
                           </div>
                           <div className=" max-h-[430px]  overflow-auto">
-                            {mockPersonasData
-                              .sort((a, b) => {
-                                const aTime = a.updated?.getTime() ?? 0
-                                const bTime = b.updated?.getTime() ?? 0
-                                return bTime - aTime
-                              })
-                              .filter((item) =>
-                                item.name
-                                  .toLowerCase()
-                                  .includes(search.toLowerCase())
-                              )
-                              .map((data) => (
-                                <PopoverClose
-                                  key={data.id}
-                                  className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 transition hover:bg-[#f7f7f7]"
-                                  onClick={() => {
-                                    setPersona(data)
-                                  }}
-                                >
-                                  <div className="flex size-8 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl">
-                                    {data.avatar}
-                                  </div>
-                                  <p className="text-[#4c4c4c]">{data.name}</p>
-                                </PopoverClose>
-                              ))}
+                            {personaSearchOptionsData.map((data) => (
+                              <PopoverClose
+                                key={data.id}
+                                className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 transition hover:bg-[#f7f7f7]"
+                                onClick={() => {
+                                  setPersona(data)
+                                }}
+                              >
+                                <div className="flex size-8 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl">
+                                  {data.avatar}
+                                </div>
+                                <p className="text-[#4c4c4c]">{data.name}</p>
+                              </PopoverClose>
+                            ))}
                           </div>
                         </PopoverContent>
                       </Popover>
@@ -266,7 +276,7 @@ export default function Rewrite() {
                           </button>
                         </PopoverTrigger>
                         <PopoverContent className="-mr-20 w-[200px] overflow-hidden rounded-[20px] p-0">
-                          {mockPersonasData.map((persona) => (
+                          {personasData.map((persona) => (
                             <PopoverClose
                               key={persona.id}
                               className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 transition hover:bg-[#f7f7f7]"
@@ -409,9 +419,7 @@ export default function Rewrite() {
                   </div>
                 </div>
                 <div className="mt-10 flex justify-end space-x-4">
-                  {mockPersonasData.find(
-                    (persona) => persona.id == persona.id
-                  ) && (
+                  {personasData.find((persona) => persona.id == persona.id) && (
                     <AlertDialog
                       open={deleteDialogOpen}
                       onOpenChange={setDeleteDialogOpen}

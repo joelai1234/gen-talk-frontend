@@ -9,7 +9,6 @@ import {
 } from './ui/alert-dialog'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
-import { useAuth } from '@/services/useAuth'
 import {
   Popover,
   PopoverContent,
@@ -33,6 +32,7 @@ import { IoMdEye } from 'react-icons/io'
 import { MdOutlineEdit } from 'react-icons/md'
 import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
 import { MdConveyorBelt } from 'react-icons/md'
+import { useAuth } from '@/services/auth/hooks/useAuth'
 
 export default function Header() {
   const { pathname } = useLocation()

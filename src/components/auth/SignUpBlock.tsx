@@ -6,9 +6,9 @@ import {
   MdOutlinePassword
 } from 'react-icons/md'
 import { Button } from '../ui/button'
-import { useAuth } from '@/services/useAuth'
 import { useSearchParams } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
+import { useAuth } from '@/services/auth/hooks/useAuth'
 
 type SignUpInputs = {
   email: string
