@@ -1,5 +1,5 @@
 import { FaUserCircle } from 'react-icons/fa'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { Button } from './ui/button'
 import {
   AlertDialog,
@@ -30,8 +30,12 @@ import { IoMdClose } from 'react-icons/io'
 import { LuUpload } from 'react-icons/lu'
 import { IoMdEyeOff } from 'react-icons/io'
 import { IoMdEye } from 'react-icons/io'
+import { MdOutlineEdit } from 'react-icons/md'
+import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
+import { MdConveyorBelt } from 'react-icons/md'
 
 export default function Header() {
+  const { pathname } = useLocation()
   const { isLogin, signIn, signOut } = useAuth()
   const [searchParams] = useSearchParams()
   const action = searchParams.get('action') as AuthStatus
@@ -52,6 +56,32 @@ export default function Header() {
           <h1 className=" text-2xl text-earth-green">GenTalk</h1>
         </div>
       </Link>
+      <div className="flex gap-6">
+        <Link
+          to="/chatbot"
+          className={cn(
+            'flex items-center gap-2 rounded-xl px-2.5 py-1 text-[#9a9a9a] transition hover:bg-white hover:text-earth-green',
+            { 'bg-white text-earth-green': pathname === '/chatbot' }
+          )}
+        >
+          <IoChatbubbleEllipsesOutline />
+          <span>Chat</span>
+        </Link>
+        <Link
+          to="/rewrite"
+          className={cn(
+            'flex items-center gap-2 rounded-xl px-2.5 py-1 text-[#9a9a9a] transition hover:bg-white hover:text-earth-green',
+            { 'bg-white text-earth-green': pathname === '/rewrite' }
+          )}
+        >
+          <MdOutlineEdit />
+          <span>Rewrite</span>
+        </Link>
+        <button className="flex items-center gap-2 rounded-xl px-2.5 py-1 text-[#9a9a9a] hover:bg-white hover:text-earth-green">
+          <MdConveyorBelt />
+          <span>Conversation</span>
+        </button>
+      </div>
       {!isLogin && (
         <div className="space-x-2">
           <Button
