@@ -75,21 +75,13 @@ export default function Rewrite() {
   }
 
   const handleSave = () => {
-    console.log('save')
-    console.log('persona', persona)
-    console.log('mockPersonasData', mockPersonasData)
-
     if (mockPersonasData.find((_persona) => _persona.id == persona.id)) {
-      console.log('setMockPersonasData')
-
       setMockPersonasData(
         mockPersonasData.map((item) =>
           item.id === persona.id ? { ...persona, updated: new Date() } : item
         )
       )
     } else {
-      console.log('addMockPersonaData:')
-
       addMockPersonaData({
         ...persona,
         created: new Date(),
@@ -147,6 +139,15 @@ export default function Rewrite() {
     }
   })
 
+  const sortedPersonasData = [...mockPersonasData]
+    .reverse()
+    .sort((a, b) => {
+      const aTime = a.updated?.getTime() ?? 0
+      const bTime = b.updated?.getTime() ?? 0
+      return bTime - aTime
+    })
+    .slice(0, 5)
+
   return (
     <div className="flex h-[calc(var(--vh)*100-60px)] pt-6 sm:px-16 sm:pb-16">
       <div className="mx-auto flex w-full max-w-[1113px] gap-8">
@@ -162,35 +163,28 @@ export default function Rewrite() {
                     <p className="text-base text-[#4c4c4c]">Rewrite with</p>
                   </div>
                   <div className="flex gap-4">
-                    {mockPersonasData
-                      .sort((a, b) => {
-                        const aTime = a.updated?.getTime() ?? 0
-                        const bTime = b.updated?.getTime() ?? 0
-                        return bTime - aTime
-                      })
-                      .slice(0, 5)
-                      .map((data) => (
+                    {sortedPersonasData.map((data) => (
+                      <div
+                        key={data.id}
+                        className="flex w-14 cursor-pointer flex-col items-center gap-1"
+                      >
                         <div
-                          key={data.id}
-                          className="flex w-14 cursor-pointer flex-col items-center gap-1"
+                          className={cn(
+                            'flex size-10 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl outline outline-transparent transition-all hover:bg-earth-green hover:outline-2 hover:outline-[#DDE7DD]',
+                            {
+                              'outline-[#DDE7DD] bg-earth-green':
+                                data.id === persona.id
+                            }
+                          )}
+                          onClick={() => {
+                            setPersona(data)
+                          }}
                         >
-                          <div
-                            className={cn(
-                              'flex size-10 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl outline outline-transparent transition-all hover:bg-earth-green hover:outline-2 hover:outline-[#DDE7DD]',
-                              {
-                                'outline-[#DDE7DD] bg-earth-green':
-                                  data.id === persona.id
-                              }
-                            )}
-                            onClick={() => {
-                              setPersona(data)
-                            }}
-                          >
-                            {data.avatar}
-                          </div>
-                          <p className="text-xs text-[#4c4c4c]">{data.name}</p>
+                          {data.avatar}
                         </div>
-                      ))}
+                        <p className="text-xs text-[#4c4c4c]">{data.name}</p>
+                      </div>
+                    ))}
                     <div
                       className="flex w-14 cursor-pointer flex-col items-center gap-1"
                       onClick={handleNew}

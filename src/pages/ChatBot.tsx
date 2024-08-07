@@ -197,7 +197,7 @@ export default function ChatBot() {
     item.name.toLowerCase().includes(search.toLowerCase())
   )
 
-  const chatBotOptionData = chatBotData.reverse().sort((a, b) => {
+  const chatBotOptionData = [...chatBotData].reverse().sort((a, b) => {
     const aTime = a.updated?.getTime() ?? 0
     const bTime = b.updated?.getTime() ?? 0
     return bTime - aTime
