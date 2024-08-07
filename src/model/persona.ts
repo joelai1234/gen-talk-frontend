@@ -19,8 +19,6 @@ export interface PersonaData {
   isPreset?: boolean
 }
 
-export type RewritePersonaData = Omit<PersonaData, 'isPreset' | 'messageColor'>
-
 export interface ChatRoomMessage {
   id: string | number
   sender: ChatRoomSender

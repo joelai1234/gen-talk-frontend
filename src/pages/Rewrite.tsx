@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import {
+  defaultPersonaIcon,
   personaLanguageOptions,
   personaStyleOptions,
   personaToneOptions
@@ -25,7 +26,6 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
-import { mockPersonasData } from '@/data/mockData'
 import { IoMdAdd, IoMdSearch } from 'react-icons/io'
 import { BsThreeDots } from 'react-icons/bs'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
@@ -43,49 +43,55 @@ export default function Rewrite() {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const {
-    mockRewritePersonasData,
-    setMockRewritePersonasData,
-    addMockRewritePersonaData,
-    deleteMockRewritePersonaData
+    mockPersonasData,
+    setMockPersonasData,
+    addMockPersonaData,
+    deleteMockPersonaData
   } = useMockDataStore()
-  const [rewritePersona, setRewritePersona] = useState(
-    mockRewritePersonasData[0] || {
+  const [persona, setPersona] = useState(
+    mockPersonasData[0] || {
       id: Date.now(),
-      avatar: '😄',
+      avatar: defaultPersonaIcon,
       name: '',
       description: '',
       tone: PersonaTone.Empathetic,
       language: PersonaLanguage.Formal,
-      style: PersonaStyle.Direct
+      style: PersonaStyle.Direct,
+      messageColor: '#EBEBEB'
     }
   )
 
   const handleNew = () => {
-    setRewritePersona({
+    setPersona({
       id: Date.now(),
-      avatar: '😄',
+      avatar: defaultPersonaIcon,
       name: '',
       description: '',
       tone: PersonaTone.Empathetic,
       language: PersonaLanguage.Formal,
-      style: PersonaStyle.Direct
+      style: PersonaStyle.Direct,
+      messageColor: '#EBEBEB'
     })
   }
 
   const handleSave = () => {
-    if (
-      mockRewritePersonasData.find((persona) => persona.id == rewritePersona.id)
-    ) {
-      setMockRewritePersonasData(
-        mockRewritePersonasData.map((item) =>
-          item.id === rewritePersona.id
-            ? { ...rewritePersona, updated: new Date() }
-            : item
+    console.log('save')
+    console.log('persona', persona)
+    console.log('mockPersonasData', mockPersonasData)
+
+    if (mockPersonasData.find((_persona) => _persona.id == persona.id)) {
+      console.log('setMockPersonasData')
+
+      setMockPersonasData(
+        mockPersonasData.map((item) =>
+          item.id === persona.id ? { ...persona, updated: new Date() } : item
         )
       )
     } else {
-      addMockRewritePersonaData({
-        ...rewritePersona,
+      console.log('addMockPersonaData:')
+
+      addMockPersonaData({
+        ...persona,
         created: new Date(),
         updated: new Date()
       })
@@ -93,13 +99,14 @@ export default function Rewrite() {
   }
 
   const handleDelete = () => {
-    deleteMockRewritePersonaData(rewritePersona.id)
+    deleteMockPersonaData(persona.id)
   }
 
   const handleImportPersona = (id: number | string) => {
-    setRewritePersona({
+    setPersona({
       ...mockPersonasData.find((persona) => persona.id == id)!,
-      id: Date.now()
+      id: Date.now(),
+      isPreset: false
     })
   }
 
@@ -113,11 +120,11 @@ export default function Rewrite() {
             {
               role: 'system',
               content: `You are now playing a role, and the following are the character's stats. Please rewrite the content I input in this character's style.
-            name: ${rewritePersona?.name}.
-            description: ${rewritePersona?.description}.
-            tone: ${rewritePersona?.tone}.
-            style: ${rewritePersona?.style}.
-            language: ${rewritePersona?.language}.
+            name: ${persona?.name}.
+            description: ${persona?.description}.
+            tone: ${persona?.tone}.
+            style: ${persona?.style}.
+            language: ${persona?.language}.
             `
             },
             { role: 'user', content: inputMessage }
@@ -132,11 +139,9 @@ export default function Rewrite() {
       )
     },
     onSuccess: () => {
-      setMockRewritePersonasData(
-        mockRewritePersonasData.map((item) =>
-          item.id === rewritePersona.id
-            ? { ...rewritePersona, updated: new Date() }
-            : item
+      setMockPersonasData(
+        mockPersonasData.map((item) =>
+          item.id === persona.id ? { ...persona, updated: new Date() } : item
         )
       )
     }
@@ -157,7 +162,7 @@ export default function Rewrite() {
                     <p className="text-base text-[#4c4c4c]">Rewrite with</p>
                   </div>
                   <div className="flex gap-4">
-                    {mockRewritePersonasData
+                    {mockPersonasData
                       .sort((a, b) => {
                         const aTime = a.updated?.getTime() ?? 0
                         const bTime = b.updated?.getTime() ?? 0
@@ -174,11 +179,11 @@ export default function Rewrite() {
                               'flex size-10 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl outline outline-transparent transition-all hover:bg-earth-green hover:outline-2 hover:outline-[#DDE7DD]',
                               {
                                 'outline-[#DDE7DD] bg-earth-green':
-                                  data.id === rewritePersona.id
+                                  data.id === persona.id
                               }
                             )}
                             onClick={() => {
-                              setRewritePersona(data)
+                              setPersona(data)
                             }}
                           >
                             {data.avatar}
@@ -195,7 +200,7 @@ export default function Rewrite() {
                       </div>
                       <p className="text-xs text-[#4c4c4c]">New</p>
                     </div>
-                    {mockRewritePersonasData.length > 5 && (
+                    {mockPersonasData.length > 5 && (
                       <Popover>
                         <PopoverTrigger asChild>
                           <div className="flex w-14 cursor-pointer flex-col items-center gap-1">
@@ -221,7 +226,7 @@ export default function Rewrite() {
                             />
                           </div>
                           <div className=" max-h-[430px]  overflow-auto">
-                            {mockRewritePersonasData
+                            {mockPersonasData
                               .sort((a, b) => {
                                 const aTime = a.updated?.getTime() ?? 0
                                 const bTime = b.updated?.getTime() ?? 0
@@ -237,17 +242,7 @@ export default function Rewrite() {
                                   key={data.id}
                                   className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 transition hover:bg-[#f7f7f7]"
                                   onClick={() => {
-                                    setRewritePersona(data)
-                                    // setMockRewritePersonasData(
-                                    //   mockRewritePersonasData.map((item) =>
-                                    //     item.id === data.id
-                                    //       ? {
-                                    //           ...item,
-                                    //           updated: new Date()
-                                    //         }
-                                    //       : item
-                                    //   )
-                                    // )
+                                    setPersona(data)
                                   }}
                                 >
                                   <div className="flex size-8 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl">
@@ -303,7 +298,7 @@ export default function Rewrite() {
                         }}
                       >
                         <div className="flex size-full items-center justify-center text-2xl">
-                          {rewritePersona.avatar}
+                          {persona.avatar}
                         </div>
                         {emojiPickerOpen && (
                           <div className="absolute size-full">
@@ -314,7 +309,7 @@ export default function Rewrite() {
                               }}
                               onEmojiClick={(emojiData) => {
                                 setEmojiPickerOpen(false)
-                                setRewritePersona((prev) => ({
+                                setPersona((prev) => ({
                                   ...prev,
                                   avatar: emojiData.emoji
                                 }))
@@ -327,9 +322,10 @@ export default function Rewrite() {
                         className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
                         type="text"
                         placeholder="Name"
-                        value={rewritePersona.name}
+                        disabled={persona.isPreset}
+                        value={persona.name}
                         onChange={(e) => {
-                          setRewritePersona((prev) => ({
+                          setPersona((prev) => ({
                             ...prev,
                             name: e.target.value
                           }))
@@ -344,9 +340,12 @@ export default function Rewrite() {
                         <Chip
                           key={option.value}
                           label={option.label}
-                          selected={rewritePersona.tone === option.value}
+                          selected={persona.tone === option.value}
+                          disabled={
+                            persona.isPreset && persona.tone !== option.value
+                          }
                           onClick={() => {
-                            setRewritePersona((prev) => ({
+                            setPersona((prev) => ({
                               ...prev,
                               tone: option.value
                             }))
@@ -362,9 +361,13 @@ export default function Rewrite() {
                         <Chip
                           key={option.value}
                           label={option.label}
-                          selected={rewritePersona.language === option.value}
+                          selected={persona.language === option.value}
+                          disabled={
+                            persona.isPreset &&
+                            persona.language !== option.value
+                          }
                           onClick={() => {
-                            setRewritePersona((prev) => ({
+                            setPersona((prev) => ({
                               ...prev,
                               language: option.value
                             }))
@@ -380,9 +383,12 @@ export default function Rewrite() {
                         <Chip
                           key={option.value}
                           label={option.label}
-                          selected={rewritePersona.style === option.value}
+                          selected={persona.style === option.value}
+                          disabled={
+                            persona.isPreset && persona.style !== option.value
+                          }
                           onClick={() => {
-                            setRewritePersona((prev) => ({
+                            setPersona((prev) => ({
                               ...prev,
                               style: option.value
                             }))
@@ -397,9 +403,10 @@ export default function Rewrite() {
                       className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
                       placeholder="Enter the description of this persona"
                       rows={3}
-                      value={rewritePersona.description}
+                      disabled={persona.isPreset}
+                      value={persona.description}
                       onChange={(e) => {
-                        setRewritePersona((prev) => ({
+                        setPersona((prev) => ({
                           ...prev,
                           description: e.target.value
                         }))
@@ -408,8 +415,8 @@ export default function Rewrite() {
                   </div>
                 </div>
                 <div className="mt-10 flex justify-end space-x-4">
-                  {mockRewritePersonasData.find(
-                    (persona) => persona.id == rewritePersona.id
+                  {mockPersonasData.find(
+                    (persona) => persona.id == persona.id
                   ) && (
                     <AlertDialog
                       open={deleteDialogOpen}

@@ -52,13 +52,13 @@ export default function CreatePersona() {
   })
 
   const handleCreate = () => {
-    // addMockPersonaData({
-    //   ...persona,
-    //   created: new Date(),
-    //   updated: new Date()
-    // })
-    // navigate('/')
-    createPersonaMutation.mutate()
+    addMockPersonaData({
+      ...persona,
+      created: new Date(),
+      updated: new Date()
+    })
+    navigate('/')
+    // createPersonaMutation.mutate()
   }
 
   return (
