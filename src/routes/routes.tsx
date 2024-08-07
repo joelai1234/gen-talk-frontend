@@ -14,6 +14,7 @@ import ResendVerificationEmail from '@/pages/Auth/ResendVerificationEmail'
 import ForgetPasswordSentEmail from '@/pages/Auth/ForgetPasswordSentEmail'
 import VerifyResetPasswordEmail from '@/pages/Auth/VerifyResetPasswordEmail'
 import SuccessResetPassword from '@/pages/Auth/SuccessResetPassword'
+import Rewrite from '@/pages/Rewrite'
 
 export const router = createBrowserRouter([
   {
@@ -38,6 +39,10 @@ export const router = createBrowserRouter([
       {
         path: '/persona/create',
         element: <CreatePersona />
+      },
+      {
+        path: '/rewrite',
+        element: <Rewrite />
       }
     ]
   },
