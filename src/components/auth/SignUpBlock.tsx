@@ -9,6 +9,7 @@ import { Button } from '../ui/button'
 import { useSearchParams } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useAuth } from '@/services/auth/hooks/useAuth'
+import { ErrorResponse } from '@/apis/model/commen'
 
 type SignUpInputs = {
   email: string
@@ -26,15 +27,17 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
   const [searchParams, setSearchParams] = useSearchParams()
   const {
     register,
-    handleSubmit
-    // formState: { errors }
+    handleSubmit,
+    formState: { errors }
   } = useForm<SignUpInputs>({
     defaultValues: {
-      email: 'joelai1234567890+1@gmail.com',
-      username: 'joe1',
-      password: 'Test1234.'
+      email: 'joelai1234567890+test@gmail.com',
+      username: 'test',
+      password: 'Test1234!'
     }
   })
+  const errorMessage = (signUpMutation.error as unknown as ErrorResponse)
+    ?.response?.data?.detail
 
   const setSearchParamsEmail = (email: string) => {
     const currentParams = new URLSearchParams(searchParams)
@@ -72,48 +75,61 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
           Sign Up
         </h4>
         <div className="space-y-3">
-          <div className="relative">
-            <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <MdOutlineEmail className=" text-2xl text-[#4C4C4C]" />
+          <div>
+            <div className="relative">
+              <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <MdOutlineEmail className=" text-2xl text-[#4C4C4C]" />
+              </div>
+              <input
+                className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
+                type="text"
+                placeholder="Email"
+                {...register('email', {
+                  required: 'Email is required'
+                })}
+              />
             </div>
-            <input
-              className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-              type="text"
-              placeholder="Email"
-              {...register('email', {
-                required: 'Email is required'
-              })}
-            />
-            {/* <p className="text-red-500">{errors.email?.message}</p> */}
+            <p className="text-sm text-red-500">{errors.email?.message}</p>
           </div>
-          <div className="relative">
-            <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <MdOutlineAccountCircle className=" text-2xl text-[#4C4C4C]" />
+          <div>
+            <div className="relative">
+              <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <MdOutlineAccountCircle className=" text-2xl text-[#4C4C4C]" />
+              </div>
+              <input
+                className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
+                type="text"
+                placeholder="Username"
+                {...register('username', { required: 'Username is required' })}
+              />
             </div>
-            <input
-              className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-              type="text"
-              placeholder="Username"
-              {...register('username', { required: 'Username is required' })}
-            />
-            {/* <p className="text-red-500">{errors.username?.message}</p> */}
+            <p className="text-sm text-red-500">{errors.username?.message}</p>
           </div>
-          <div className="relative">
-            <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <MdOutlinePassword className=" text-2xl text-[#4C4C4C]" />
+          <div>
+            <div className="relative">
+              <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <MdOutlinePassword className=" text-2xl text-[#4C4C4C]" />
+              </div>
+              <input
+                className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
+                type="password"
+                placeholder="Password"
+                {...register('password', { required: 'Password is required' })}
+              />
             </div>
-            <input
-              className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-              type="password"
-              placeholder="Password"
-              {...register('password', { required: 'Password is required' })}
-            />
-            {/* <p className="text-red-500">{errors.password?.message}</p> */}
+            <p className="text-red-500">{errors.password?.message}</p>
           </div>
         </div>
-        <Button className="w-full" onClick={handleSubmit(onSubmit)}>
-          Continue
-        </Button>
+        <div>
+          <Button
+            className="w-full"
+            onClick={handleSubmit(onSubmit)}
+            isLoading={signUpMutation.isPending}
+          >
+            Continue
+          </Button>
+          <p className="text-red-500">{errorMessage}</p>
+        </div>
       </div>
       <p className="mt-6 text-center text-base">
         <span className="text-[#4c4c4c]">Already have an account? </span>

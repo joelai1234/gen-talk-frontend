@@ -25,8 +25,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { PersonaData } from '@/model/persona'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
-
-const user_id = 1
+import { user_id } from '@/data/mockData'
 
 export default function EditPersona() {
   const { authAxios } = useAuth()

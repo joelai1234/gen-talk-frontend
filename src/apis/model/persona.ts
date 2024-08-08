@@ -7,7 +7,7 @@ export interface PersonaAPIData {
   lang: PersonaLanguage
   style: PersonaStyle
   persona_description: string
-  user_id: number // TODO: get from accessToken
+  user_id: string // TODO: get from accessToken
   icon: string
   message_color: string
 

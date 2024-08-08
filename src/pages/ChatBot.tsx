@@ -15,10 +15,10 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { formatPersona } from '@/utils/persona'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { getMePersonas } from '@/apis/persona'
+import { user_id } from '@/data/mockData'
 
 const VITE_OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string
 
-const user_id = 1
 const isLogin = false
 
 export default function ChatBot() {

@@ -15,7 +15,7 @@ export const getDefaultPersonas = (http: AxiosInstance) => () => {
 
 export const getMePersonas =
   (http: AxiosInstance) =>
-  ({ user_id }: { user_id: number }) => {
+  ({ user_id }: { user_id: string }) => {
     return http.get<PersonaAPIData[]>(`/api/v1/personas/${user_id}`)
   }
 

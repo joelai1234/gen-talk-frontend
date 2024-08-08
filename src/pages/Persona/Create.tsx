@@ -2,6 +2,7 @@ import { createPersona } from '@/apis/persona'
 import Chip from '@/components/Chip'
 import InputColor from '@/components/InputColor'
 import { Button } from '@/components/ui/button'
+import { user_id } from '@/data/mockData'
 import {
   defaultPersonaIcon,
   personaLanguageOptions,
@@ -43,7 +44,7 @@ export default function CreatePersona() {
         lang: persona.language,
         style: persona.style,
         persona_description: persona.description,
-        user_id: 1,
+        user_id: user_id,
         icon: persona.avatar,
         message_color: persona.messageColor
       })
