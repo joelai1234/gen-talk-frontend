@@ -29,7 +29,6 @@ import { IoMdAdd, IoMdSearch } from 'react-icons/io'
 import { BsThreeDots } from 'react-icons/bs'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { cn } from '@/lib/utils'
-import axios from 'axios'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { user_id } from '@/data/mockData'
 import { useAuth } from '@/services/auth/hooks/useAuth'
@@ -42,8 +41,6 @@ import {
 } from '@/apis/persona'
 import { PersonaData } from '@/model/persona'
 import { formatPersona } from '@/utils/persona'
-
-const VITE_OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string
 
 export default function Rewrite() {
   const scrollBoxRef = useRef<HTMLDivElement | null>(null)

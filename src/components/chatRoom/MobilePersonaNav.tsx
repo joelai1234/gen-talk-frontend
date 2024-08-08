@@ -9,7 +9,7 @@ import { PersonaData } from '@/model/persona'
 interface MobilePersonaNavProps {
   persona?: PersonaData
   personaOptions: {
-    id: string | number
+    id: number
     avatar: string
     name: string
     time: string
