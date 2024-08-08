@@ -28,10 +28,13 @@ export const getOnePersona =
 
 export const createPersona =
   (http: AxiosInstance) => (payload: CreatePersonaPayload) => {
-    return http.post<unknown>(`/api/v1/personas/create/${payload.user_id}`, {
-      persona_id: 0,
-      ...payload
-    })
+    return http.post<PersonaAPIData>(
+      `/api/v1/personas/create/${payload.user_id}`,
+      {
+        persona_id: 0,
+        ...payload
+      }
+    )
   }
 
 export const updatePersona =
@@ -73,6 +76,25 @@ export const sendMessage =
   }) => {
     return http.post<ChatResponse>(
       `/api/v1/chat/chat-store/${user_id}/${persona_id}`,
+      {
+        query: message
+      }
+    )
+  }
+
+export const rewriteMessage =
+  (http: AxiosInstance) =>
+  ({
+    persona_id,
+    user_id,
+    message
+  }: {
+    persona_id: number
+    user_id: string
+    message: string
+  }) => {
+    return http.post<ChatResponse>(
+      `/api/v1/chat/rewrite/${user_id}/${persona_id}`,
       {
         query: message
       }

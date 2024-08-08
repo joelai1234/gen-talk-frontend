@@ -13,9 +13,8 @@ import {
   personaStyleOptions,
   personaToneOptions
 } from '@/data/persona'
-import { useMockDataStore } from '@/store/useMockDataStore'
 import EmojiPicker from 'emoji-picker-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { RiDeleteBin5Line } from 'react-icons/ri'
 import { useNavigate } from 'react-router-dom'
 import { FaArrowDown } from 'react-icons/fa6'
@@ -31,39 +30,116 @@ import { BsThreeDots } from 'react-icons/bs'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { cn } from '@/lib/utils'
 import axios from 'axios'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { user_id } from '@/data/mockData'
+import { useAuth } from '@/services/auth/hooks/useAuth'
+import {
+  createPersona,
+  deletePersona,
+  getMePersonas,
+  rewriteMessage,
+  updatePersona
+} from '@/apis/persona'
+import { PersonaData } from '@/model/persona'
+import { formatPersona } from '@/utils/persona'
 
 const VITE_OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string
 
 export default function Rewrite() {
+  const scrollBoxRef = useRef<HTMLDivElement | null>(null)
+  const { authAxios } = useAuth()
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [inputMessage, setInputMessage] = useState('')
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
-
+  const queryClient = useQueryClient()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const {
-    mockPersonasData: personasData,
-    setMockPersonasData,
-    addMockPersonaData,
-    deleteMockPersonaData
-  } = useMockDataStore()
-  const [persona, setPersona] = useState(
-    personasData[0] || {
-      id: Date.now(),
-      avatar: defaultPersonaIcon,
-      name: '',
-      description: '',
-      tone: PersonaTone.Empathetic,
-      language: PersonaLanguage.Formal,
-      style: PersonaStyle.Direct,
-      messageColor: '#EBEBEB'
+
+  const { data: mePersonasRes } = useQuery({
+    queryKey: ['getMePersonas', user_id, authAxios],
+    queryFn: () => {
+      return getMePersonas(authAxios!)({ user_id })
+    },
+    enabled: !!authAxios
+  })
+
+  const personasApiData = mePersonasRes?.data ?? []
+  const personasData = personasApiData.map((data) => formatPersona(data))
+
+  const [persona, setPersona] = useState<
+    Omit<PersonaData, 'id'> & {
+      id?: number
     }
-  )
+  >({
+    avatar: defaultPersonaIcon,
+    name: '',
+    description: '',
+    tone: PersonaTone.Empathetic,
+    language: PersonaLanguage.Formal,
+    style: PersonaStyle.Direct,
+    messageColor: '#EBEBEB'
+  })
+
+  const createPersonaMutation = useMutation({
+    mutationFn: () => {
+      return createPersona(authAxios!)({
+        persona_name: persona.name,
+        tone: persona.tone,
+        lang: persona.language,
+        style: persona.style,
+        persona_description: persona.description,
+        user_id: user_id,
+        icon: persona.avatar,
+        message_color: persona.messageColor
+      })
+    },
+    onSuccess: (data) => {
+      setPersona((prev) => ({ ...prev, id: data.data.persona_id }))
+      queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+    }
+  })
+
+  const updatePersonaMutation = useMutation({
+    mutationFn: (personaId: number) => {
+      return updatePersona(authAxios!)({
+        persona_id: personaId,
+        payload: {
+          persona_name: persona?.name,
+          tone: persona?.tone,
+          lang: persona?.language,
+          style: persona?.style,
+          persona_description: persona?.description,
+          user_id,
+          icon: persona?.avatar,
+          message_color: persona?.messageColor
+        }
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+    }
+  })
+
+  const deletePersonaMutation = useMutation({
+    mutationFn: (personaId: number) => {
+      return deletePersona(authAxios!)({
+        persona_id: Number(personaId)
+      })
+    },
+    onSuccess: () => {
+      setDeleteDialogOpen(false)
+      // scrollBoxRef.current?.scrollIntoView({
+      //   behavior: 'smooth',
+      //   block: 'start'
+      // })
+      // scrollBoxRef.current?.scrollTo({ behavior: 'smooth', top: 0 })
+
+      queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+    }
+  })
 
   const handleNew = () => {
     setPersona({
-      id: Date.now(),
       avatar: defaultPersonaIcon,
       name: '',
       description: '',
@@ -75,71 +151,44 @@ export default function Rewrite() {
   }
 
   const handleSave = () => {
-    if (personasData.find((_persona) => _persona.id == persona.id)) {
-      setMockPersonasData(
-        personasData.map((item) =>
-          item.id === persona.id ? { ...persona, updatedAt: new Date() } : item
-        )
-      )
+    if (persona.id) {
+      updatePersonaMutation.mutate(persona.id)
     } else {
-      addMockPersonaData({
-        ...persona,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      })
+      createPersonaMutation.mutate()
     }
   }
 
   const handleDelete = () => {
-    deleteMockPersonaData(persona.id)
+    if (persona.id) {
+      deletePersonaMutation.mutate(persona.id)
+    }
   }
 
-  const handleImportPersona = (id: number | string) => {
+  const personaTemplates = personasApiData
+    .filter((item) => {
+      return item.user_id == '-1'
+    })
+    .map((data) => formatPersona(data))
+
+  const handleImportPersona = (id: number) => {
     setPersona({
-      ...personasData.find((persona) => persona.id == id)!,
-      id: Date.now(),
+      ...personaTemplates.find((persona) => persona.id == id)!,
+      id: undefined,
       isPreset: false
     })
   }
 
   const rewriteMutation = useMutation({
     mutationFn: () => {
-      return axios.post(
-        'https://api.openai.com/v1/chat/completions',
-        {
-          model: 'gpt-4o',
-          messages: [
-            {
-              role: 'system',
-              content: `You are now playing a role, and the following are the character's stats. Please rewrite the content I input in this character's style.
-            name: ${persona?.name}.
-            description: ${persona?.description}.
-            tone: ${persona?.tone}.
-            style: ${persona?.style}.
-            language: ${persona?.language}.
-            `
-            },
-            { role: 'user', content: inputMessage }
-          ]
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${VITE_OPENAI_API_KEY}`
-          }
-        }
-      )
-    },
-    onSuccess: () => {
-      setMockPersonasData(
-        personasData.map((item) =>
-          item.id === persona.id ? { ...persona, updatedAt: new Date() } : item
-        )
-      )
+      return rewriteMessage(authAxios!)({
+        persona_id: persona.id!,
+        user_id: user_id,
+        message: inputMessage
+      })
     }
   })
 
-  const personaOptionsData = [...personasData]
+  const personaOptionsData = personasData
     .reverse()
     .sort((a, b) => {
       const aLastMessageSentAt = a.lastMessageSentAt?.getTime() ?? 0
@@ -177,6 +226,7 @@ export default function Rewrite() {
           style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}
         >
           <div className="size-full overflow-y-auto px-6">
+            <div ref={scrollBoxRef} />
             <div className="pb-10">
               <div className="mt-2 space-y-6 px-4 pb-10 sm:px-0 sm:pb-0">
                 <div className="space-y-2">
@@ -240,7 +290,7 @@ export default function Rewrite() {
                               }
                             />
                           </div>
-                          <div className=" max-h-[430px]  overflow-auto">
+                          <div className="max-h-[430px] overflow-auto">
                             {personaSearchOptionsData.map((data) => (
                               <PopoverClose
                                 key={data.id}
@@ -276,7 +326,7 @@ export default function Rewrite() {
                           </button>
                         </PopoverTrigger>
                         <PopoverContent className="-mr-20 w-[200px] overflow-hidden rounded-[20px] p-0">
-                          {personasData.map((persona) => (
+                          {personaTemplates.map((persona) => (
                             <PopoverClose
                               key={persona.id}
                               className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 transition hover:bg-[#f7f7f7]"
@@ -419,7 +469,11 @@ export default function Rewrite() {
                   </div>
                 </div>
                 <div className="mt-10 flex justify-end space-x-4">
-                  {personasData.find((persona) => persona.id == persona.id) && (
+                  {personasApiData.find(
+                    (_persona) =>
+                      _persona.persona_id == persona.id &&
+                      _persona.user_id !== '-1'
+                  ) && (
                     <AlertDialog
                       open={deleteDialogOpen}
                       onOpenChange={setDeleteDialogOpen}
@@ -454,6 +508,7 @@ export default function Rewrite() {
                             <Button
                               className="px-6"
                               variant="waring-secondary"
+                              disabled={deletePersonaMutation.isPending}
                               onClick={() => {
                                 setDeleteDialogOpen(false)
                               }}
@@ -464,6 +519,7 @@ export default function Rewrite() {
                               className="px-6"
                               variant="warning"
                               onClick={handleDelete}
+                              isLoading={deletePersonaMutation.isPending}
                             >
                               Delete
                             </Button>
@@ -480,7 +536,14 @@ export default function Rewrite() {
                   >
                     Cancel
                   </Button>
-                  <Button className="w-[120px]" onClick={handleSave}>
+                  <Button
+                    className="w-[120px]"
+                    onClick={handleSave}
+                    isLoading={
+                      createPersonaMutation.isPending ||
+                      updatePersonaMutation.isPending
+                    }
+                  >
                     Save
                   </Button>
                 </div>
@@ -506,12 +569,10 @@ export default function Rewrite() {
               </div>
               <div
                 className={cn('h-1/2 bg-[#f7f7f7] px-4 py-6 text-[#9a9a9a]', {
-                  'text-black':
-                    !!rewriteMutation.data?.data.choices[0].message.content
+                  'text-black': !!rewriteMutation.data?.data.response
                 })}
               >
-                {rewriteMutation.data?.data.choices[0].message.content ??
-                  'Output'}
+                {rewriteMutation.data?.data.response ?? 'Output'}
               </div>
               <div className=" absolute left-1/2 top-1/2 flex size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-earth-green">
                 <FaArrowDown className="text-white" />
@@ -524,6 +585,10 @@ export default function Rewrite() {
                 rewriteMutation.mutate()
               }
             }}
+            isLoading={rewriteMutation.isPending}
+            disabled={
+              !personasData.find((_persona) => _persona.id == persona.id)
+            }
           >
             Rewrite
           </Button>

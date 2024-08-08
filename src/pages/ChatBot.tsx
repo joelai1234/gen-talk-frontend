@@ -16,8 +16,6 @@ import { getMePersonas, getPersonaHistory, sendMessage } from '@/apis/persona'
 import { user_id } from '@/data/mockData'
 import { useChatHistoryStore } from '@/store/useChatHistoryStore'
 
-const isLogin = false
-
 export default function ChatBot() {
   const { authAxios } = useAuth()
   const [selectedPersonaId, setSelectedPersonaId] = useState<
@@ -37,7 +35,7 @@ export default function ChatBot() {
   const [search, setSearch] = useState('')
 
   const { data: mePersonasRes } = useQuery({
-    queryKey: ['getMePersonas', user_id, isLogin],
+    queryKey: ['getMePersonas', user_id, authAxios],
     queryFn: () => {
       return getMePersonas(authAxios!)({ user_id })
     },

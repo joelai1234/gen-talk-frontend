@@ -16,9 +16,14 @@ export interface PersonaAPIData {
   // last_message_sent_at: Date | number // last message sent at
 }
 
-export type CreatePersonaPayload = Omit<PersonaAPIData, 'persona_id'>
+export type CreatePersonaPayload = Omit<
+  PersonaAPIData,
+  'persona_id' | 'time_created' | 'time_updated'
+>
 
-export type UpdatePersonaPayload = Partial<Omit<PersonaAPIData, 'persona_id'>>
+export type UpdatePersonaPayload = Partial<
+  Omit<PersonaAPIData, 'persona_id' | 'time_created' | 'time_updated'>
+>
 
 export interface ChatResponse {
   response: string
