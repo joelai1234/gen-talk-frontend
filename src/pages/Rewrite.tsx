@@ -235,6 +235,9 @@ export default function Rewrite() {
                       <div
                         key={data.id}
                         className="flex w-14 cursor-pointer flex-col items-center gap-1"
+                        onClick={() => {
+                          setPersona(data)
+                        }}
                       >
                         <div
                           className={cn(
@@ -244,9 +247,6 @@ export default function Rewrite() {
                                 data.id === persona.id
                             }
                           )}
-                          onClick={() => {
-                            setPersona(data)
-                          }}
                         >
                           {data.avatar}
                         </div>
