@@ -12,6 +12,9 @@ export const formatPersona: (personaAPIData: PersonaAPIData) => PersonaData = (
     tone: personaAPIData.tone,
     language: personaAPIData.lang,
     style: personaAPIData.style,
-    messageColor: personaAPIData.message_color
+    messageColor: personaAPIData.message_color ?? '#EBEBEB',
+    isPreset: personaAPIData.user_id == '-1',
+    createdAt: new Date(personaAPIData.time_created) ?? 0,
+    updatedAt: new Date(personaAPIData.time_updated) ?? 0
   }
 }

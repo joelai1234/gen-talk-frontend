@@ -1,5 +1,6 @@
 import { AxiosInstance } from 'axios'
 import {
+  ChatResponse,
   CreatePersonaPayload,
   PersonaAPIData,
   UpdatePersonaPayload
@@ -54,5 +55,26 @@ export const deletePersona =
 export const getPersonaHistory =
   (http: AxiosInstance) =>
   ({ persona_id }: { persona_id: number }) => {
-    return http.delete<unknown>(`/api/v1/personas/chat-history/${persona_id}`)
+    return http.get<[number, string, string][]>(
+      `/api/v1/personas/chat-history/${persona_id}`
+    )
+  }
+
+export const sendMessage =
+  (http: AxiosInstance) =>
+  ({
+    persona_id,
+    user_id,
+    message
+  }: {
+    persona_id: number
+    user_id: string
+    message: string
+  }) => {
+    return http.post<ChatResponse>(
+      `/api/v1/chat/chat-store/${user_id}/${persona_id}`,
+      {
+        query: message
+      }
+    )
   }

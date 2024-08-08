@@ -26,6 +26,7 @@ import { useAuth } from '@/services/auth/hooks/useAuth'
 import { PersonaData } from '@/model/persona'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { user_id } from '@/data/mockData'
+import { formatPersona } from '@/utils/persona'
 
 export default function EditPersona() {
   const { authAxios } = useAuth()
@@ -59,17 +60,7 @@ export default function EditPersona() {
   })
 
   useEffect(() => {
-    if (personaRes)
-      setPersona({
-        id: personaRes.data.persona_id,
-        avatar: '🌳',
-        name: personaRes.data.persona_name,
-        description: personaRes.data.persona_description,
-        tone: personaRes.data.tone,
-        language: personaRes.data.lang,
-        style: personaRes.data.style,
-        messageColor: '#EBEBEB'
-      })
+    if (personaRes) setPersona(formatPersona(personaRes.data))
   }, [personaRes])
 
   const queryClient = useQueryClient()

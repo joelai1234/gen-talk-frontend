@@ -1,6 +1,7 @@
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { PersonaData, PersonaMessages } from '@/model/persona'
 
+// export const user_id = '-1'
 export const user_id = '017bc590-6071-7060-1a65-6e312f3e6877'
 
 export const mockPersonasData: PersonaData[] = [

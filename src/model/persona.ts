@@ -9,7 +9,7 @@ export interface PersonaData {
   createdAt?: Date
   updatedAt?: Date
   lastMessageSentAt?: Date
-  id: string | number
+  id: number
   avatar: string
   name: string
   description: string
@@ -24,10 +24,10 @@ export interface ChatRoomMessage {
   id: string | number
   sender: ChatRoomSender
   message: string
-  timestamp: Date
+  // timestamp: Date
 }
 
 export interface PersonaMessages {
-  personaId: string | number
+  personaId: number
   messages: ChatRoomMessage[]
 }

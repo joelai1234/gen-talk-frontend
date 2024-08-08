@@ -6,13 +6,13 @@ import { PersonaData } from '@/model/persona'
 interface DesktopPersonaSiderProps {
   persona?: PersonaData
   personaOptions: {
-    id: string | number
+    id: number
     avatar: string
     name: string
     time: string
     active?: boolean
   }[]
-  onChangePersona: (id: string | number) => void
+  onChangePersona: (id: number) => void
   search: string
   onChangeSearch: (search: string) => void
 }

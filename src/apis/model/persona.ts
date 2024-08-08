@@ -11,11 +11,16 @@ export interface PersonaAPIData {
   icon: string
   message_color: string
 
-  // created_at: Date | number // created persona at
-  // updated_at: Date | number // updated persona at
+  time_created: Date | number // created persona at
+  time_updated: Date | number // updated persona at
   // last_message_sent_at: Date | number // last message sent at
 }
 
 export type CreatePersonaPayload = Omit<PersonaAPIData, 'persona_id'>
 
 export type UpdatePersonaPayload = Partial<Omit<PersonaAPIData, 'persona_id'>>
+
+export interface ChatResponse {
+  response: string
+  query_id: number
+}
