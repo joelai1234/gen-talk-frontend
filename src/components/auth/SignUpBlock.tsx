@@ -31,9 +31,9 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
     formState: { errors }
   } = useForm<SignUpInputs>({
     defaultValues: {
-      email: 'joelai1234567890+test@gmail.com',
-      username: 'test',
-      password: 'Test1234!'
+      // email: 'joelai1234567890+test@gmail.com',
+      // username: 'test',
+      // password: 'Test1234!'
     }
   })
   const errorMessage = (signUpMutation.error as unknown as ErrorResponse)
