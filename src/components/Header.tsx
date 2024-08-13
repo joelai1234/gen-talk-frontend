@@ -77,10 +77,16 @@ export default function Header() {
           <MdOutlineEdit />
           <span>Rewrite</span>
         </Link>
-        <button className="flex items-center gap-2 rounded-xl px-2.5 py-1 text-[#9a9a9a] hover:bg-white hover:text-earth-green">
+        <Link
+          to="/conversation"
+          className={cn(
+            'flex items-center gap-2 rounded-xl px-2.5 py-1 text-[#9a9a9a] transition hover:bg-white hover:text-earth-green',
+            { 'bg-white text-earth-green': pathname === '/conversation' }
+          )}
+        >
           <MdConveyorBelt />
           <span>Conversation</span>
-        </button>
+        </Link>
       </div>
       {!isLogin && (
         <div className="space-x-2">
@@ -166,7 +172,7 @@ export default function Header() {
                     Name (dev)
                   </p>
                   <p className="w-[125px] overflow-hidden text-ellipsis text-sm text-[#4c4c4c]">
-                    {userData?.me.email}
+                    {userData?.me?.email}
                   </p>
                 </div>
               </div>

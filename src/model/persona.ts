@@ -20,6 +20,10 @@ export interface PersonaData {
   isPreset?: boolean
 }
 
+export type TempPersonaData = Omit<PersonaData, 'id'> & {
+  id?: number
+}
+
 export interface ChatRoomMessage {
   id: string | number
   sender: ChatRoomSender

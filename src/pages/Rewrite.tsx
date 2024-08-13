@@ -39,7 +39,7 @@ import {
   rewriteMessage,
   updatePersona
 } from '@/apis/persona'
-import { PersonaData } from '@/model/persona'
+import { TempPersonaData } from '@/model/persona'
 import { formatPersona } from '@/utils/persona'
 
 export default function Rewrite() {
@@ -63,11 +63,7 @@ export default function Rewrite() {
   const personasApiData = mePersonasRes?.data ?? []
   const personasData = personasApiData.map((data) => formatPersona(data))
 
-  const [persona, setPersona] = useState<
-    Omit<PersonaData, 'id'> & {
-      id?: number
-    }
-  >({
+  const [persona, setPersona] = useState<TempPersonaData>({
     avatar: defaultPersonaIcon,
     name: '',
     description: '',

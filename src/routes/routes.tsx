@@ -15,6 +15,7 @@ import ForgetPasswordSentEmail from '@/pages/Auth/ForgetPasswordSentEmail'
 import VerifyResetPasswordEmail from '@/pages/Auth/VerifyResetPasswordEmail'
 import SuccessResetPassword from '@/pages/Auth/SuccessResetPassword'
 import Rewrite from '@/pages/Rewrite'
+import Conversation from '@/pages/Conversation'
 
 export const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
       {
         path: '/rewrite',
         element: <Rewrite />
+      },
+      {
+        path: '/conversation',
+        element: <Conversation />
       }
     ]
   },
