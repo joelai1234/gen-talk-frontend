@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react'
 
 interface ChatRoomProps {
   messageColor: string
+  botMessageColor?: string
   isLoadingAIMessage: boolean
   messages: {
     id: number | string
@@ -16,7 +17,8 @@ interface ChatRoomProps {
 export default function ChatRoom({
   isLoadingAIMessage,
   messages,
-  messageColor
+  messageColor,
+  botMessageColor
 }: ChatRoomProps) {
   const chatEndRef = useRef<HTMLDivElement | null>(null)
 
@@ -68,7 +70,10 @@ export default function ChatRoom({
             return (
               <div
                 key={data.id}
-                className="mr-20 w-fit rounded-3xl bg-white px-4 py-2"
+                className="mr-20 w-fit rounded-3xl px-4 py-2"
+                style={{
+                  backgroundColor: botMessageColor ?? 'white'
+                }}
               >
                 <p className="text-base text-[#4c4c4c]">{data.message}</p>
               </div>

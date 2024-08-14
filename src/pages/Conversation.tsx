@@ -54,7 +54,7 @@ export default function Conversation() {
             </Step>
           </Stepper>
         </div>
-        <div className="flex-1">
+        <div className="flex flex-1 flex-col">
           {activeStep === ConversationStep.Role1 && (
             <SelectPersonaRole
               name="role 1"
@@ -140,8 +140,8 @@ export default function Conversation() {
             </div>
           )}
           {activeStep === ConversationStep.Conversation && (
-            <div className="">
-              <div className="flex-1 rounded-[20px] border border-[#ebebeb] bg-[#F7F7F7]">
+            <div className="flex flex-1 flex-col">
+              <div className="flex flex-1 flex-col rounded-[20px] border border-[#ebebeb] bg-[#F7F7F7]">
                 <div className="flex justify-between border-b border-[#ebebeb] px-4 py-3">
                   <div className="flex items-center gap-2">
                     <div className="flex size-8 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl">
@@ -156,34 +156,37 @@ export default function Conversation() {
                     <p className="text-[#4c4c4c]">{role1?.name}</p>
                   </div>
                 </div>
-                <div className="h-[700px] overflow-auto py-4">
-                  <ChatRoom
-                    messageColor={'#ffffff'}
-                    isLoadingAIMessage={false}
-                    messages={[
-                      {
-                        id: 1,
-                        sender: ChatRoomSender.Bot,
-                        message: 'Hello'
-                      },
-                      {
-                        id: 2,
-                        sender: ChatRoomSender.User,
-                        message: 'Hello'
-                      },
-                      {
-                        id: 3,
-                        sender: ChatRoomSender.Bot,
-                        message:
-                          'Hello asdfasdf asdf asd fas dfasd fasd fasd fdasf asd Hello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asd'
-                      },
-                      {
-                        id: 4,
-                        sender: ChatRoomSender.User,
-                        message: 'mock message'
-                      }
-                    ]}
-                  />
+                <div className="my-1 flex flex-1 flex-col">
+                  <div className="h-0 grow overflow-auto py-4">
+                    <ChatRoom
+                      messageColor={role1?.messageColor ?? 'white'}
+                      botMessageColor={role2?.messageColor}
+                      isLoadingAIMessage={false}
+                      messages={[
+                        {
+                          id: 1,
+                          sender: ChatRoomSender.Bot,
+                          message: 'Hello'
+                        },
+                        {
+                          id: 2,
+                          sender: ChatRoomSender.User,
+                          message: 'Hello'
+                        },
+                        {
+                          id: 3,
+                          sender: ChatRoomSender.Bot,
+                          message:
+                            'Hello asdfasdf asdf asd fas dfasd fasd fasd fdasf asd Hello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asd'
+                        },
+                        {
+                          id: 4,
+                          sender: ChatRoomSender.User,
+                          message: 'mock message'
+                        }
+                      ]}
+                    />
+                  </div>
                 </div>
               </div>
               <Button
