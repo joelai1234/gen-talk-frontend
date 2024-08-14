@@ -36,7 +36,7 @@ export default function ChatRoom({
 
   return (
     <div className="w-full overflow-auto px-6">
-      <div className="mx-auto flex  w-full max-w-3xl  flex-col space-y-2 overflow-auto pb-4">
+      <div className="mx-auto flex w-full max-w-3xl  flex-col space-y-2 overflow-auto pb-4">
         {messages.map((data) => {
           if (data.sender === ChatRoomSender.User) {
             return (

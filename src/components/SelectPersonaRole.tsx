@@ -30,10 +30,12 @@ import { Checkbox } from './ui/checkbox'
 
 interface SelectPersonaRoleProps {
   onSubmitted: (persona: TempPersonaData) => void
+  name: string
 }
 
 export default function SelectPersonaRole({
-  onSubmitted
+  onSubmitted,
+  name
 }: SelectPersonaRoleProps) {
   const { authAxios } = useAuth()
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
@@ -431,7 +433,7 @@ export default function SelectPersonaRole({
           <div className="flex size-full flex-col items-center justify-center gap-4">
             <img src="/images/bg-conversation.svg" alt="bg" />
             <p className="w-[297px] text-center text-base text-[#4c4c4c]">
-              Select or create a new persona for role 1 to simulate a
+              Select or create a new persona for {name} to simulate a
               conversation.
             </p>
           </div>
