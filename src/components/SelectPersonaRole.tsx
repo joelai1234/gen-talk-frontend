@@ -16,7 +16,6 @@ import {
 } from '@/data/persona'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { createPersona, getMePersonas, updatePersona } from '@/apis/persona'
-import { user_id } from '@/data/mockData'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { formatPersona } from '@/utils/persona'
 import { useAuth } from '@/services/auth/hooks/useAuth'
@@ -37,7 +36,8 @@ export default function SelectPersonaRole({
   onSubmitted,
   name
 }: SelectPersonaRoleProps) {
-  const { authAxios } = useAuth()
+  const { authAxios, userData } = useAuth()
+  const user_id = userData?.me.id
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [isSaveToAccount, setIsSaveToAccount] = useState(true)
@@ -47,7 +47,8 @@ export default function SelectPersonaRole({
   const { data: mePersonasRes } = useQuery({
     queryKey: ['getMePersonas', user_id, authAxios],
     queryFn: () => {
-      return getMePersonas(authAxios!)({ user_id })
+      if (!user_id || !authAxios) return
+      return getMePersonas(authAxios)({ user_id: user_id })
     },
     enabled: !!authAxios
   })
@@ -118,6 +119,7 @@ export default function SelectPersonaRole({
           }
         })
       } else {
+        if (!user_id) return
         createPersonaMutation.mutate(
           {
             persona_name: persona.name,

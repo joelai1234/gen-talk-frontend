@@ -6,7 +6,7 @@ interface UserData {
   refreshToken: string
   idToken: string
   me: {
-    id: number
+    id: string
     name: string
     email: string
   }

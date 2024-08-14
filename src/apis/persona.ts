@@ -3,6 +3,7 @@ import {
   ChatResponse,
   CreatePersonaPayload,
   PersonaAPIData,
+  RewriteMessagePayload,
   UpdatePersonaPayload
 } from './model/persona'
 
@@ -84,15 +85,7 @@ export const sendMessage =
 
 export const rewriteMessage =
   (http: AxiosInstance) =>
-  ({
-    persona_id,
-    user_id,
-    message
-  }: {
-    persona_id: number
-    user_id: string
-    message: string
-  }) => {
+  ({ persona_id, user_id, message }: RewriteMessagePayload) => {
     return http.post<ChatResponse>(
       `/api/v1/chat/rewrite/${user_id}/${persona_id}`,
       {

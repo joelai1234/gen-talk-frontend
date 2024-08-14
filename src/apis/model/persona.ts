@@ -29,3 +29,9 @@ export interface ChatResponse {
   response: string
   query_id: number
 }
+
+export interface RewriteMessagePayload {
+  persona_id: number
+  user_id: string
+  message: string
+}

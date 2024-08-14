@@ -156,7 +156,7 @@ export default function Conversation() {
                     <p className="text-[#4c4c4c]">{role1?.name}</p>
                   </div>
                 </div>
-                <div className=" h-[500px]  overflow-auto py-4">
+                <div className="h-[700px] overflow-auto py-4">
                   <ChatRoom
                     messageColor={'#ffffff'}
                     isLoadingAIMessage={false}

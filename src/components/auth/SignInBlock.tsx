@@ -6,6 +6,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { ErrorResponse } from '@/apis/model/commen'
 import axios, { AxiosResponse } from 'axios'
+import { jwtDecode } from 'jwt-decode'
 
 type SignInInputs = {
   email: string
@@ -32,18 +33,18 @@ export default function SignInBlock({ setAuthAction }: SignInBlockProps) {
       password: 'Test1234!'
     }
   })
-
   const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
-    console.log('data', data)
     signInMutation.mutate(data, {
       onSuccess: (data) => {
         setAuthAction(AuthStatus.none)
+        const accessToken = data.data.access_token
+        const decoded = jwtDecode<{ username: string }>(accessToken)
         setUserData({
           accessToken: data.data.access_token,
           refreshToken: data.data.refresh_token,
           idToken: data.data.id_token,
           me: {
-            id: 1,
+            id: decoded.username,
             name: 'name (dev)',
             email: getValues('email')
           }

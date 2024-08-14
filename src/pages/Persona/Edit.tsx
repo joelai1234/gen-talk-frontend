@@ -25,11 +25,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { PersonaData } from '@/model/persona'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
-import { user_id } from '@/data/mockData'
 import { formatPersona } from '@/utils/persona'
 
 export default function EditPersona() {
-  const { authAxios } = useAuth()
+  const { authAxios, userData } = useAuth()
+  const user_id = userData?.me.id
   const navigate = useNavigate()
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
 
@@ -98,18 +98,6 @@ export default function EditPersona() {
       navigate('/')
     }
   })
-
-  // const handleSave = () => {
-  //   setMockPersonasData(
-  //     mockPersonasData.map((item) => (item.id === persona.id ? persona : item))
-  //   )
-  //   navigate('/')
-  // }
-
-  // const handleDelete = () => {
-  //   deleteMockPersonaData(persona.id)
-  //   navigate('/')
-  // }
 
   const handleSave = () => {
     updatePersonaMutation.mutate()

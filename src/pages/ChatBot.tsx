@@ -13,11 +13,11 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { formatPersona } from '@/utils/persona'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { getMePersonas, getPersonaHistory, sendMessage } from '@/apis/persona'
-import { user_id } from '@/data/mockData'
 import { useChatHistoryStore } from '@/store/useChatHistoryStore'
 
 export default function ChatBot() {
-  const { authAxios } = useAuth()
+  const { authAxios, userData } = useAuth()
+  const user_id = userData?.me.id
   const [selectedPersonaId, setSelectedPersonaId] = useState<
     number | undefined
   >()
@@ -37,6 +37,7 @@ export default function ChatBot() {
   const { data: mePersonasRes } = useQuery({
     queryKey: ['getMePersonas', user_id, authAxios],
     queryFn: () => {
+      if (!user_id || !authAxios) return
       return getMePersonas(authAxios!)({ user_id })
     },
     enabled: !!authAxios
@@ -95,7 +96,7 @@ export default function ChatBot() {
           message
         }
       })
-
+      if (!user_id || !authAxios) return
       return sendMessage(authAxios!)({
         persona_id: personaId,
         user_id,

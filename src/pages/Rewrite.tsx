@@ -30,7 +30,6 @@ import { BsThreeDots } from 'react-icons/bs'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { cn } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { user_id } from '@/data/mockData'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import {
   createPersona,
@@ -41,10 +40,15 @@ import {
 } from '@/apis/persona'
 import { TempPersonaData } from '@/model/persona'
 import { formatPersona } from '@/utils/persona'
+import {
+  CreatePersonaPayload,
+  RewriteMessagePayload
+} from '@/apis/model/persona'
 
 export default function Rewrite() {
   const scrollBoxRef = useRef<HTMLDivElement | null>(null)
-  const { authAxios } = useAuth()
+  const { authAxios, userData } = useAuth()
+  const user_id = userData?.me.id
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [inputMessage, setInputMessage] = useState('')
@@ -55,6 +59,7 @@ export default function Rewrite() {
   const { data: mePersonasRes } = useQuery({
     queryKey: ['getMePersonas', user_id, authAxios],
     queryFn: () => {
+      if (!user_id || !authAxios) return
       return getMePersonas(authAxios!)({ user_id })
     },
     enabled: !!authAxios
@@ -74,17 +79,8 @@ export default function Rewrite() {
   })
 
   const createPersonaMutation = useMutation({
-    mutationFn: () => {
-      return createPersona(authAxios!)({
-        persona_name: persona.name,
-        tone: persona.tone,
-        lang: persona.language,
-        style: persona.style,
-        persona_description: persona.description,
-        user_id: user_id,
-        icon: persona.avatar,
-        message_color: persona.messageColor
-      })
+    mutationFn: (payload: CreatePersonaPayload) => {
+      return createPersona(authAxios!)(payload)
     },
     onSuccess: (data) => {
       setPersona((prev) => ({ ...prev, id: data.data.persona_id }))
@@ -147,7 +143,17 @@ export default function Rewrite() {
     if (persona.id) {
       updatePersonaMutation.mutate(persona.id)
     } else {
-      createPersonaMutation.mutate()
+      if (!user_id) return
+      createPersonaMutation.mutate({
+        persona_name: persona.name,
+        tone: persona.tone,
+        lang: persona.language,
+        style: persona.style,
+        persona_description: persona.description,
+        user_id: user_id,
+        icon: persona.avatar,
+        message_color: persona.messageColor
+      })
     }
   }
 
@@ -172,12 +178,8 @@ export default function Rewrite() {
   }
 
   const rewriteMutation = useMutation({
-    mutationFn: () => {
-      return rewriteMessage(authAxios!)({
-        persona_id: persona.id!,
-        user_id: user_id,
-        message: inputMessage
-      })
+    mutationFn: (payload: RewriteMessagePayload) => {
+      return rewriteMessage(authAxios!)(payload)
     }
   })
 
@@ -575,7 +577,13 @@ export default function Rewrite() {
           <Button
             onClick={() => {
               if (inputMessage !== '') {
-                rewriteMutation.mutate()
+                if (persona.id && user_id) {
+                  rewriteMutation.mutate({
+                    persona_id: persona.id,
+                    user_id: user_id,
+                    message: inputMessage
+                  })
+                }
               }
             }}
             isLoading={rewriteMutation.isPending}

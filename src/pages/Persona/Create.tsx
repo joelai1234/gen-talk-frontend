@@ -1,8 +1,8 @@
+import { CreatePersonaPayload } from '@/apis/model/persona'
 import { createPersona } from '@/apis/persona'
 import Chip from '@/components/Chip'
 import InputColor from '@/components/InputColor'
 import { Button } from '@/components/ui/button'
-import { user_id } from '@/data/mockData'
 import {
   defaultPersonaIcon,
   personaLanguageOptions,
@@ -19,7 +19,8 @@ import { FaArrowLeft } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
 export default function CreatePersona() {
-  const { authAxios } = useAuth()
+  const { authAxios, userData } = useAuth()
+  const user_id = userData?.me.id
   const navigate = useNavigate()
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
   // const { addMockPersonaData } = useMockDataStore()
@@ -37,17 +38,8 @@ export default function CreatePersona() {
   const queryClient = useQueryClient()
 
   const createPersonaMutation = useMutation({
-    mutationFn: () => {
-      return createPersona(authAxios!)({
-        persona_name: persona.name,
-        tone: persona.tone,
-        lang: persona.language,
-        style: persona.style,
-        persona_description: persona.description,
-        user_id: user_id,
-        icon: persona.avatar,
-        message_color: persona.messageColor
-      })
+    mutationFn: (payload: CreatePersonaPayload) => {
+      return createPersona(authAxios!)(payload)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
@@ -56,13 +48,17 @@ export default function CreatePersona() {
   })
 
   const handleCreate = () => {
-    // addMockPersonaData({
-    //   ...persona,
-    //   createdAt: new Date(),
-    //   updatedAt: new Date()
-    // })
-    // navigate('/')
-    createPersonaMutation.mutate()
+    if (!user_id) return
+    createPersonaMutation.mutate({
+      persona_name: persona.name,
+      tone: persona.tone,
+      lang: persona.language,
+      style: persona.style,
+      persona_description: persona.description,
+      user_id: user_id,
+      icon: persona.avatar,
+      message_color: persona.messageColor
+    })
   }
 
   return (

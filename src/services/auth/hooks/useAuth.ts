@@ -21,7 +21,7 @@ export const useAuth = () => {
       refreshToken: 'refresh-token',
       idToken: 'id',
       me: {
-        id: 1,
+        id: '1',
         name: 'John doe',
         email: 'john.doe@example.com'
       }
