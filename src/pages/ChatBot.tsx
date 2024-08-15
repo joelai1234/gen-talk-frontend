@@ -109,7 +109,7 @@ export default function ChatBot() {
         message: {
           id: uuidv4(),
           sender: ChatRoomSender.Bot,
-          message: data.data.response
+          message: data?.data.response ?? 'Sorry, I am not able to help you'
         }
       })
     }
