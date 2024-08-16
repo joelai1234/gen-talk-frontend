@@ -29,7 +29,7 @@ import { formatPersona } from '@/utils/persona'
 
 export default function EditPersona() {
   const { authAxios, userData } = useAuth()
-  const user_id = userData?.me.id
+  const user_id = userData?.me?.id
   const navigate = useNavigate()
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
 

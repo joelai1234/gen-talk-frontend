@@ -37,7 +37,7 @@ export default function SelectPersonaRole({
   name
 }: SelectPersonaRoleProps) {
   const { authAxios, userData } = useAuth()
-  const user_id = userData?.me.id
+  const user_id = userData?.me?.id
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [isSaveToAccount, setIsSaveToAccount] = useState(true)

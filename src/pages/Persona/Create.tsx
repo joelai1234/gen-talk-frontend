@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom'
 
 export default function CreatePersona() {
   const { authAxios, userData } = useAuth()
-  const user_id = userData?.me.id
+  const user_id = userData?.me?.id
   const navigate = useNavigate()
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
   // const { addMockPersonaData } = useMockDataStore()

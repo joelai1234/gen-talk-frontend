@@ -48,7 +48,7 @@ import {
 export default function Rewrite() {
   const scrollBoxRef = useRef<HTMLDivElement | null>(null)
   const { authAxios, userData } = useAuth()
-  const user_id = userData?.me.id
+  const user_id = userData?.me?.id
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [inputMessage, setInputMessage] = useState('')

@@ -17,7 +17,7 @@ import { useChatHistoryStore } from '@/store/useChatHistoryStore'
 
 export default function ChatBot() {
   const { authAxios, userData } = useAuth()
-  const user_id = userData?.me.id
+  const user_id = userData?.me?.id
   const [selectedPersonaId, setSelectedPersonaId] = useState<
     number | undefined
   >()
