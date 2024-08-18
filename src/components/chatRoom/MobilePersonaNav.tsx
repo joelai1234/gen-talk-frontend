@@ -97,7 +97,6 @@ export default function MobilePersonaNav({
         </button>
       </div>
       <div
-        // ref={contentRef}
         className={cn(
           'rounded-b-[20px] z-10 bg-white max-h-0 ease-in-out overflow-hidden absolute w-full transition-all duration-300 flex flex-col'
         )}
@@ -112,7 +111,7 @@ export default function MobilePersonaNav({
             New Persona
           </Link>
         </button>
-        <div className="flex-1 overflow-auto" ref={contentRef}>
+        <div className="max-h-[374px] flex-1 overflow-auto" ref={contentRef}>
           {personaOptions.map((item) => (
             <ChatBotItem
               key={item.id}

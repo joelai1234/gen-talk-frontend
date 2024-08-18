@@ -6,7 +6,7 @@ interface ChatBotItemProps {
   id: string | number
   avatar: string
   name: string
-  time: string
+  time?: string
   active?: boolean
   onClick?: () => void
 }

@@ -44,6 +44,9 @@ import {
   CreatePersonaPayload,
   RewriteMessagePayload
 } from '@/apis/model/persona'
+import { IoIosArrowUp } from 'react-icons/io'
+import MobileRewritePersonaNav from '@/components/rewrite/MobileRewritePersonaNav'
+import { useMedia } from 'react-use'
 
 export default function Rewrite() {
   const scrollBoxRef = useRef<HTMLDivElement | null>(null)
@@ -55,6 +58,8 @@ export default function Rewrite() {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
   const queryClient = useQueryClient()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [isShowMobilePersonaUi, setIsShowMobilePersonaUi] = useState(false)
+  const isMobile = useMedia('(max-width: 640px)')
 
   const { data: mePersonasRes } = useQuery({
     queryKey: ['getMePersonas', user_id, authAxios],
@@ -85,6 +90,7 @@ export default function Rewrite() {
     onSuccess: (data) => {
       setPersona((prev) => ({ ...prev, id: data.data.persona_id }))
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+      setIsShowMobilePersonaUi(false)
     }
   })
 
@@ -106,6 +112,7 @@ export default function Rewrite() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+      setIsShowMobilePersonaUi(false)
     }
   })
 
@@ -122,7 +129,7 @@ export default function Rewrite() {
       //   block: 'start'
       // })
       // scrollBoxRef.current?.scrollTo({ behavior: 'smooth', top: 0 })
-
+      setIsShowMobilePersonaUi(false)
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
     }
   })
@@ -137,6 +144,9 @@ export default function Rewrite() {
       style: PersonaStyle.Direct,
       messageColor: '#EBEBEB'
     })
+    if (isMobile) {
+      setIsShowMobilePersonaUi(true)
+    }
   }
 
   const handleSave = () => {
@@ -214,17 +224,39 @@ export default function Rewrite() {
     })
 
   return (
-    <div className="flex h-[calc(var(--vh)*100-60px)] pt-6 sm:px-16 sm:pb-16">
-      <div className="mx-auto flex w-full max-w-[1113px] gap-8">
+    <div className="box-border flex min-h-[calc(var(--vh)*100-60px)] flex-col gap-2 pb-6 sm:h-[calc(var(--vh)*100-60px)] sm:flex-row sm:px-16 sm:pb-16">
+      <MobileRewritePersonaNav
+        persona={persona}
+        onChangePersona={(id) => {
+          setPersona(personasData.find((persona) => persona.id == id)!)
+        }}
+        personaOptions={personaSearchOptionsData}
+        search={search}
+        onChangeSearch={setSearch}
+        onClickNewPersona={handleNew}
+        onClickAdjustments={() => setIsShowMobilePersonaUi((prev) => !prev)}
+      />
+      <div className="mx-auto flex w-full max-w-[1113px] flex-1 flex-col gap-8 pb-6 sm:flex-row sm:pb-0">
         <div
-          className="box-border flex flex-1 shrink-0 overflow-hidden rounded-t-[20px] bg-[#f7f7f7] py-4 sm:rounded-b-[20px]"
+          className={cn(
+            'box-border flex-1 shrink-0 rounded-[20px] relative bg-[#f7f7f7] py-4 sm:flex sm:overflow-hidden',
+            {
+              hidden: !isShowMobilePersonaUi
+            }
+          )}
           style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}
         >
-          <div className="size-full overflow-y-auto px-6">
+          <div
+            className="absolute bottom-0 left-1/2 flex size-10 -translate-x-1/2 translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-[#EBEBEB] bg-white"
+            onClick={() => setIsShowMobilePersonaUi(false)}
+          >
+            <IoIosArrowUp />
+          </div>
+          <div className="size-full overflow-y-auto px-2 sm:px-6">
             <div ref={scrollBoxRef} />
-            <div className="pb-10">
+            <div className="sm:pb-10">
               <div className="mt-2 space-y-6 px-4 pb-10 sm:px-0 sm:pb-0">
-                <div className="space-y-2">
+                <div className="hidden space-y-2 sm:block">
                   <div className="flex items-center justify-between">
                     <p className="text-base text-[#4c4c4c]">Rewrite with</p>
                   </div>
@@ -306,7 +338,7 @@ export default function Rewrite() {
                     )}
                   </div>
                 </div>
-                <div className="h-px w-full bg-[#EBEBEB]" />
+                <div className="hidden h-px w-full bg-[#EBEBEB] sm:block" />
                 <div className="space-y-8">
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
@@ -320,7 +352,12 @@ export default function Rewrite() {
                             <span className="text-sm">Import template</span>
                           </button>
                         </PopoverTrigger>
-                        <PopoverContent className="-mr-20 w-[200px] overflow-hidden rounded-[20px] p-0">
+                        <PopoverContent
+                          className={cn(
+                            '-mr-20 w-[200px] overflow-hidden rounded-[20px] p-0',
+                            { 'mr-0': isMobile }
+                          )}
+                        >
                           {personaTemplates.map((persona) => (
                             <PopoverClose
                               key={persona.id}
@@ -546,9 +583,9 @@ export default function Rewrite() {
             </div>
           </div>
         </div>
-        <div className="flex flex-1 shrink-0 flex-col gap-6">
+        <div className="flex h-[calc(100vh-180px)] shrink-0 grow flex-col gap-6 sm:h-auto sm:flex-1">
           <div
-            className="box-border flex flex-1 overflow-hidden rounded-t-[20px] bg-[#f7f7f7] sm:rounded-b-[20px]"
+            className="box-border flex flex-1 overflow-hidden rounded-[20px] bg-[#f7f7f7] sm:flex-1"
             style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}
           >
             <div className="relative size-full">
@@ -575,6 +612,7 @@ export default function Rewrite() {
             </div>
           </div>
           <Button
+            className="mx-6"
             onClick={() => {
               if (inputMessage !== '') {
                 if (persona.id && user_id) {

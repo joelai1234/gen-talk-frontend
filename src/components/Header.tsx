@@ -1,5 +1,10 @@
 import { FaUserCircle } from 'react-icons/fa'
-import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams
+} from 'react-router-dom'
 import { Button } from './ui/button'
 import {
   AlertDialog,
@@ -11,6 +16,7 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import {
   Popover,
+  PopoverClose,
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
@@ -33,8 +39,25 @@ import { MdOutlineEdit } from 'react-icons/md'
 import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
 import { MdConveyorBelt } from 'react-icons/md'
 import { useAuth } from '@/services/auth/hooks/useAuth'
+import { MdArrowDropDown } from 'react-icons/md'
+
+const getNavTitle = (pathname: string) => {
+  if (pathname.includes('/persona')) return 'Chat'
+
+  switch (pathname) {
+    case '/chatbot':
+      return 'Chat'
+    case '/rewrite':
+      return 'Rewrite'
+    case '/conversation':
+      return 'Conversation'
+    default:
+      return 'Chat'
+  }
+}
 
 export default function Header() {
+  const navigate = useNavigate()
   const { pathname } = useLocation()
   const { isLogin, signOut, userData } = useAuth()
   const [searchParams] = useSearchParams()
@@ -52,11 +75,72 @@ export default function Header() {
     <header className="flex h-[60px] items-center justify-between px-4 py-2 sm:px-6">
       <Link to="/chatbot">
         <div className="flex items-center gap-2">
-          <img src="/images/logo.png" alt="logo" />
-          <h1 className=" text-2xl text-earth-green">GenTalk</h1>
+          <img className="size-8" src="/images/logo.png" alt="logo" />
+          <h1 className="hidden text-2xl text-earth-green sm:inline">
+            GenTalk
+          </h1>
         </div>
       </Link>
-      <div className="flex gap-6">
+      <div className="block sm:hidden">
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="flex items-center gap-2 rounded-xl bg-white px-2.5 py-1.5 text-earth-green">
+              <IoChatbubbleEllipsesOutline />
+              <span>{getNavTitle(pathname)}</span>
+
+              <MdArrowDropDown className="ml-auto text-xl" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className=" flex w-[180px] flex-col gap-1 rounded-xl px-3 py-2">
+            <PopoverClose>
+              <button
+                className={cn(
+                  'flex w-full items-center gap-2 rounded-xl bg-white px-2.5 py-1.5 text-black hover:text-earth-green hover:bg-pale-green transition',
+                  { 'text-earth-green bg-pale-green': pathname === '/chatbot' }
+                )}
+                onClick={() => {
+                  navigate('/chatbot')
+                }}
+              >
+                <IoChatbubbleEllipsesOutline />
+                <span>Chat</span>
+              </button>
+            </PopoverClose>
+            <PopoverClose>
+              <button
+                className={cn(
+                  'flex w-full items-center gap-2 rounded-xl bg-white px-2.5 py-1.5 text-black hover:text-earth-green hover:bg-pale-green transition',
+                  { 'text-earth-green bg-pale-green': pathname === '/rewrite' }
+                )}
+                onClick={() => {
+                  navigate('/rewrite')
+                }}
+              >
+                <MdOutlineEdit />
+                <span>Rewrite</span>
+              </button>
+            </PopoverClose>
+            <PopoverClose>
+              <button
+                className={cn(
+                  'flex w-full items-center gap-2 rounded-xl bg-white px-2.5 py-1.5 text-black hover:text-earth-green hover:bg-pale-green transition',
+                  {
+                    'text-earth-green bg-pale-green':
+                      pathname === '/conversation'
+                  }
+                )}
+                onClick={() => {
+                  navigate('/conversation')
+                }}
+              >
+                <MdConveyorBelt />
+                <span>Conversation</span>
+              </button>
+            </PopoverClose>
+          </PopoverContent>
+        </Popover>
+      </div>
+      <div className="hidden gap-6 sm:flex">
         <Link
           to="/chatbot"
           className={cn(
