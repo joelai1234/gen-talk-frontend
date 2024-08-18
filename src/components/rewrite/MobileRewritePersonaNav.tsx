@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { IoIosArrowDown, IoMdAdd, IoMdSearch } from 'react-icons/io'
 import { TempPersonaData } from '@/model/persona'
 import { HiOutlineAdjustments } from 'react-icons/hi'
-import RewriteChatBotItem from './RewriteChatBotItem'
+import SimpleChatBotItem from '../SimpleChatBotItem'
 
 interface MobilePersonaNavProps {
   persona?: TempPersonaData
@@ -121,7 +121,7 @@ export default function MobileRewritePersonaNav({
               ref={contentRef}
             >
               {personaOptions.map((item) => (
-                <RewriteChatBotItem
+                <SimpleChatBotItem
                   key={item.id}
                   avatar={item.avatar}
                   name={item.name}

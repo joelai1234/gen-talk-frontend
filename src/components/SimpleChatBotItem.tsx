@@ -1,18 +1,18 @@
 import { cn } from '@/lib/utils'
 
-interface RewriteChatBotItemProps {
+interface SimpleChatBotItemProps {
   avatar: string
   name: string
   active?: boolean
   onClick?: () => void
 }
 
-export default function RewriteChatBotItem({
+export default function SimpleChatBotItem({
   avatar,
   name,
   active,
   onClick
-}: RewriteChatBotItemProps) {
+}: SimpleChatBotItemProps) {
   return (
     <div
       className={cn(

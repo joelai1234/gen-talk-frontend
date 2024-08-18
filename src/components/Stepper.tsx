@@ -11,7 +11,6 @@ interface StepProps {
 }
 
 export const Step: React.FC<StepProps> = ({
-  step,
   onClick,
   disabled,
   active,
@@ -30,13 +29,19 @@ export const Step: React.FC<StepProps> = ({
     >
       <div
         className={cn(
-          'flex size-8 items-center justify-center rounded-full border border-[#9a9a9a] text-center text-base text-[#9a9a9a]',
+          'hidden sm:flex size-8 items-center justify-center rounded-full border border-[#9a9a9a] text-center text-base text-[#9a9a9a] ',
           { 'border-none text-white bg-[#6a8f6b]': active }
         )}
       >
         {index}
       </div>
-      <div className="text-[#9a9a9a]">{children}</div>
+      <div
+        className={cn('whitespace-nowrap text-[#9a9a9a]', {
+          'text-earth-green': active
+        })}
+      >
+        {children}
+      </div>
     </div>
   )
 }
@@ -63,10 +68,12 @@ export const Stepper: React.FC<StepperProps> = ({ activeStep, children }) => {
           index: index + 1
         })}
       {index < React.Children.count(children) - 1 && (
-        <div className="my-1.5 ml-4 h-3 w-[2px] bg-white" />
+        <div className="mx-2 h-px w-full bg-white sm:my-1.5 sm:ml-4 sm:h-3 sm:w-[2px]" />
       )}
     </React.Fragment>
   ))
 
-  return <div>{steps}</div>
+  return (
+    <div className="flex items-center justify-between sm:block">{steps}</div>
+  )
 }

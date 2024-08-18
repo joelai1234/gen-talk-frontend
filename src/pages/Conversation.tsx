@@ -37,8 +37,8 @@ export default function Conversation() {
 
   return (
     <div className="flex min-h-[calc(var(--vh)*100-60px)] flex-col pt-6 sm:px-16 sm:pb-16">
-      <div className="mx-auto flex size-full max-w-[898px] flex-1 gap-[120px]">
-        <div className="w-[142px]">
+      <div className="mx-auto flex size-full max-w-[898px] flex-1 flex-col gap-6 sm:flex-row sm:gap-[120px]">
+        <div className="px-6 sm:w-[142px] sm:px-0">
           <Stepper activeStep={activeStep}>
             <Step step={ConversationStep.Role1}>
               <StepLabel>Role 1</StepLabel>
@@ -74,8 +74,8 @@ export default function Conversation() {
             />
           )}
           {activeStep === ConversationStep.Scenario && (
-            <div>
-              <div className="gap-2 rounded-lg border border-[#ebebeb] bg-[#F7F7F7] p-4">
+            <div className="flex flex-1 flex-col">
+              <div className="flex-1 gap-2 rounded-[20px] border border-[#ebebeb] bg-[#F7F7F7] p-4">
                 <div className="space-y-6">
                   <div className="space-y-1">
                     <p className="text-[#4c4c4c]">Conversation</p>
@@ -123,9 +123,22 @@ export default function Conversation() {
                     />
                   </div>
                 </div>
+                <Button
+                  className="ml-auto mt-4 flex px-4 sm:hidden"
+                  disabled={scenario.length === 0}
+                  onClick={() => {
+                    setActiveStep(ConversationStep.Conversation)
+                  }}
+                  // isLoading={
+                  //   createPersonaMutation.isPending ||
+                  //   updatePersonaMutation.isPending
+                  // }
+                >
+                  Generate Conversation
+                </Button>
               </div>
               <Button
-                className="ml-auto mt-4 flex px-4"
+                className="ml-auto mt-4 hidden px-4 sm:flex"
                 disabled={scenario.length === 0}
                 onClick={() => {
                   setActiveStep(ConversationStep.Conversation)
@@ -141,7 +154,7 @@ export default function Conversation() {
           )}
           {activeStep === ConversationStep.Conversation && (
             <div className="flex flex-1 flex-col">
-              <div className="flex flex-1 flex-col rounded-[20px] border border-[#ebebeb] bg-[#F7F7F7]">
+              <div className="flex flex-1 flex-col rounded-t-[20px] border border-[#ebebeb] bg-[#F7F7F7] sm:rounded-b-[20px]">
                 <div className="flex justify-between border-b border-[#ebebeb] px-4 py-3">
                   <div className="flex items-center gap-2">
                     <div className="flex size-8 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl">
@@ -157,7 +170,7 @@ export default function Conversation() {
                   </div>
                 </div>
                 <div className="my-1 flex flex-1 flex-col">
-                  <div className="h-0 grow overflow-auto py-4">
+                  <div className="h-0 grow overflow-auto pb-20 pt-4 sm:pb-4">
                     <ChatRoom
                       messageColor={role1?.messageColor ?? 'white'}
                       botMessageColor={role2?.messageColor}
@@ -190,7 +203,7 @@ export default function Conversation() {
                 </div>
               </div>
               <Button
-                className="ml-auto mt-4 flex gap-2 px-4"
+                className="absolute bottom-5 left-1/2 ml-auto mt-4 flex -translate-x-1/2 gap-2 px-4 sm:static sm:translate-x-0"
                 disabled={scenario.length === 0}
                 // onClick={handleSave}
                 // isLoading={

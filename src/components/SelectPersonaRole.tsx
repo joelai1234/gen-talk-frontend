@@ -26,6 +26,7 @@ import { AiOutlineImport } from 'react-icons/ai'
 import { CreatePersonaPayload } from '@/apis/model/persona'
 import InputColor from '@/components/InputColor'
 import { Checkbox } from './ui/checkbox'
+import MobileConversationPersonaNav from './conversation/MobileConversationPersonaNav'
 
 interface SelectPersonaRoleProps {
   onSubmitted: (persona: TempPersonaData) => void
@@ -165,8 +166,8 @@ export default function SelectPersonaRole({
     })
 
   return (
-    <div className="flex h-full flex-col space-y-4">
-      <div className="space-y-1">
+    <div className="flex h-full flex-1 flex-col space-y-4">
+      <div className="hidden space-y-1 sm:block">
         <p className="text-[#4c4c4c]">Select a persona</p>
         <Popover>
           <PopoverTrigger asChild>
@@ -241,7 +242,17 @@ export default function SelectPersonaRole({
         </Popover>
       </div>
 
-      <div className="flex flex-1 rounded-[20px] bg-[#F7F7F7]">
+      <div className="flex flex-1 flex-col overflow-hidden rounded-t-[20px] bg-[#F7F7F7] sm:flex-row sm:rounded-b-[20px]">
+        <MobileConversationPersonaNav
+          persona={persona}
+          onChangePersona={(id) => {
+            setPersona(personasData.find((data) => data.id === id))
+          }}
+          personaOptions={personaSearchOptionsData}
+          search={search}
+          onChangeSearch={setSearch}
+          onClickNewPersona={handleNew}
+        />
         {persona && (
           <div className="w-full space-y-8 p-6 pb-10">
             <div className="space-y-1">
@@ -429,10 +440,40 @@ export default function SelectPersonaRole({
                 }}
               />
             </div>
+            <div className="flex justify-end gap-4 sm:hidden">
+              {persona && (
+                <label
+                  className="flex cursor-pointer items-center gap-2"
+                  htmlFor="save-backend"
+                >
+                  <Checkbox
+                    id="save-backend"
+                    checked={isSaveToAccount}
+                    onCheckedChange={(e) => setIsSaveToAccount(e as boolean)}
+                  />
+                  <p className="text-sm text-[#4c4c4c]">
+                    {persona?.id
+                      ? 'Update current persona'
+                      : 'Save this persona to my account'}
+                  </p>
+                </label>
+              )}
+              <Button
+                className="w-[120px] "
+                disabled={!persona}
+                onClick={handleSave}
+                isLoading={
+                  createPersonaMutation.isPending ||
+                  updatePersonaMutation.isPending
+                }
+              >
+                Continue
+              </Button>
+            </div>
           </div>
         )}
         {!persona && (
-          <div className="flex size-full flex-col items-center justify-center gap-4">
+          <div className="flex size-full flex-1 flex-col items-center justify-center gap-4">
             <img src="/images/bg-conversation.svg" alt="bg" />
             <p className="w-[297px] text-center text-base text-[#4c4c4c]">
               Select or create a new persona for {name} to simulate a
@@ -441,7 +482,7 @@ export default function SelectPersonaRole({
           </div>
         )}
       </div>
-      <div className="flex gap-4 self-end">
+      <div className="hidden gap-4 self-end sm:flex">
         {persona && (
           <label
             className="flex cursor-pointer items-center gap-2"
