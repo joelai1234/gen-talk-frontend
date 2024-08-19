@@ -47,7 +47,7 @@ export default function MobilePersonaNav({
 
   return (
     <div className="relative mb-4 sm:hidden">
-      <div className="z-20 flex h-[56px] items-center justify-between bg-white px-4">
+      <div className="z-20 flex h-[56px] items-center justify-between bg-white pl-4">
         {isOpenMobileMenu && (
           <div className="relative w-full rounded-xl px-2">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5">
@@ -88,7 +88,7 @@ export default function MobilePersonaNav({
             )}
           </div>
         )}
-        <button onClick={toggleCollapse}>
+        <button className="p-4 pl-0" onClick={toggleCollapse}>
           <IoIosArrowDown
             className={cn('size-5 text-[#4c4c4c]', {
               'transform rotate-180': isOpenMobileMenu

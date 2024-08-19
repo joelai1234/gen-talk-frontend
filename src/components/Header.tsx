@@ -84,10 +84,9 @@ export default function Header() {
       <div className="block sm:hidden">
         <Popover>
           <PopoverTrigger asChild>
-            <button className="flex items-center gap-2 rounded-xl bg-white px-2.5 py-1.5 text-earth-green">
+            <button className="ml-6 flex items-center gap-2 rounded-xl bg-white px-2.5 py-1.5 text-earth-green sm:ml-0">
               <IoChatbubbleEllipsesOutline />
               <span>{getNavTitle(pathname)}</span>
-
               <MdArrowDropDown className="ml-auto text-xl" />
             </button>
           </PopoverTrigger>
@@ -175,7 +174,7 @@ export default function Header() {
       {!isLogin && (
         <div className="space-x-2">
           <Button
-            className="w-[100px] sm:w-[120px]"
+            className="hidden w-[100px] sm:inline-block sm:w-[120px]"
             variant="white"
             onClick={() => {
               if (authAction === AuthStatus.login) {
@@ -188,7 +187,7 @@ export default function Header() {
             Login
           </Button>
           <Button
-            className="w-[100px] sm:w-[120px]"
+            className="h-9 w-[100px] sm:h-auto sm:w-[120px]"
             onClick={() => {
               if (authAction === AuthStatus.signUp) {
                 setAuthAction(AuthStatus.none)
@@ -285,7 +284,7 @@ export default function Header() {
           </Popover>
           <AlertDialog open={settingModalType !== SettingModalType.none}>
             <AlertDialogContent
-              className={cn('w-[414px]', {
+              className={cn('w-[368px] sm:w-[414px]', {
                 'p-0 hidden': settingModalType === SettingModalType.none
               })}
             >
@@ -293,7 +292,7 @@ export default function Header() {
                 <AlertDialogTitle></AlertDialogTitle>
               </AlertDialogHeader>
               {settingModalType === SettingModalType.setting && (
-                <div className="flex flex-col">
+                <div className="flex flex-1 flex-col overflow-hidden">
                   <button
                     className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
                     onClick={() => {
@@ -316,7 +315,7 @@ export default function Header() {
                     <div className="mt-5">
                       <div>
                         <div className="flex items-center ">
-                          <p className="w-[108px] shrink-0 text-base text-[#9a9a9a]">
+                          <p className="w-[100px] shrink-0 text-base text-[#9a9a9a]">
                             Username
                           </p>
                           <p className="text-base text-[#4c4c4c]">Name (dev)</p>
@@ -325,7 +324,7 @@ export default function Header() {
                       <div className="my-6 h-px w-full bg-[#ebebeb]" />
                       <div>
                         <div className="flex items-center ">
-                          <p className="w-[108px] shrink-0 text-base text-[#9a9a9a]">
+                          <p className="w-[100px] shrink-0 text-base text-[#9a9a9a]">
                             Email
                           </p>
                           <p className="text-base text-[#4c4c4c]">
@@ -336,7 +335,7 @@ export default function Header() {
                       <div className="my-6 h-px w-full bg-[#ebebeb]" />
                       <div>
                         <div className="flex items-center">
-                          <p className="w-[108px] shrink-0 text-base text-[#9a9a9a]">
+                          <p className="w-[100px] shrink-0 text-base text-[#9a9a9a]">
                             Password
                           </p>
                           <div className="flex w-full items-center justify-between">
