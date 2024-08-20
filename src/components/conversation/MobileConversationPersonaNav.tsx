@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { useEffect, useRef, useState } from 'react'
 import { IoIosArrowDown, IoMdAdd, IoMdSearch } from 'react-icons/io'
 import { TempPersonaData } from '@/model/persona'
-import SimpleChatBotItem from '../SimpleChatBotItem'
+import PersonaItem from '../PersonaItem'
 
 interface MobileConversationPersonaNavProps {
   persona?: TempPersonaData
@@ -112,8 +112,12 @@ export default function MobileConversationPersonaNav({
           <p className="text-sm text-earth-green">New Persona</p>
         </button>
         <div className="max-h-[374px] flex-1 overflow-auto" ref={contentRef}>
-          {personaOptions.map((item) => (
-            <SimpleChatBotItem
+          {personaOptions.map((item, index) => (
+            <PersonaItem
+              className={cn({
+                'border-b border-b-[#EDEDED]':
+                  index !== personaOptions.length - 1
+              })}
               key={item.id}
               avatar={item.avatar}
               name={item.name}

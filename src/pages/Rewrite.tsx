@@ -47,6 +47,7 @@ import {
 import { IoIosArrowUp } from 'react-icons/io'
 import MobileRewritePersonaNav from '@/components/rewrite/MobileRewritePersonaNav'
 import { useMedia } from 'react-use'
+import PersonaItem from '@/components/PersonaItem'
 
 export default function Rewrite() {
   const scrollBoxRef = useRef<HTMLDivElement | null>(null)
@@ -303,12 +304,12 @@ export default function Rewrite() {
                           </div>
                         </PopoverTrigger>
                         <PopoverContent className="mr-[413px] w-[495px] overflow-hidden rounded-[20px] px-0 py-3">
-                          <div className="relative mb-3 w-full rounded-xl px-4">
-                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5">
+                          <div className="relative mb-3 w-full rounded-xl px-6">
+                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-9">
                               <IoMdSearch className="size-4 text-[#9a9a9a]" />
                             </div>
                             <input
-                              className="w-full rounded-xl border border-[#ebebeb] py-2 pl-10 pr-4 text-sm placeholder:text-[#9a9a9a] focus:outline-none"
+                              className="w-full rounded-xl border border-[#ebebeb] py-2 pl-8 pr-4 text-sm placeholder:text-[#9a9a9a] focus:outline-none"
                               type="text"
                               placeholder="Search"
                               value={search}
@@ -318,18 +319,23 @@ export default function Rewrite() {
                             />
                           </div>
                           <div className="max-h-[430px] overflow-auto">
-                            {personaSearchOptionsData.map((data) => (
+                            {personaSearchOptionsData.map((persona, index) => (
                               <PopoverClose
-                                key={data.id}
-                                className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 transition hover:bg-[#f7f7f7]"
+                                key={persona.id}
+                                className="flex w-full"
                                 onClick={() => {
-                                  setPersona(data)
+                                  setPersona(persona)
                                 }}
                               >
-                                <div className="flex size-8 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl">
-                                  {data.avatar}
-                                </div>
-                                <p className="text-[#4c4c4c]">{data.name}</p>
+                                <PersonaItem
+                                  className={cn({
+                                    'border-b border-b-[#EDEDED]':
+                                      index !==
+                                      personaSearchOptionsData.length - 1
+                                  })}
+                                  avatar={persona.avatar}
+                                  name={persona.name}
+                                />
                               </PopoverClose>
                             ))}
                           </div>
@@ -352,24 +358,19 @@ export default function Rewrite() {
                             <span className="text-sm">Import template</span>
                           </button>
                         </PopoverTrigger>
-                        <PopoverContent
-                          className={cn(
-                            '-mr-20 w-[200px] overflow-hidden rounded-[20px] p-0',
-                            { 'mr-0': isMobile }
-                          )}
-                        >
+                        <PopoverContent className="mr-5 w-[200px] overflow-hidden rounded-[20px] p-0 sm:-mr-20">
                           {personaTemplates.map((persona) => (
                             <PopoverClose
+                              className="w-full"
                               key={persona.id}
-                              className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 transition hover:bg-[#f7f7f7]"
                               onClick={() => {
                                 handleImportPersona(persona.id)
                               }}
                             >
-                              <div className="flex size-8 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl">
-                                {persona.avatar}
-                              </div>
-                              <p className="text-[#4c4c4c]">{persona.name}</p>
+                              <PersonaItem
+                                avatar={persona.avatar}
+                                name={persona.name}
+                              />
                             </PopoverClose>
                           ))}
                         </PopoverContent>

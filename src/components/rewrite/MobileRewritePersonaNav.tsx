@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { IoIosArrowDown, IoMdAdd, IoMdSearch } from 'react-icons/io'
 import { TempPersonaData } from '@/model/persona'
 import { HiOutlineAdjustments } from 'react-icons/hi'
-import SimpleChatBotItem from '../SimpleChatBotItem'
+import PersonaItem from '../PersonaItem'
 
 interface MobilePersonaNavProps {
   persona?: TempPersonaData
@@ -120,9 +120,13 @@ export default function MobileRewritePersonaNav({
               className="max-h-[346px] flex-1 overflow-auto pb-2"
               ref={contentRef}
             >
-              {personaOptions.map((item) => (
-                <SimpleChatBotItem
+              {personaOptions.map((item, index) => (
+                <PersonaItem
                   key={item.id}
+                  className={cn({
+                    'border-b border-b-[#EDEDED]':
+                      index !== personaOptions.length - 1
+                  })}
                   avatar={item.avatar}
                   name={item.name}
                   active={item.id === persona?.id}

@@ -23,7 +23,7 @@ export default function ChatBotItem({
   return (
     <div
       className={cn(
-        'flex w-full group cursor-pointer items-center justify-between border-l-[6px] border-t border-l-transparent border-t-[#EBEBEB] py-4 pl-[18px] pr-6 transition',
+        'flex w-full group cursor-pointer items-center justify-between border-l-[6px] border-t border-l-transparent border-t-[#EBEBEB] py-4 pl-[18px] pr-6 transition hover:border-l-pale hover:bg-pale/40',
         {
           'border-l-pale bg-pale/40': active
         }
