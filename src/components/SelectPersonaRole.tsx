@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
-import { IoIosArrowDown, IoMdAdd, IoMdSearch } from 'react-icons/io'
+import { IoIosArrowDown } from 'react-icons/io'
 import {
   Popover,
   PopoverClose,
@@ -19,7 +19,6 @@ import { createPersona, getMePersonas, updatePersona } from '@/apis/persona'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { formatPersona } from '@/utils/persona'
 import { useAuth } from '@/services/auth/hooks/useAuth'
-import { cn } from '@/lib/utils'
 import Chip from '@/components/Chip'
 import EmojiPicker from 'emoji-picker-react'
 import { AiOutlineImport } from 'react-icons/ai'

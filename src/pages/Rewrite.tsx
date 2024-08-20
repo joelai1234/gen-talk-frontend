@@ -25,7 +25,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
-import { IoMdAdd, IoMdSearch } from 'react-icons/io'
+import { IoMdAdd } from 'react-icons/io'
 import { BsThreeDots } from 'react-icons/bs'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { cn } from '@/lib/utils'
