@@ -1,18 +1,13 @@
 import { cn } from '@/lib/utils'
-import { useEffect, useRef, useState } from 'react'
-import { IoIosArrowDown, IoMdAdd, IoMdSearch } from 'react-icons/io'
-import { TempPersonaData } from '@/model/persona'
+import { useState } from 'react'
+import { IoIosArrowDown, IoMdSearch } from 'react-icons/io'
+import { PersonaData, TempPersonaData } from '@/model/persona'
 import { HiOutlineAdjustments } from 'react-icons/hi'
-import PersonaItem from '../PersonaItem'
+import PersonaMenuAutoHightDialog from '../PersonaMenuAutoHightDialog'
 
-interface MobilePersonaNavProps {
+interface MobileRewritePersonaProps {
   persona?: TempPersonaData
-  personaOptions: {
-    id: number
-    avatar: string
-    name: string
-    active?: boolean
-  }[]
+  personaOptions: PersonaData[]
   onChangePersona: (id: number) => void
   search: string
   onChangeSearch: (search: string) => void
@@ -28,23 +23,12 @@ export default function MobileRewritePersonaNav({
   onChangeSearch,
   onClickNewPersona,
   onClickAdjustments
-}: MobilePersonaNavProps) {
+}: MobileRewritePersonaProps) {
   const [isOpenMobileMenu, setIsOpenMobileMenu] = useState(false)
-
-  const [height, setHeight] = useState('0px')
-  const contentRef = useRef<HTMLDivElement>(null)
 
   const toggleCollapse = () => {
     setIsOpenMobileMenu(!isOpenMobileMenu)
   }
-
-  useEffect(() => {
-    if (contentRef.current) {
-      setHeight(
-        isOpenMobileMenu ? `${contentRef.current.scrollHeight}px` : '0px'
-      )
-    }
-  }, [isOpenMobileMenu])
 
   return (
     <div className="relative z-10 mb-4 h-[40px] sm:hidden">
@@ -100,44 +84,14 @@ export default function MobileRewritePersonaNav({
               />
             </button>
           </div>
-          <div
-            className={cn(
-              'max-h-0 ease-in-out rounded-b-[24px] overflow-hidden w-full transition-all duration-300 flex flex-col'
-            )}
-            style={{
-              maxHeight: height,
-              boxShadow: '0px 20px 20px 0 rgba(65,76,65,0.07)'
-            }}
-          >
-            <button
-              className="mx-6 mb-4 mt-2 flex items-center gap-1"
-              onClick={onClickNewPersona}
-            >
-              <IoMdAdd className="text-earth-green" />
-              <p className="text-sm text-earth-green">New Persona</p>
-            </button>
-            <div
-              className="max-h-[346px] flex-1 overflow-auto pb-2"
-              ref={contentRef}
-            >
-              {personaOptions.map((item, index) => (
-                <PersonaItem
-                  key={item.id}
-                  className={cn({
-                    'border-b border-b-[#EDEDED]':
-                      index !== personaOptions.length - 1
-                  })}
-                  avatar={item.avatar}
-                  name={item.name}
-                  active={item.id === persona?.id}
-                  onClick={() => {
-                    setIsOpenMobileMenu(false)
-                    onChangePersona(item.id)
-                  }}
-                />
-              ))}
-            </div>
-          </div>
+          <PersonaMenuAutoHightDialog
+            className="rounded-b-3xl"
+            isOpen={isOpenMobileMenu}
+            onClose={() => setIsOpenMobileMenu(false)}
+            onChangePersona={onChangePersona}
+            personaOptions={personaOptions}
+            onClickNewPersona={onClickNewPersona}
+          />
         </div>
         <HiOutlineAdjustments
           className="mt-3 text-xl text-[#4C4C4C]"
