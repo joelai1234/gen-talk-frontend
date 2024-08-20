@@ -28,6 +28,7 @@ import InputColor from '@/components/InputColor'
 import { Checkbox } from './ui/checkbox'
 import MobileConversationPersonaNav from './conversation/MobileConversationPersonaNav'
 import PersonaItem from './PersonaItem'
+import SearchPersonaModal from './SearchPersonaModal'
 
 interface SelectPersonaRoleProps {
   onSubmitted: (persona: TempPersonaData) => void
@@ -170,7 +171,34 @@ export default function SelectPersonaRole({
     <div className="flex h-full flex-1 flex-col space-y-4">
       <div className="hidden space-y-1 sm:block">
         <p className="text-[#4c4c4c]">Select a persona</p>
-        <Popover>
+        <SearchPersonaModal
+          className="w-[636px]"
+          personaOptions={personasData}
+          onClickNewPersona={handleNew}
+          onChangePersona={setPersona}
+        >
+          <div>
+            {!persona?.id && (
+              <div className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#ebebeb] bg-white px-3 py-2">
+                <img src="/images/default-persona.png" alt="default-logo" />
+                <p className="text-[#4c4c4c]">{persona ? 'New' : 'Persona'}</p>
+                <IoIosArrowDown className="ml-auto" />
+              </div>
+            )}
+            {persona?.id && (
+              <div className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#ebebeb] bg-white px-3 py-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-8 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl">
+                    {persona?.avatar}
+                  </div>
+                  <p className="text-[#4c4c4c]">{persona?.name}</p>
+                </div>
+                <IoIosArrowDown className="ml-auto" />
+              </div>
+            )}
+          </div>
+        </SearchPersonaModal>
+        {/* <Popover>
           <PopoverTrigger asChild>
             <div>
               {!persona?.id && (
@@ -238,7 +266,7 @@ export default function SelectPersonaRole({
               ))}
             </div>
           </PopoverContent>
-        </Popover>
+        </Popover> */}
       </div>
 
       <div className="flex flex-1 flex-col overflow-hidden rounded-t-[20px] bg-[#F7F7F7] sm:flex-row sm:rounded-b-[20px]">

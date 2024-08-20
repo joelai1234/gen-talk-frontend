@@ -48,6 +48,7 @@ import { IoIosArrowUp } from 'react-icons/io'
 import MobileRewritePersonaNav from '@/components/rewrite/MobileRewritePersonaNav'
 import { useMedia } from 'react-use'
 import PersonaItem from '@/components/PersonaItem'
+import SearchPersonaModal from '@/components/SearchPersonaModal'
 
 export default function Rewrite() {
   const scrollBoxRef = useRef<HTMLDivElement | null>(null)
@@ -294,53 +295,19 @@ export default function Rewrite() {
                       <p className="text-xs text-[#4c4c4c]">New</p>
                     </div>
                     {personasData.length > 5 && (
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <div className="flex w-14 cursor-pointer flex-col items-center gap-1">
-                            <div className="group flex size-10 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl outline outline-transparent transition-all hover:bg-earth-green hover:outline-2 hover:outline-[#DDE7DD]">
-                              <BsThreeDots className="text-[#4C4C4C] group-hover:text-white" />
-                            </div>
-                            <p className="text-xs text-[#4c4c4c]">More</p>
+                      <SearchPersonaModal
+                        className="mr-[413px] w-[495px]"
+                        personaOptions={personasData}
+                        onClickNewPersona={handleNew}
+                        onChangePersona={setPersona}
+                      >
+                        <div className="flex w-14 cursor-pointer flex-col items-center gap-1">
+                          <div className="group flex size-10 items-center justify-center rounded-full border border-[#EBEBEB] bg-white text-xl outline outline-transparent transition-all hover:bg-earth-green hover:outline-2 hover:outline-[#DDE7DD]">
+                            <BsThreeDots className="text-[#4C4C4C] group-hover:text-white" />
                           </div>
-                        </PopoverTrigger>
-                        <PopoverContent className="mr-[413px] w-[495px] overflow-hidden rounded-[20px] px-0 py-3">
-                          <div className="relative mb-3 w-full rounded-xl px-6">
-                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-9">
-                              <IoMdSearch className="size-4 text-[#9a9a9a]" />
-                            </div>
-                            <input
-                              className="w-full rounded-xl border border-[#ebebeb] py-2 pl-8 pr-4 text-sm placeholder:text-[#9a9a9a] focus:outline-none"
-                              type="text"
-                              placeholder="Search"
-                              value={search}
-                              onChange={(event) =>
-                                setSearch(event.currentTarget.value)
-                              }
-                            />
-                          </div>
-                          <div className="max-h-[430px] overflow-auto">
-                            {personaSearchOptionsData.map((persona, index) => (
-                              <PopoverClose
-                                key={persona.id}
-                                className="flex w-full"
-                                onClick={() => {
-                                  setPersona(persona)
-                                }}
-                              >
-                                <PersonaItem
-                                  className={cn({
-                                    'border-b border-b-[#EDEDED]':
-                                      index !==
-                                      personaSearchOptionsData.length - 1
-                                  })}
-                                  avatar={persona.avatar}
-                                  name={persona.name}
-                                />
-                              </PopoverClose>
-                            ))}
-                          </div>
-                        </PopoverContent>
-                      </Popover>
+                          <p className="text-xs text-[#4c4c4c]">More</p>
+                        </div>
+                      </SearchPersonaModal>
                     )}
                   </div>
                 </div>
