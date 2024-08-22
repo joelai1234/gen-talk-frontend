@@ -20,7 +20,7 @@ import Conversation from '@/pages/Conversation'
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to="/chatbot" replace={true} />
+    element: <Navigate to="/rewrite" replace={true} />
   },
   {
     path: '/components',
