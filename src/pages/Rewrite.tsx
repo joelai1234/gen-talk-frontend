@@ -551,7 +551,7 @@ export default function Rewrite() {
             </div>
           </div>
         </div>
-        <div className="flex h-[calc(100vh-180px)] shrink-0 grow flex-col gap-6 sm:h-auto sm:flex-1">
+        <div className="flex h-[calc(var(--vh)*100-180px)] shrink-0 grow flex-col gap-6 sm:h-auto sm:flex-1">
           <div
             className="box-border flex flex-1 overflow-hidden rounded-[20px] bg-[#f7f7f7] sm:flex-1"
             style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}
