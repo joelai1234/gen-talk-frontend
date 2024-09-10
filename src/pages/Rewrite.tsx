@@ -25,7 +25,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
-import { IoMdAdd, IoMdClose } from 'react-icons/io'
+import { IoIosArrowDown, IoMdAdd, IoMdClose } from 'react-icons/io'
 import { BsThreeDots } from 'react-icons/bs'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { cn } from '@/lib/utils'
@@ -65,6 +65,7 @@ export default function Rewrite() {
   const [isShowMobilePersonaUi, setIsShowMobilePersonaUi] = useState(false)
   const [rewriteMessages, setRewriteMessages] = useState<string[]>([])
   const isMobile = useMedia('(max-width: 640px)')
+  const [inputType, setInputType] = useState('text')
 
   const { data: mePersonasRes } = useQuery({
     queryKey: ['getMePersonas', user_id, authAxios],
@@ -232,7 +233,7 @@ export default function Rewrite() {
     })
 
   return (
-    <div className="box-border flex min-h-[calc(var(--vh)*100-60px)] flex-col gap-2 pb-6 sm:h-[calc(var(--vh)*100-60px)] sm:flex-row sm:px-16 sm:pb-16">
+    <div className="box-border flex min-h-[calc(var(--vh)*100-60px)] flex-col gap-2 sm:h-[calc(var(--vh)*100-60px)] sm:flex-row sm:px-16 sm:pb-16">
       <MobileRewritePersonaNav
         persona={persona}
         onChangePersona={(id) => {
@@ -244,7 +245,7 @@ export default function Rewrite() {
         onClickNewPersona={handleNew}
         onClickAdjustments={() => setIsShowMobilePersonaUi((prev) => !prev)}
       />
-      <div className="mx-auto flex w-full max-w-[1113px] flex-1 flex-col gap-8 pb-6 sm:flex-row sm:pb-0">
+      <div className="mx-auto flex w-full max-w-[1113px] flex-1 flex-col gap-8 sm:flex-row sm:pb-0">
         <div
           className={cn(
             'box-border flex-1 shrink-0 rounded-[20px] relative bg-[#f7f7f7] py-4 sm:flex sm:overflow-hidden',
@@ -255,7 +256,7 @@ export default function Rewrite() {
           style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}
         >
           <div
-            className="absolute bottom-0 left-1/2 flex size-10 -translate-x-1/2 translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-[#EBEBEB] bg-white"
+            className="absolute bottom-0 left-1/2 flex size-10 -translate-x-1/2 translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-[#EBEBEB] bg-white sm:hidden"
             onClick={() => setIsShowMobilePersonaUi(false)}
           >
             <IoIosArrowUp />
@@ -557,16 +558,19 @@ export default function Rewrite() {
             </div>
           </div>
         </div>
-        <div className="flex h-[calc(var(--vh)*100-180px)] shrink-0 grow flex-col gap-6 sm:h-auto sm:flex-1">
+        <div className="flex h-[calc(var(--vh)*100-130px)] shrink-0 grow flex-col gap-6 sm:h-auto sm:flex-1">
           <div
-            className="box-border flex flex-1 overflow-hidden rounded-[20px] bg-[#f7f7f7] sm:flex-1"
+            className="box-border flex flex-1 overflow-hidden rounded-t-[20px] bg-[#f7f7f7] sm:flex-1 sm:rounded-b-[20px]"
             style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}
           >
             <div className="relative size-full">
               <div className="flex h-1/2 flex-col bg-white">
                 <Tabs
-                  defaultValue="text"
                   className="w-full border-b border-b-[#EBEBEB] px-4"
+                  value={inputType}
+                  onValueChange={(value) => {
+                    setInputType(value)
+                  }}
                 >
                   <TabsList>
                     <TabsTrigger value="text">Text</TabsTrigger>
@@ -574,7 +578,28 @@ export default function Rewrite() {
                     <TabsTrigger value="email">Email</TabsTrigger>
                     <TabsTrigger value="blog">Blog</TabsTrigger>
                     <TabsTrigger value="linkedin">Linkedin</TabsTrigger>
-                    <TabsTrigger value="facebook">Facebook</TabsTrigger>
+                    <TabsTrigger className="hidden sm:block" value="facebook">
+                      Facebook
+                    </TabsTrigger>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="block p-3 sm:hidden">
+                          <IoIosArrowDown className="text-[#9A9A9A]" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="-translate-y-2 rounded-xl px-3 py-2">
+                        <PopoverClose>
+                          <div
+                            className="flex h-10 w-20 items-center justify-center text-[#9A9A9A]"
+                            onClick={() => {
+                              setInputType('facebook')
+                            }}
+                          >
+                            Facebook
+                          </div>
+                        </PopoverClose>
+                      </PopoverContent>
+                    </Popover>
                   </TabsList>
                 </Tabs>
                 <div className="flex flex-1 items-start justify-between overflow-y-auto px-4 pb-2 pt-4 ">
@@ -587,6 +612,7 @@ export default function Rewrite() {
                     }}
                   />
                   <button
+                    className={cn({ hidden: inputMessage === '' })}
                     onClick={() => {
                       setInputMessage('')
                     }}
