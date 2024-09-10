@@ -25,7 +25,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
-import { IoMdAdd } from 'react-icons/io'
+import { IoMdAdd, IoMdClose } from 'react-icons/io'
 import { BsThreeDots } from 'react-icons/bs'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { cn } from '@/lib/utils'
@@ -577,14 +577,24 @@ export default function Rewrite() {
                     <TabsTrigger value="facebook">Facebook</TabsTrigger>
                   </TabsList>
                 </Tabs>
-                <textarea
-                  className="flex-1 resize-none overflow-y-auto px-4 pb-6 pt-4 text-base placeholder:text-[#9a9a9a] focus:outline-none"
-                  placeholder="Type or paste the content you’d like the persona to rewrite."
-                  value={inputMessage}
-                  onChange={(e) => {
-                    setInputMessage(e.target.value)
-                  }}
-                />
+                <div className="flex flex-1 items-start justify-between overflow-y-auto px-4 pb-2 pt-4 ">
+                  <textarea
+                    className="h-full flex-1 resize-none text-base placeholder:text-[#9a9a9a] focus:outline-none"
+                    placeholder="Type or paste the content you’d like the persona to rewrite."
+                    value={inputMessage}
+                    onChange={(e) => {
+                      setInputMessage(e.target.value)
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      setInputMessage('')
+                    }}
+                  >
+                    <IoMdClose className="mt-[2px] text-xl" />
+                  </button>
+                </div>
+
                 <Button
                   className="mx-4 mb-6 mt-2"
                   onClick={() => {
