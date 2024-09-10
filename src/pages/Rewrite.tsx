@@ -50,6 +50,7 @@ import { useMedia } from 'react-use'
 import PersonaItem from '@/components/PersonaItem'
 import SearchPersonaModal from '@/components/SearchPersonaModal'
 import TextCopyClipboard from '@/components/TextCopyClipboard'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function Rewrite() {
   const scrollBoxRef = useRef<HTMLDivElement | null>(null)
@@ -562,15 +563,48 @@ export default function Rewrite() {
             style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}
           >
             <div className="relative size-full">
-              <div className="h-1/2 bg-white">
+              <div className="flex h-1/2 flex-col bg-white">
+                <Tabs
+                  defaultValue="text"
+                  className="w-full border-b border-b-[#EBEBEB] px-4"
+                >
+                  <TabsList>
+                    <TabsTrigger value="text">Text</TabsTrigger>
+                    <TabsTrigger value="twitter">Twitter</TabsTrigger>
+                    <TabsTrigger value="email">Email</TabsTrigger>
+                    <TabsTrigger value="blog">Blog</TabsTrigger>
+                    <TabsTrigger value="linkedin">Linkedin</TabsTrigger>
+                    <TabsTrigger value="facebook">Facebook</TabsTrigger>
+                  </TabsList>
+                </Tabs>
                 <textarea
-                  className="size-full resize-none overflow-y-auto px-4 py-6 text-base placeholder:text-[#9a9a9a] focus:outline-none"
+                  className="flex-1 resize-none overflow-y-auto px-4 pb-6 pt-4 text-base placeholder:text-[#9a9a9a] focus:outline-none"
                   placeholder="Type or paste the content you’d like the persona to rewrite."
                   value={inputMessage}
                   onChange={(e) => {
                     setInputMessage(e.target.value)
                   }}
                 />
+                <Button
+                  className="mx-4 mb-6 mt-2"
+                  onClick={() => {
+                    if (inputMessage !== '') {
+                      if (persona.id && user_id) {
+                        rewriteMutation.mutate({
+                          persona_id: persona.id,
+                          user_id: user_id,
+                          message: inputMessage
+                        })
+                      }
+                    }
+                  }}
+                  isLoading={rewriteMutation.isPending}
+                  disabled={
+                    !personasData.find((_persona) => _persona.id == persona.id)
+                  }
+                >
+                  Rewrite
+                </Button>
               </div>
               <div className="h-1/2 space-y-4 overflow-auto border-t border-t-[#EBEBEB] bg-white px-4 py-6 text-[#9a9a9a]">
                 {rewriteMessages.length === 0 && 'Output'}
@@ -580,26 +614,6 @@ export default function Rewrite() {
               </div>
             </div>
           </div>
-          <Button
-            className="mx-6"
-            onClick={() => {
-              if (inputMessage !== '') {
-                if (persona.id && user_id) {
-                  rewriteMutation.mutate({
-                    persona_id: persona.id,
-                    user_id: user_id,
-                    message: inputMessage
-                  })
-                }
-              }
-            }}
-            isLoading={rewriteMutation.isPending}
-            disabled={
-              !personasData.find((_persona) => _persona.id == persona.id)
-            }
-          >
-            Rewrite
-          </Button>
         </div>
       </div>
     </div>
