@@ -17,7 +17,7 @@ import EmojiPicker from 'emoji-picker-react'
 import { useRef, useState } from 'react'
 import { RiDeleteBin5Line } from 'react-icons/ri'
 import { useNavigate } from 'react-router-dom'
-import { FaArrowDown } from 'react-icons/fa6'
+
 import { AiOutlineImport } from 'react-icons/ai'
 import {
   Popover,
@@ -49,6 +49,7 @@ import MobileRewritePersonaNav from '@/components/rewrite/MobileRewritePersonaNa
 import { useMedia } from 'react-use'
 import PersonaItem from '@/components/PersonaItem'
 import SearchPersonaModal from '@/components/SearchPersonaModal'
+import TextCopyClipboard from '@/components/TextCopyClipboard'
 
 export default function Rewrite() {
   const scrollBoxRef = useRef<HTMLDivElement | null>(null)
@@ -61,6 +62,7 @@ export default function Rewrite() {
   const queryClient = useQueryClient()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isShowMobilePersonaUi, setIsShowMobilePersonaUi] = useState(false)
+  const [rewriteMessages, setRewriteMessages] = useState<string[]>([])
   const isMobile = useMedia('(max-width: 640px)')
 
   const { data: mePersonasRes } = useQuery({
@@ -192,6 +194,9 @@ export default function Rewrite() {
   const rewriteMutation = useMutation({
     mutationFn: (payload: RewriteMessagePayload) => {
       return rewriteMessage(authAxios!)(payload)
+    },
+    onSuccess: (data) => {
+      setRewriteMessages((prev) => [...prev, data.data.response])
     }
   })
 
@@ -567,15 +572,11 @@ export default function Rewrite() {
                   }}
                 />
               </div>
-              <div
-                className={cn('h-1/2 bg-[#f7f7f7] px-4 py-6 text-[#9a9a9a]', {
-                  'text-black': !!rewriteMutation.data?.data.response
-                })}
-              >
-                {rewriteMutation.data?.data.response ?? 'Output'}
-              </div>
-              <div className=" absolute left-1/2 top-1/2 flex size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-earth-green">
-                <FaArrowDown className="text-white" />
+              <div className="h-1/2 space-y-4 overflow-auto border-t border-t-[#EBEBEB] bg-white px-4 py-6 text-[#9a9a9a]">
+                {rewriteMessages.length === 0 && 'Output'}
+                {[...rewriteMessages].reverse().map((message) => (
+                  <TextCopyClipboard key={message} text={message} />
+                ))}
               </div>
             </div>
           </div>
