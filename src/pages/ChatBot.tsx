@@ -149,7 +149,7 @@ export default function ChatBot() {
   })
 
   let isLoadingSendMessage = false
-  if (sendMessageMutation.isPending && messages.length > 1) {
+  if (sendMessageMutation.isPending && messages.length >= 1) {
     const lastMessage = messages[messages.length - 1]
     if (lastMessage.sender === ChatRoomSender.User) {
       isLoadingSendMessage = true
