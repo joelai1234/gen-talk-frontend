@@ -75,7 +75,8 @@ export default function EditPersona() {
           lang: persona?.language,
           style: persona?.style,
           persona_description: persona?.description,
-          user_id,
+          user_id: persona.isPreset ? '-1' : user_id,
+          // user_id,
           icon: persona?.avatar,
           message_color: persona?.messageColor
         }
@@ -83,7 +84,7 @@ export default function EditPersona() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
-      navigate('/')
+      navigate(-1)
     }
   })
 
@@ -95,7 +96,7 @@ export default function EditPersona() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
-      navigate('/')
+      navigate(-1)
     }
   })
 
@@ -117,7 +118,7 @@ export default function EditPersona() {
           <button
             className="flex size-10 items-center justify-center rounded-full border border-[#EBEBEB]"
             onClick={() => {
-              navigate('/')
+              navigate(-1)
             }}
           >
             <FaArrowLeft />
@@ -130,7 +131,7 @@ export default function EditPersona() {
                 <button
                   className="flex size-10 items-center justify-center"
                   onClick={() => {
-                    navigate('/')
+                    navigate(-1)
                   }}
                 >
                   <FaArrowLeft />
