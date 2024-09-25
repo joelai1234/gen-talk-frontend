@@ -6,6 +6,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ErrorResponse } from '@/apis/model/commen'
+import { handleEnterKeyPress } from '@/utils' // 新增這行
 
 interface ResendSignUpVerificationEmailBlockProps {
   setAuthAction: (action: AuthStatus) => void
@@ -17,9 +18,6 @@ export default function ResendSignUpVerificationEmailBlock({
   const [searchParams] = useSearchParams()
   const email = searchParams.get('email') || ''
   const { confirmSignUpMutation } = useAuth()
-  const errorMessage = (confirmSignUpMutation.error as unknown as ErrorResponse)
-    ?.response?.data.detail
-  console.log(confirmSignUpMutation.error)
 
   const {
     register,
@@ -36,6 +34,20 @@ export default function ResendSignUpVerificationEmailBlock({
         }
       }
     )
+  }
+
+  const errorMessageDetail = (
+    confirmSignUpMutation.error as unknown as ErrorResponse
+  )?.response?.data?.detail
+
+  let errorMessage = ''
+  if (typeof errorMessageDetail === 'string') {
+    errorMessage = errorMessageDetail
+  } else if (
+    Array.isArray(errorMessageDetail) &&
+    errorMessageDetail.every((item) => typeof item.msg === 'string')
+  ) {
+    errorMessage = errorMessageDetail[0].msg
   }
 
   return (
@@ -79,6 +91,7 @@ export default function ResendSignUpVerificationEmailBlock({
               {...register('code', {
                 required: 'Code is required'
               })}
+              onKeyDown={(e) => handleEnterKeyPress(e, handleSubmit(onSubmit))} // 新增這行
             />
           </div>
           <p className="text-sm text-red-500">{errors.code?.message}</p>

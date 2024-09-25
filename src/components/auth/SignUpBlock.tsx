@@ -10,6 +10,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { ErrorResponse } from '@/apis/model/commen'
+import { handleEnterKeyPress } from '@/utils'
 
 type SignUpInputs = {
   email: string
@@ -36,8 +37,6 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
       // password: 'Test1234!'
     }
   })
-  const errorMessage = (signUpMutation.error as unknown as ErrorResponse)
-    ?.response?.data?.detail
 
   const setSearchParamsEmail = (email: string) => {
     const currentParams = new URLSearchParams(searchParams)
@@ -53,6 +52,19 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
         setAuthAction(AuthStatus.resendSignUpVerificationEmail)
       }
     })
+  }
+
+  const errorMessageDetail = (signUpMutation.error as unknown as ErrorResponse)
+    ?.response?.data?.detail
+
+  let errorMessage = ''
+  if (typeof errorMessageDetail === 'string') {
+    errorMessage = errorMessageDetail
+  } else if (
+    Array.isArray(errorMessageDetail) &&
+    errorMessageDetail.every((item) => typeof item.msg === 'string')
+  ) {
+    errorMessage = errorMessageDetail[0].msg
   }
 
   return (
@@ -87,6 +99,13 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
                 {...register('email', {
                   required: 'Email is required'
                 })}
+                onKeyDown={(e) =>
+                  handleEnterKeyPress(
+                    e,
+                    handleSubmit(onSubmit),
+                    'usernameInput'
+                  )
+                }
               />
             </div>
             <p className="text-sm text-red-500">{errors.email?.message}</p>
@@ -97,10 +116,18 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
                 <MdOutlineAccountCircle className=" text-2xl text-[#4C4C4C]" />
               </div>
               <input
+                id="usernameInput"
                 className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
                 type="text"
                 placeholder="Username"
                 {...register('username', { required: 'Username is required' })}
+                onKeyDown={(e) =>
+                  handleEnterKeyPress(
+                    e,
+                    handleSubmit(onSubmit),
+                    'passwordInput'
+                  )
+                }
               />
             </div>
             <p className="text-sm text-red-500">{errors.username?.message}</p>
@@ -111,10 +138,14 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
                 <MdOutlinePassword className=" text-2xl text-[#4C4C4C]" />
               </div>
               <input
+                id="passwordInput"
                 className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
                 type="password"
                 placeholder="Password"
                 {...register('password', { required: 'Password is required' })}
+                onKeyDown={(e) =>
+                  handleEnterKeyPress(e, handleSubmit(onSubmit))
+                }
               />
             </div>
             <p className="text-red-500">{errors.password?.message}</p>

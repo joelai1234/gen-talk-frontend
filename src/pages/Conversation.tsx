@@ -33,7 +33,7 @@ export default function Conversation() {
     ConversationStep.Role1
   )
 
-  console.log('role1', role1)
+  // console.log('role1', role1)
 
   return (
     <div className="flex min-h-[calc(var(--vh)*100-60px)] flex-col pt-6 sm:px-16 sm:pb-16">

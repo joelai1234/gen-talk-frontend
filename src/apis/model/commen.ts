@@ -3,5 +3,5 @@ export interface ErrorResponse {
 }
 
 export interface Data {
-  detail: string
+  detail: { msg: string }[] | string
 }
