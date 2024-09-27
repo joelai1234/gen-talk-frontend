@@ -1,5 +1,11 @@
 import { cn } from '@/lib/utils'
 import React, { ReactElement } from 'react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 
 interface StepProps {
   step: string
@@ -74,7 +80,20 @@ interface StepDescriptionProps {
 export const StepDescription: React.FC<StepDescriptionProps> = ({
   children
 }) => {
-  return <p className="text-sm">{children}</p>
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <p className="max-w-[80px] overflow-hidden text-ellipsis text-sm sm:max-w-[120px]">
+            {children}
+          </p>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="text-sm">{children}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
 }
 
 interface StepperProps {
