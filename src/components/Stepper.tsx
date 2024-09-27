@@ -36,11 +36,24 @@ export const Step: React.FC<StepProps> = ({
         {index}
       </div>
       <div
-        className={cn('whitespace-nowrap text-[#9a9a9a]', {
-          'text-earth-green': active
+        className={cn('whitespace-nowrap text-[#9a9a9a] relative', {
+          'text-black': active
         })}
       >
-        {children}
+        {React.Children.map(children, (child) => {
+          if (React.isValidElement(child) && child.type === StepLabel) {
+            return child
+          }
+          return null
+        })}
+        <div className="absolute -bottom-5">
+          {React.Children.map(children, (child) => {
+            if (React.isValidElement(child) && child.type === StepDescription) {
+              return child
+            }
+            return null
+          })}
+        </div>
       </div>
     </div>
   )
@@ -52,6 +65,16 @@ interface StepLabelProps {
 
 export const StepLabel: React.FC<StepLabelProps> = ({ children }) => {
   return <p>{children}</p>
+}
+
+interface StepDescriptionProps {
+  children: React.ReactNode
+}
+
+export const StepDescription: React.FC<StepDescriptionProps> = ({
+  children
+}) => {
+  return <p className="text-sm">{children}</p>
 }
 
 interface StepperProps {
@@ -68,7 +91,7 @@ export const Stepper: React.FC<StepperProps> = ({ activeStep, children }) => {
           index: index + 1
         })}
       {index < React.Children.count(children) - 1 && (
-        <div className="mx-2 h-px w-full bg-white sm:my-1.5 sm:ml-4 sm:h-3 sm:w-[2px]" />
+        <div className="mx-2 h-px w-full bg-white sm:my-1.5 sm:ml-4 sm:h-5 sm:w-[2px]" />
       )}
     </React.Fragment>
   ))

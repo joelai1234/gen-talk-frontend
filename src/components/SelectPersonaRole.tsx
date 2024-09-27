@@ -28,15 +28,20 @@ import { Checkbox } from './ui/checkbox'
 import MobileConversationPersonaNav from './conversation/MobileConversationPersonaNav'
 import PersonaItem from './PersonaItem'
 import SearchPersonaModal from './SearchPersonaModal'
+import clsx from 'clsx'
 
 interface SelectPersonaRoleProps {
+  defaultPersona?: TempPersonaData
   onSubmitted: (persona: TempPersonaData) => void
+  onBack?: () => void
   name: string
 }
 
 export default function SelectPersonaRole({
   onSubmitted,
-  name
+  name,
+  defaultPersona,
+  onBack
 }: SelectPersonaRoleProps) {
   const { authAxios, userData } = useAuth()
   const user_id = userData?.me?.id
@@ -44,7 +49,9 @@ export default function SelectPersonaRole({
   const [search, setSearch] = useState('')
   const [isSaveToAccount, setIsSaveToAccount] = useState(true)
   const queryClient = useQueryClient()
-  const [persona, setPersona] = useState<TempPersonaData>()
+  const [persona, setPersona] = useState<TempPersonaData | undefined>(
+    defaultPersona
+  )
 
   const { data: mePersonasRes } = useQuery({
     queryKey: ['getMePersonas', user_id, authAxios],
@@ -466,35 +473,49 @@ export default function SelectPersonaRole({
                 }}
               />
             </div>
-            <div className="flex justify-end gap-4 sm:hidden">
-              {persona && (
-                <label
-                  className="flex cursor-pointer items-center gap-2"
-                  htmlFor="save-backend"
-                >
-                  <Checkbox
-                    id="save-backend"
-                    checked={isSaveToAccount}
-                    onCheckedChange={(e) => setIsSaveToAccount(e as boolean)}
-                  />
-                  <p className="text-sm text-[#4c4c4c]">
-                    {persona?.id
-                      ? 'Update current persona'
-                      : 'Save this persona to my account'}
-                  </p>
-                </label>
-              )}
-              <Button
-                className="w-[120px] "
-                disabled={!persona}
-                onClick={handleSave}
-                isLoading={
-                  createPersonaMutation.isPending ||
-                  updatePersonaMutation.isPending
-                }
+            <div className="block sm:hidden">
+              <div
+                className={clsx('flex gap-4', {
+                  'justify-end': !onBack
+                })}
               >
-                Continue
-              </Button>
+                {onBack && (
+                  <button
+                    className="mr-auto text-[#4c4c4c] hover:text-earth-green"
+                    onClick={onBack}
+                  >
+                    Back
+                  </button>
+                )}
+                {persona && (
+                  <label
+                    className="flex cursor-pointer items-center gap-2"
+                    htmlFor="save-backend"
+                  >
+                    <Checkbox
+                      id="save-backend"
+                      checked={isSaveToAccount}
+                      onCheckedChange={(e) => setIsSaveToAccount(e as boolean)}
+                    />
+                    <p className="text-sm text-[#4c4c4c]">
+                      {persona?.id
+                        ? 'Update current persona'
+                        : 'Save this persona to my account'}
+                    </p>
+                  </label>
+                )}
+                <Button
+                  className="w-[120px] "
+                  disabled={!persona}
+                  onClick={handleSave}
+                  isLoading={
+                    createPersonaMutation.isPending ||
+                    updatePersonaMutation.isPending
+                  }
+                >
+                  Continue
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -508,7 +529,19 @@ export default function SelectPersonaRole({
           </div>
         )}
       </div>
-      <div className="hidden gap-4 self-end sm:flex">
+      <div
+        className={clsx('hidden gap-4 sm:flex', {
+          'self-end': !onBack
+        })}
+      >
+        {onBack && (
+          <button
+            className="mr-auto text-[#4c4c4c] hover:text-earth-green"
+            onClick={onBack}
+          >
+            Back
+          </button>
+        )}
         {persona && (
           <label
             className="flex cursor-pointer items-center gap-2"

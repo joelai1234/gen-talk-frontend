@@ -1,4 +1,4 @@
-import { Step, StepLabel, Stepper } from '@/components/Stepper'
+import { Step, StepDescription, StepLabel, Stepper } from '@/components/Stepper'
 import { useState } from 'react'
 
 import { TempPersonaData } from '@/model/persona'
@@ -25,31 +25,66 @@ enum ConversationStep {
 }
 
 export default function Conversation() {
-  const [role1, setRole1] = useState<TempPersonaData | null>(null)
-  const [role2, setRole2] = useState<TempPersonaData | null>(null)
+  const [role1, setRole1] = useState<TempPersonaData>()
+  const [role2, setRole2] = useState<TempPersonaData>()
   const [round, setRound] = useState(5)
   const [scenario, setScenario] = useState('')
   const [activeStep, setActiveStep] = useState<ConversationStep>(
     ConversationStep.Role1
   )
 
-  // console.log('role1', role1)
-
   return (
     <div className="flex min-h-[calc(var(--vh)*100-60px)] flex-col pt-6 sm:px-16 sm:pb-16">
       <div className="mx-auto flex size-full max-w-[898px] flex-1 flex-col gap-6 sm:flex-row sm:gap-[120px]">
         <div className="px-6 sm:w-[142px] sm:px-0">
           <Stepper activeStep={activeStep}>
-            <Step step={ConversationStep.Role1}>
+            <Step
+              step={ConversationStep.Role1}
+              onClick={() => {
+                setActiveStep(ConversationStep.Role1)
+              }}
+            >
               <StepLabel>Role 1</StepLabel>
+              <StepDescription>{role1?.name}</StepDescription>
             </Step>
-            <Step step={ConversationStep.Role2}>
+            <Step
+              step={ConversationStep.Role2}
+              onClick={
+                !role1
+                  ? undefined
+                  : () => {
+                      setActiveStep(ConversationStep.Role2)
+                    }
+              }
+            >
               <StepLabel>Role 2</StepLabel>
+              <StepDescription>{role2?.name}</StepDescription>
             </Step>
-            <Step step={ConversationStep.Scenario}>
+            <Step
+              step={ConversationStep.Scenario}
+              onClick={
+                !role1 || !role2
+                  ? undefined
+                  : () => {
+                      setActiveStep(ConversationStep.Scenario)
+                    }
+              }
+            >
               <StepLabel>Scenario</StepLabel>
+              {!(!role1 || !role2) && (
+                <StepDescription>{round} rounds</StepDescription>
+              )}
             </Step>
-            <Step step={ConversationStep.Conversation}>
+            <Step
+              step={ConversationStep.Conversation}
+              onClick={
+                !role1 || !role2 || scenario.length === 0
+                  ? undefined
+                  : () => {
+                      setActiveStep(ConversationStep.Conversation)
+                    }
+              }
+            >
               <StepLabel>Conversation</StepLabel>
             </Step>
           </Stepper>
@@ -57,6 +92,7 @@ export default function Conversation() {
         <div className="flex flex-1 flex-col">
           {activeStep === ConversationStep.Role1 && (
             <SelectPersonaRole
+              defaultPersona={role1}
               name="role 1"
               onSubmitted={(persona) => {
                 setRole1(persona)
@@ -66,10 +102,14 @@ export default function Conversation() {
           )}
           {activeStep === ConversationStep.Role2 && (
             <SelectPersonaRole
+              defaultPersona={role2}
               name="role 2"
               onSubmitted={(persona) => {
                 setRole2(persona)
                 setActiveStep(ConversationStep.Scenario)
+              }}
+              onBack={() => {
+                setActiveStep(ConversationStep.Role1)
               }}
             />
           )}
@@ -123,8 +163,41 @@ export default function Conversation() {
                     />
                   </div>
                 </div>
+                <div className="flex sm:hidden">
+                  <button
+                    className="mr-auto text-[#4c4c4c] hover:text-earth-green"
+                    onClick={() => {
+                      setActiveStep(ConversationStep.Role2)
+                    }}
+                  >
+                    Back
+                  </button>
+                  <Button
+                    className="ml-auto mt-4 block px-4"
+                    disabled={scenario.length === 0}
+                    onClick={() => {
+                      setActiveStep(ConversationStep.Conversation)
+                    }}
+                    // isLoading={
+                    //   createPersonaMutation.isPending ||
+                    //   updatePersonaMutation.isPending
+                    // }
+                  >
+                    Generate Conversation
+                  </Button>
+                </div>
+              </div>
+              <div className="hidden sm:flex">
+                <button
+                  className="mr-auto text-[#4c4c4c] hover:text-earth-green"
+                  onClick={() => {
+                    setActiveStep(ConversationStep.Role2)
+                  }}
+                >
+                  Back
+                </button>
                 <Button
-                  className="ml-auto mt-4 flex px-4 sm:hidden"
+                  className="ml-auto mt-4 px-4 sm:block"
                   disabled={scenario.length === 0}
                   onClick={() => {
                     setActiveStep(ConversationStep.Conversation)
@@ -137,19 +210,6 @@ export default function Conversation() {
                   Generate Conversation
                 </Button>
               </div>
-              <Button
-                className="ml-auto mt-4 hidden px-4 sm:flex"
-                disabled={scenario.length === 0}
-                onClick={() => {
-                  setActiveStep(ConversationStep.Conversation)
-                }}
-                // isLoading={
-                //   createPersonaMutation.isPending ||
-                //   updatePersonaMutation.isPending
-                // }
-              >
-                Generate Conversation
-              </Button>
             </div>
           )}
           {activeStep === ConversationStep.Conversation && (
