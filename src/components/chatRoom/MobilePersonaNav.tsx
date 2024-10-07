@@ -4,10 +4,9 @@ import { IoIosArrowDown, IoMdAdd, IoMdSearch } from 'react-icons/io'
 import { MdOutlineEdit } from 'react-icons/md'
 import ChatBotItem from '../ChatBotItem'
 import { Link, useNavigate } from 'react-router-dom'
-import { PersonaData } from '@/model/persona'
 
 interface MobilePersonaNavProps {
-  persona?: PersonaData
+  personaId?: number
   personaOptions: {
     id: number
     avatar: string
@@ -21,7 +20,7 @@ interface MobilePersonaNavProps {
 }
 
 export default function MobilePersonaNav({
-  persona,
+  personaId,
   personaOptions,
   onChangePersona,
   search,
@@ -44,6 +43,8 @@ export default function MobilePersonaNav({
       )
     }
   }, [isOpenMobileMenu])
+
+  const persona = personaOptions.find((item) => item.id === personaId)
 
   return (
     <div className="relative mb-4 sm:hidden">

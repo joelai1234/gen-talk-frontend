@@ -10,12 +10,15 @@ import MessageTextarea from '@/components/MessageTextarea'
 import MobilePersonaNav from '@/components/chatRoom/MobilePersonaNav'
 import DesktopPersonaSider from '@/components/chatRoom/DesktopPersonaSider'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { formatPersona } from '@/utils/persona'
 import { useAuth } from '@/services/auth/hooks/useAuth'
-import { getPersonaHistory, sendMessage } from '@/apis/persona'
+import {
+  getChatroomPersonas,
+  getOnePersona,
+  getPersonaHistory,
+  sendMessage
+} from '@/apis/persona'
 import { useChatHistoryStore } from '@/store/useChatHistoryStore'
 import { useSSEMutation } from '@/hooks/useSSEMutation' // 引入 useSSEMutation
-import useGetPersonasQuery from '@/hooks/useGetPersonasQuery'
 
 export default function ChatBot() {
   const queryClient = useQueryClient()
@@ -37,7 +40,21 @@ export default function ChatBot() {
 
   const [search, setSearch] = useState('')
 
-  const { data: mePersonasRes } = useGetPersonasQuery()
+  // const { data: mePersonasRes } = useGetPersonasQuery()
+
+  const { data: chatroomPersonasRes } = useQuery({
+    queryKey: ['getChatroomPersonas', authAxios],
+    queryFn: () => getChatroomPersonas(authAxios!)(),
+    enabled: !!authAxios
+  })
+
+  const { data: personaRes, isLoading: isLoadingPersona } = useQuery({
+    queryKey: ['getOnePersona', selectedPersonaId],
+    queryFn: () => {
+      return getOnePersona(authAxios!)({ persona_id: selectedPersonaId! })
+    },
+    enabled: !!authAxios && !!selectedPersonaId
+  })
 
   useQuery({
     queryKey: ['getPersonaHistory', authAxios, selectedPersonaId],
@@ -71,11 +88,9 @@ export default function ChatBot() {
     enabled: !!authAxios && !!selectedPersonaId
   })
 
-  const personasData = mePersonasRes.map(formatPersona) ?? []
+  const personasData = chatroomPersonasRes?.data.data ?? []
 
-  const persona = personasData.find(
-    (persona) => persona.id === selectedPersonaId
-  )
+  const persona = personaRes?.data
 
   const { mutate: sendMessageMutation, isLoading: isSendingMessage } =
     useSSEMutation({
@@ -139,9 +154,9 @@ export default function ChatBot() {
   const personaOptions = personaOptionsData.map((item) => {
     return {
       id: item.id,
-      avatar: item.avatar,
+      avatar: item.icon,
       name: item.name,
-      time: item.updatedAt ? format(item.updatedAt, 'hh:mm a') : 'New',
+      time: item.is_new ? 'New' : format(item.last_interaction, 'hh:mm a'),
       active: item.id === selectedPersonaId
     }
   })
@@ -153,7 +168,7 @@ export default function ChatBot() {
         style={{ boxShadow: '0px 8px 40px 0 rgba(65,76,65,0.16)' }}
       >
         <DesktopPersonaSider
-          persona={persona}
+          personaId={selectedPersonaId}
           onChangePersona={(id) => {
             setSelectedPersonaId(id)
           }}
@@ -165,7 +180,7 @@ export default function ChatBot() {
           <div className="size-full">
             <div className="mx-auto flex size-full flex-col pb-6 sm:pt-6">
               <MobilePersonaNav
-                persona={persona}
+                personaId={selectedPersonaId}
                 onChangePersona={(id) => {
                   setSelectedPersonaId(id)
                 }}
@@ -173,12 +188,16 @@ export default function ChatBot() {
                 search={search}
                 onChangeSearch={setSearch}
               />
-
-              {!persona && <WelcomeChatRoom />}
+              {isLoadingPersona && (
+                <div className="flex size-full items-center justify-center">
+                  <div className="size-10 animate-spin rounded-full border-y-2 border-earth-green"></div>
+                </div>
+              )}
+              {!selectedPersonaId && <WelcomeChatRoom />}
               {persona && messages.length === 0 && (
                 <NewChatRoom
                   persona={{
-                    avatar: persona.avatar,
+                    avatar: persona.icon,
                     name: persona.name,
                     description: persona.description
                   }}
@@ -186,7 +205,7 @@ export default function ChatBot() {
               )}
               {persona && messages.length > 0 && (
                 <ChatRoom
-                  messageColor={persona.messageColor}
+                  messageColor={persona.message_color ?? '#EBEBEB'}
                   isLoadingAIMessage={isSendingMessage}
                   messages={messages}
                 />

@@ -1,10 +1,9 @@
 import { IoMdAdd, IoMdSearch } from 'react-icons/io'
 import ChatBotItem from '../ChatBotItem'
 import { Link } from 'react-router-dom'
-import { PersonaData } from '@/model/persona'
 
 interface DesktopPersonaSiderProps {
-  persona?: PersonaData
+  personaId?: number
   personaOptions: {
     id: number
     avatar: string
@@ -18,7 +17,7 @@ interface DesktopPersonaSiderProps {
 }
 
 export default function DesktopPersonaSider({
-  persona,
+  personaId,
   personaOptions,
   onChangePersona,
   search,
@@ -54,7 +53,7 @@ export default function DesktopPersonaSider({
             avatar={item.avatar}
             name={item.name}
             time={item.time}
-            active={item.id === persona?.id}
+            active={item.id === personaId}
             onClick={() => {
               onChangePersona(item.id)
             }}
