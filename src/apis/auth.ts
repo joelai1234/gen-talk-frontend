@@ -8,8 +8,6 @@ import {
 } from './model/auth'
 
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL
-// const VITE_BACKEND_URL = ''
-// http://0.0.0.0:8000/api/v1/login
 const http = axios.create({
   baseURL: VITE_BACKEND_URL
 })
