@@ -8,6 +8,7 @@ import { ErrorResponse } from '@/apis/model/commen'
 import axios, { AxiosResponse } from 'axios'
 import { jwtDecode } from 'jwt-decode'
 import { handleEnterKeyPress } from '@/utils'
+import { useSearchParams } from 'react-router-dom'
 
 type SignInInputs = {
   email: string
@@ -20,8 +21,7 @@ interface SignInBlockProps {
 
 export default function SignInBlock({ setAuthAction }: SignInBlockProps) {
   const { signInMutation, setUserData } = useAuth()
-  signInMutation.error?.message
-
+  const [searchParams, setSearchParams] = useSearchParams()
   const {
     getValues,
     register,
@@ -29,10 +29,17 @@ export default function SignInBlock({ setAuthAction }: SignInBlockProps) {
     formState: { errors }
   } = useForm<SignInInputs>({
     defaultValues: {
-      // email: 'joelai1234567890+local2@gmail.com',
+      // email: 'joelai1234567890+local6@gmail.com',
       // password: 'Test1234!'
     }
   })
+
+  const setSearchParamsEmail = (email: string) => {
+    const currentParams = new URLSearchParams(searchParams)
+    currentParams.set('email', email)
+    setSearchParams(currentParams)
+  }
+
   const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
     signInMutation.mutate(data, {
       onSuccess: (data) => {
@@ -53,11 +60,9 @@ export default function SignInBlock({ setAuthAction }: SignInBlockProps) {
       onError: (error) => {
         if (axios.isAxiosError(error) && error.response) {
           error.response as AxiosResponse<ErrorResponse>
-          if (
-            error.response.data.detail ===
-            'An error occurred (UserNotConfirmedException) when calling the InitiateAuth operation: User is not confirmed.'
-          ) {
+          if (error.response.data.detail === 'Email not verified') {
             setAuthAction(AuthStatus.resendSignUpVerificationEmail)
+            setSearchParamsEmail(getValues('email'))
           }
         }
       }
