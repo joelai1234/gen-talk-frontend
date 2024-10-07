@@ -43,7 +43,7 @@ export default function CreatePersona() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
       queryClient.invalidateQueries({ queryKey: ['getChatroomPersonas'] })
-      navigate('/')
+      navigate(-1)
     }
   })
 
@@ -70,7 +70,7 @@ export default function CreatePersona() {
           <button
             className="flex size-10 items-center justify-center rounded-full border border-[#EBEBEB]"
             onClick={() => {
-              navigate('/')
+              navigate(-1)
             }}
           >
             <FaArrowLeft />
@@ -83,7 +83,7 @@ export default function CreatePersona() {
                 <button
                   className="flex size-10 items-center justify-center"
                   onClick={() => {
-                    navigate('/')
+                    navigate(-1)
                   }}
                 >
                   <FaArrowLeft />
@@ -234,7 +234,7 @@ export default function CreatePersona() {
                     <Button
                       variant="secondary"
                       onClick={() => {
-                        navigate('/')
+                        navigate(-1)
                       }}
                       disabled={createPersonaMutation.isPending}
                     >
