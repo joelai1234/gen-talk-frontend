@@ -23,7 +23,6 @@ export default function CreatePersona() {
   const user_id = userData?.me?.id
   const navigate = useNavigate()
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
-  // const { addMockPersonaData } = useMockDataStore()
   const [persona, setPersona] = useState<PersonaData>({
     id: Date.now(),
     avatar: defaultPersonaIcon,
@@ -50,12 +49,11 @@ export default function CreatePersona() {
   const handleCreate = () => {
     if (!user_id) return
     createPersonaMutation.mutate({
-      persona_name: persona.name,
+      name: persona.name,
       tone: persona.tone,
       lang: persona.language,
       style: persona.style,
-      persona_description: persona.description,
-      user_id: user_id,
+      description: persona.description,
       icon: persona.avatar,
       message_color: persona.messageColor
     })

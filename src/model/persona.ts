@@ -8,7 +8,7 @@ import {
 export interface PersonaData {
   createdAt?: Date
   updatedAt?: Date
-  lastMessageSentAt?: Date
+  // lastMessageSentAt?: Date
   id: number
   avatar: string
   name: string

@@ -9,7 +9,7 @@ import ChatRoom from '@/components/chatRoom/ChatRoom'
 import MessageTextarea from '@/components/MessageTextarea'
 import MobilePersonaNav from '@/components/chatRoom/MobilePersonaNav'
 import DesktopPersonaSider from '@/components/chatRoom/DesktopPersonaSider'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { formatPersona } from '@/utils/persona'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { getMePersonas, getPersonaHistory, sendMessage } from '@/apis/persona'
@@ -131,43 +131,21 @@ export default function ChatBot() {
     if (message.trim() === '') return
     if (selectedPersonaId === undefined) return
     chatWithPersona({ chatroomId: selectedPersonaId, message })
-    // sendMessageMutation.mutate({ message, personaId: selectedPersonaId })
   }
 
-  const personaOptionsData = personasData
-    .filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
-    .reverse()
-    .sort((a, b) => {
-      const aLastMessageSentAt = a.lastMessageSentAt?.getTime() ?? 0
-      const bLastMessageSentAt = b.lastMessageSentAt?.getTime() ?? 0
-      const aUpdatedAt = a.updatedAt?.getTime() ?? 0
-      const bUpdatedAt = b.updatedAt?.getTime() ?? 0
-      const aTime =
-        aLastMessageSentAt > aUpdatedAt ? aLastMessageSentAt : aUpdatedAt
-      const bTime =
-        bLastMessageSentAt > bUpdatedAt ? bLastMessageSentAt : bUpdatedAt
-      return bTime - aTime
-    })
+  const personaOptionsData = personasData.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  )
 
   const personaOptions = personaOptionsData.map((item) => {
     return {
       id: item.id,
       avatar: item.avatar,
       name: item.name,
-      time: item.lastMessageSentAt
-        ? format(item.lastMessageSentAt, 'hh:mm a')
-        : 'New',
+      time: item.updatedAt ? format(item.updatedAt, 'hh:mm a') : 'New',
       active: item.id === selectedPersonaId
     }
   })
-
-  // let isLoadingSendMessage = false
-  // if (sendMessageMutation.isPending && messages.length >= 1) {
-  //   const lastMessage = messages[messages.length - 1]
-  //   if (lastMessage.sender === ChatRoomSender.User) {
-  //     isLoadingSendMessage = true
-  //   }
-  // }
 
   return (
     <div className="flex h-[calc(var(--vh)*100-60px)] pt-6 sm:px-16 sm:pb-16">

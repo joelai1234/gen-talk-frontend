@@ -24,11 +24,14 @@ export interface Pagination {
 
 export type CreatePersonaPayload = Omit<
   PersonaAPIData,
-  'persona_id' | 'time_created' | 'time_updated'
+  'default_persona_id' | 'user_id' | 'id' | 'created_at' | 'updated_at'
 >
 
 export type UpdatePersonaPayload = Partial<
-  Omit<PersonaAPIData, 'persona_id' | 'time_created' | 'time_updated'>
+  Omit<
+    PersonaAPIData,
+    'default_persona_id' | 'user_id' | 'id' | 'created_at' | 'updated_at'
+  >
 >
 
 export interface ChatResponse {
@@ -50,6 +53,6 @@ export interface ChatHistoryResponse {
 
 export interface RewriteMessagePayload {
   persona_id: number
-  user_id: string
   message: string
+  context: string
 }

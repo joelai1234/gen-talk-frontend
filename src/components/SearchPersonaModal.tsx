@@ -33,15 +33,9 @@ export default function SearchPersonaModal({
     .filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
     .reverse()
     .sort((a, b) => {
-      const aLastMessageSentAt = a.lastMessageSentAt?.getTime() ?? 0
-      const bLastMessageSentAt = b.lastMessageSentAt?.getTime() ?? 0
       const aUpdatedAt = a.updatedAt?.getTime() ?? 0
       const bUpdatedAt = b.updatedAt?.getTime() ?? 0
-      const aTime =
-        aLastMessageSentAt > aUpdatedAt ? aLastMessageSentAt : aUpdatedAt
-      const bTime =
-        bLastMessageSentAt > bUpdatedAt ? bLastMessageSentAt : bUpdatedAt
-      return bTime - aTime
+      return bUpdatedAt - aUpdatedAt
     })
 
   return (

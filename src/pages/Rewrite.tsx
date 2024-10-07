@@ -35,6 +35,7 @@ import {
   createPersona,
   deletePersona,
   getMePersonas,
+  getRewriteContexts,
   rewriteMessage,
   updatePersona
 } from '@/apis/persona'
@@ -51,6 +52,8 @@ import PersonaItem from '@/components/PersonaItem'
 import SearchPersonaModal from '@/components/SearchPersonaModal'
 import TextCopyClipboard from '@/components/TextCopyClipboard'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useSSEMutation } from '@/hooks/useSSEMutation'
+import { v4 as uuidv4 } from 'uuid'
 
 export default function Rewrite() {
   const scrollBoxRef = useRef<HTMLDivElement | null>(null)
@@ -63,9 +66,11 @@ export default function Rewrite() {
   const queryClient = useQueryClient()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isShowMobilePersonaUi, setIsShowMobilePersonaUi] = useState(false)
-  const [rewriteMessages, setRewriteMessages] = useState<string[]>([])
+  const [rewriteMessages, setRewriteMessages] = useState<
+    { id: string; content: string }[]
+  >([])
   const isMobile = useMedia('(max-width: 640px)')
-  const [inputType, setInputType] = useState('text')
+  const [inputContext, setInputContext] = useState('TEXT')
 
   const { data: mePersonasRes } = useQuery({
     queryKey: ['getMePersonas', user_id, authAxios],
@@ -76,7 +81,7 @@ export default function Rewrite() {
     enabled: !!authAxios
   })
 
-  const personasApiData = mePersonasRes?.data ?? []
+  const personasApiData = mePersonasRes?.data.data ?? []
   const personasData = personasApiData.map((data) => formatPersona(data))
 
   const [persona, setPersona] = useState<TempPersonaData>({
@@ -89,12 +94,21 @@ export default function Rewrite() {
     messageColor: '#EBEBEB'
   })
 
+  const { data: rewriteContextsRes } = useQuery({
+    queryKey: ['getRewriteContexts', authAxios],
+    queryFn: () => {
+      if (!authAxios) return
+      return getRewriteContexts(authAxios!)()
+    },
+    enabled: !!authAxios
+  })
+
   const createPersonaMutation = useMutation({
     mutationFn: (payload: CreatePersonaPayload) => {
       return createPersona(authAxios!)(payload)
     },
     onSuccess: (data) => {
-      setPersona((prev) => ({ ...prev, id: data.data.persona_id }))
+      setPersona((prev) => ({ ...prev, id: data.data.id }))
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
       setIsShowMobilePersonaUi(false)
     }
@@ -105,12 +119,11 @@ export default function Rewrite() {
       return updatePersona(authAxios!)({
         persona_id: personaId,
         payload: {
-          persona_name: persona?.name,
+          name: persona?.name,
           tone: persona?.tone,
           lang: persona?.language,
           style: persona?.style,
-          persona_description: persona?.description,
-          user_id,
+          description: persona?.description,
           icon: persona?.avatar,
           message_color: persona?.messageColor
         }
@@ -161,12 +174,11 @@ export default function Rewrite() {
     } else {
       if (!user_id) return
       createPersonaMutation.mutate({
-        persona_name: persona.name,
+        name: persona.name,
         tone: persona.tone,
         lang: persona.language,
         style: persona.style,
-        persona_description: persona.description,
-        user_id: user_id,
+        description: persona.description,
         icon: persona.avatar,
         message_color: persona.messageColor
       })
@@ -181,7 +193,7 @@ export default function Rewrite() {
 
   const personaTemplates = personasApiData
     .filter((item) => {
-      return item.user_id == '-1'
+      return item.default_persona_id > 0
     })
     .map((data) => formatPersona(data))
 
@@ -193,44 +205,40 @@ export default function Rewrite() {
     })
   }
 
-  const rewriteMutation = useMutation({
-    mutationFn: (payload: RewriteMessagePayload) => {
-      return rewriteMessage(authAxios!)(payload)
+  const rewriteMutation = useSSEMutation({
+    mutationFn: async ({
+      payload
+    }: {
+      id: string
+      payload: RewriteMessagePayload
+    }) => {
+      const res = await rewriteMessage(authAxios!)(payload)
+      return res
     },
-    onSuccess: (data) => {
-      setRewriteMessages((prev) => [...prev, data.data.response])
+    onDownloadProgress: (value, { id }) => {
+      setRewriteMessages((prev) => {
+        // 检查是否存在相同 ID 的消息
+        const existingIndex = prev.findIndex((msg) => msg.id === id)
+        if (existingIndex !== -1) {
+          // 如果存在，则更新该消息
+          const updatedMessages = [...prev]
+          updatedMessages[existingIndex] = {
+            id,
+            content: value
+          } // 更新消息
+          return updatedMessages
+        }
+        // 如果不存在，则添加新消息
+        return [...prev, { id, content: value }] // 添加新消息
+      })
     }
   })
 
-  const personaOptionsData = personasData
-    .reverse()
-    .sort((a, b) => {
-      const aLastMessageSentAt = a.lastMessageSentAt?.getTime() ?? 0
-      const bLastMessageSentAt = b.lastMessageSentAt?.getTime() ?? 0
-      const aUpdatedAt = a.updatedAt?.getTime() ?? 0
-      const bUpdatedAt = b.updatedAt?.getTime() ?? 0
-      const aTime =
-        aLastMessageSentAt > aUpdatedAt ? aLastMessageSentAt : aUpdatedAt
-      const bTime =
-        bLastMessageSentAt > bUpdatedAt ? bLastMessageSentAt : bUpdatedAt
-      return bTime - aTime
-    })
-    .slice(0, 5)
+  const personaOptionsData = personasData.slice(0, 5)
 
-  const personaSearchOptionsData = personasData
-    .filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
-    .reverse()
-    .sort((a, b) => {
-      const aLastMessageSentAt = a.lastMessageSentAt?.getTime() ?? 0
-      const bLastMessageSentAt = b.lastMessageSentAt?.getTime() ?? 0
-      const aUpdatedAt = a.updatedAt?.getTime() ?? 0
-      const bUpdatedAt = b.updatedAt?.getTime() ?? 0
-      const aTime =
-        aLastMessageSentAt > aUpdatedAt ? aLastMessageSentAt : aUpdatedAt
-      const bTime =
-        bLastMessageSentAt > bUpdatedAt ? bLastMessageSentAt : bUpdatedAt
-      return bTime - aTime
-    })
+  const personaSearchOptionsData = personasData.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  )
 
   return (
     <div className="box-border flex min-h-[calc(var(--vh)*100-60px)] flex-col gap-2 sm:h-[calc(var(--vh)*100-60px)] sm:flex-row sm:px-16 sm:pb-16">
@@ -478,8 +486,8 @@ export default function Rewrite() {
                 <div className="mt-10 flex justify-end space-x-4">
                   {personasApiData.find(
                     (_persona) =>
-                      _persona.persona_id == persona.id &&
-                      _persona.user_id !== '-1'
+                      _persona.id == persona.id &&
+                      _persona.default_persona_id < 1
                   ) && (
                     <AlertDialog
                       open={deleteDialogOpen}
@@ -567,20 +575,27 @@ export default function Rewrite() {
               <div className="flex h-1/2 flex-col bg-white">
                 <Tabs
                   className="w-full border-b border-b-[#EBEBEB] px-4"
-                  value={inputType}
+                  value={inputContext}
                   onValueChange={(value) => {
-                    setInputType(value)
+                    setInputContext(value)
                   }}
                 >
                   <TabsList>
-                    <TabsTrigger value="text">Text</TabsTrigger>
-                    <TabsTrigger value="twitter">Twitter</TabsTrigger>
-                    <TabsTrigger value="email">Email</TabsTrigger>
-                    <TabsTrigger value="blog">Blog</TabsTrigger>
-                    <TabsTrigger value="linkedin">Linkedin</TabsTrigger>
-                    <TabsTrigger className="hidden sm:block" value="facebook">
-                      Facebook
-                    </TabsTrigger>
+                    {rewriteContextsRes?.data.map((context, index) => (
+                      <TabsTrigger
+                        key={context}
+                        value={context}
+                        className={
+                          index === rewriteContextsRes.data.length - 1
+                            ? 'hidden sm:block'
+                            : ''
+                        }
+                      >
+                        <span className="capitalize">
+                          {context.toLocaleLowerCase()}
+                        </span>
+                      </TabsTrigger>
+                    ))}
                     <Popover>
                       <PopoverTrigger asChild>
                         <button className="block p-3 sm:hidden">
@@ -590,12 +605,18 @@ export default function Rewrite() {
                       <PopoverContent className="-translate-y-2 rounded-xl px-3 py-2">
                         <PopoverClose>
                           <div
-                            className="flex h-10 w-20 items-center justify-center text-[#9A9A9A]"
+                            className="flex h-10 w-20 items-center justify-center capitalize text-[#9A9A9A]"
                             onClick={() => {
-                              setInputType('facebook')
+                              setInputContext(
+                                rewriteContextsRes?.data[
+                                  rewriteContextsRes.data.length - 1
+                                ] ?? ''
+                              )
                             }}
                           >
-                            Facebook
+                            {rewriteContextsRes?.data[
+                              rewriteContextsRes.data.length - 1
+                            ].toLocaleLowerCase()}
                           </div>
                         </PopoverClose>
                       </PopoverContent>
@@ -627,14 +648,17 @@ export default function Rewrite() {
                     if (inputMessage !== '') {
                       if (persona.id && user_id) {
                         rewriteMutation.mutate({
-                          persona_id: persona.id,
-                          user_id: user_id,
-                          message: inputMessage
+                          id: uuidv4(),
+                          payload: {
+                            persona_id: persona.id,
+                            message: inputMessage,
+                            context: inputContext
+                          }
                         })
                       }
                     }
                   }}
-                  isLoading={rewriteMutation.isPending}
+                  isLoading={rewriteMutation.isLoading}
                   disabled={
                     !personasData.find((_persona) => _persona.id == persona.id)
                   }
@@ -645,7 +669,7 @@ export default function Rewrite() {
               <div className="h-1/2 space-y-4 overflow-auto border-t border-t-[#EBEBEB] bg-white px-4 py-6 text-[#9a9a9a]">
                 {rewriteMessages.length === 0 && 'Output'}
                 {[...rewriteMessages].reverse().map((message) => (
-                  <TextCopyClipboard key={message} text={message} />
+                  <TextCopyClipboard key={message.id} text={message.content} />
                 ))}
               </div>
             </div>

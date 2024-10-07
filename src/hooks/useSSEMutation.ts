@@ -14,6 +14,7 @@ export function useSSEMutation<T>({
     async (payload: T) => {
       setIsLoading(true) // Set loading to true
       const response = await mutationFn(payload)
+      console.log(response, 'response')
       const stream = response.data
 
       const reader = stream.pipeThrough(new TextDecoderStream()).getReader()
@@ -27,8 +28,11 @@ export function useSSEMutation<T>({
         }
 
         if (done) break
-        if (value === 'data: [DONE]\n\n') break
-        result += value.replaceAll('data: ', '').replaceAll('\n\n', '')
+
+        result += value
+          .replaceAll('data: ', '')
+          .replaceAll('\n\n', '')
+          .replaceAll('[DONE]', '')
         // console.log(`|${value}|`)
         onDownloadProgress(result, payload)
         // eslint-disable-next-line no-constant-condition

@@ -20,26 +20,20 @@ import {
 import EmojiPicker from 'emoji-picker-react'
 import { deletePersona, getOnePersona, updatePersona } from '@/apis/persona'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-// import { PersonaData } from '@/model/persona'
-// import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { PersonaData } from '@/model/persona'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
 import { formatPersona } from '@/utils/persona'
 
 export default function EditPersona() {
-  const { authAxios, userData } = useAuth()
-  const user_id = userData?.me?.id
+  const { authAxios } = useAuth()
   const navigate = useNavigate()
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false)
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  // const { mockPersonasData, setMockPersonasData, deleteMockPersonaData } =
-  //   useMockDataStore()
+
   const { personaId } = useParams()
-  // const [persona, setPersona] = useState(
-  //   mockPersonasData.find((persona) => persona.id == personaId)!
-  // )
+
   const [persona, setPersona] = useState<PersonaData>({
     id: 1,
     avatar: '',
@@ -70,13 +64,11 @@ export default function EditPersona() {
       return updatePersona(authAxios!)({
         persona_id: Number(personaId),
         payload: {
-          persona_name: persona?.name,
+          name: persona?.name,
           tone: persona?.tone,
           lang: persona?.language,
           style: persona?.style,
-          persona_description: persona?.description,
-          user_id: persona.isPreset ? '-1' : user_id,
-          // user_id,
+          description: persona?.description,
           icon: persona?.avatar,
           message_color: persona?.messageColor
         }

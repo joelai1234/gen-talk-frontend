@@ -26,18 +26,12 @@ export const getMePersonas = (http: AxiosInstance) => () => {
 export const getOnePersona =
   (http: AxiosInstance) =>
   ({ persona_id }: { persona_id: number }) => {
-    return http.get<PersonaAPIData>(`/api/v1/personas/id/${persona_id}`)
+    return http.get<PersonaAPIData>(`/api/v1/personas/${persona_id}`)
   }
 
 export const createPersona =
   (http: AxiosInstance) => (payload: CreatePersonaPayload) => {
-    return http.post<PersonaAPIData>(
-      `/api/v1/personas/create/${payload.user_id}`,
-      {
-        persona_id: 0,
-        ...payload
-      }
-    )
+    return http.post<PersonaAPIData>(`/api/v1/personas`, payload)
   }
 
 export const updatePersona =
@@ -55,7 +49,7 @@ export const updatePersona =
 export const deletePersona =
   (http: AxiosInstance) =>
   ({ persona_id }: { persona_id: number }) => {
-    return http.delete<unknown>(`/api/v1/personas/delete/${persona_id}`)
+    return http.delete<unknown>(`/api/v1/personas/${persona_id}`)
   }
 
 export const getPersonaHistory =
@@ -69,7 +63,7 @@ export const getPersonaHistory =
 export const sendMessage =
   (http: AxiosInstance) =>
   ({ chatroom_id, message }: { chatroom_id: number; message: string }) => {
-    return http.post<any>(
+    return http.post<ReadableStream<Uint8Array>>(
       `/api/v1/chatrooms/${chatroom_id}/chat`,
       {
         message
@@ -79,21 +73,22 @@ export const sendMessage =
           Accept: 'text/event-stream'
         },
         responseType: 'stream',
-        adapter: 'fetch' // <- this option can also be set in axios.create()
+        adapter: 'fetch'
       }
-      // {
-      //   responseType: 'stream'
-      // }
     )
   }
 
 export const rewriteMessage =
-  (http: AxiosInstance) =>
-  ({ persona_id, user_id, message }: RewriteMessagePayload) => {
-    return http.post<ChatResponse>(
-      `/api/v1/chat/rewrite/${user_id}/${persona_id}`,
-      {
-        query: message
-      }
-    )
+  (http: AxiosInstance) => (payload: RewriteMessagePayload) => {
+    return http.post<ReadableStream<Uint8Array>>(`/api/v1/rewrites/`, payload, {
+      headers: {
+        Accept: 'text/event-stream'
+      },
+      responseType: 'stream',
+      adapter: 'fetch'
+    })
   }
+
+export const getRewriteContexts = (http: AxiosInstance) => () => {
+  return http.get<string[]>('/api/v1/rewrites/contexts')
+}
