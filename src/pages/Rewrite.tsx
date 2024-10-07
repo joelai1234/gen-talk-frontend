@@ -34,7 +34,6 @@ import { useAuth } from '@/services/auth/hooks/useAuth'
 import {
   createPersona,
   deletePersona,
-  getMePersonas,
   getRewriteContexts,
   rewriteMessage,
   updatePersona
@@ -54,6 +53,7 @@ import TextCopyClipboard from '@/components/TextCopyClipboard'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useSSEMutation } from '@/hooks/useSSEMutation'
 import { v4 as uuidv4 } from 'uuid'
+import useGetPersonasQuery from '@/hooks/useGetPersonasQuery'
 
 export default function Rewrite() {
   const scrollBoxRef = useRef<HTMLDivElement | null>(null)
@@ -72,16 +72,8 @@ export default function Rewrite() {
   const isMobile = useMedia('(max-width: 640px)')
   const [inputContext, setInputContext] = useState('TEXT')
 
-  const { data: mePersonasRes } = useQuery({
-    queryKey: ['getMePersonas', user_id, authAxios],
-    queryFn: () => {
-      if (!user_id || !authAxios) return
-      return getMePersonas(authAxios!)()
-    },
-    enabled: !!authAxios
-  })
+  const { data: personasApiData } = useGetPersonasQuery()
 
-  const personasApiData = mePersonasRes?.data.data ?? []
   const personasData = personasApiData.map((data) => formatPersona(data))
 
   const [persona, setPersona] = useState<TempPersonaData>({
@@ -110,6 +102,7 @@ export default function Rewrite() {
     onSuccess: (data) => {
       setPersona((prev) => ({ ...prev, id: data.data.id }))
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+      queryClient.invalidateQueries({ queryKey: ['getChatroomPersonas'] })
       setIsShowMobilePersonaUi(false)
     }
   })
@@ -131,6 +124,7 @@ export default function Rewrite() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+      queryClient.invalidateQueries({ queryKey: ['getChatroomPersonas'] })
       setIsShowMobilePersonaUi(false)
     }
   })
@@ -150,6 +144,7 @@ export default function Rewrite() {
       // scrollBoxRef.current?.scrollTo({ behavior: 'smooth', top: 0 })
       setIsShowMobilePersonaUi(false)
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+      queryClient.invalidateQueries({ queryKey: ['getChatroomPersonas'] })
     }
   })
 
@@ -498,8 +493,10 @@ export default function Rewrite() {
                           className="mr-auto text-[#EA4663]"
                           variant="secondary"
                         >
-                          <RiDeleteBin5Line className="mr-1" />
-                          <span>Delete</span>
+                          <div className="flex items-center">
+                            <RiDeleteBin5Line className="mr-1" />
+                            <span>Delete</span>
+                          </div>
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent className="w-[414px]">

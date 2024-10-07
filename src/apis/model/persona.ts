@@ -15,6 +15,17 @@ export interface PersonaAPIData {
   id: number
 }
 
+export interface ChatroomPersonaAPIData {
+  id: number
+  name: string
+  icon: string
+  persona_id: number
+  user_id: number
+  last_interaction: string
+  created_at: string
+  is_new: boolean
+}
+
 export interface Pagination {
   count: number
   page: number

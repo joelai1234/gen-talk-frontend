@@ -9,14 +9,16 @@ import ChatRoom from '@/components/chatRoom/ChatRoom'
 import MessageTextarea from '@/components/MessageTextarea'
 import MobilePersonaNav from '@/components/chatRoom/MobilePersonaNav'
 import DesktopPersonaSider from '@/components/chatRoom/DesktopPersonaSider'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { formatPersona } from '@/utils/persona'
 import { useAuth } from '@/services/auth/hooks/useAuth'
-import { getMePersonas, getPersonaHistory, sendMessage } from '@/apis/persona'
+import { getPersonaHistory, sendMessage } from '@/apis/persona'
 import { useChatHistoryStore } from '@/store/useChatHistoryStore'
 import { useSSEMutation } from '@/hooks/useSSEMutation' // 引入 useSSEMutation
+import useGetPersonasQuery from '@/hooks/useGetPersonasQuery'
 
 export default function ChatBot() {
+  const queryClient = useQueryClient()
   const { authAxios } = useAuth()
   const [selectedPersonaId, setSelectedPersonaId] = useState<
     number | undefined
@@ -35,14 +37,7 @@ export default function ChatBot() {
 
   const [search, setSearch] = useState('')
 
-  const { data: mePersonasRes } = useQuery({
-    queryKey: ['getMePersonas', authAxios],
-    queryFn: () => {
-      if (!authAxios) return
-      return getMePersonas(authAxios!)()
-    },
-    enabled: !!authAxios
-  })
+  const { data: mePersonasRes } = useGetPersonasQuery()
 
   useQuery({
     queryKey: ['getPersonaHistory', authAxios, selectedPersonaId],
@@ -76,7 +71,7 @@ export default function ChatBot() {
     enabled: !!authAxios && !!selectedPersonaId
   })
 
-  const personasData = mePersonasRes?.data.data.map(formatPersona) ?? []
+  const personasData = mePersonasRes.map(formatPersona) ?? []
 
   const persona = personasData.find(
     (persona) => persona.id === selectedPersonaId
@@ -106,6 +101,10 @@ export default function ChatBot() {
             message: value
           }
         })
+      },
+      onFinished: () => {
+        queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+        queryClient.invalidateQueries({ queryKey: ['getChatroomPersonas'] })
       }
     })
 

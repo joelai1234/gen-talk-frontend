@@ -42,6 +42,7 @@ export default function CreatePersona() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+      queryClient.invalidateQueries({ queryKey: ['getChatroomPersonas'] })
       navigate('/')
     }
   })

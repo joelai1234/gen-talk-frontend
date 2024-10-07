@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios'
+import axios, { AxiosInstance } from 'axios'
 import {
   ChatHistoryResponse,
   CreatePersonaPayload,
@@ -7,20 +7,29 @@ import {
   RewriteMessagePayload,
   SendConversationsResponse,
   SendConversationsPayload,
-  UpdatePersonaPayload
+  UpdatePersonaPayload,
+  ChatroomPersonaAPIData
 } from './model/persona'
 
 export const getAllPersonas = (http: AxiosInstance) => () => {
   return http.get<PersonaAPIData[]>('/api/v1/personas/all')
 }
 
-export const getDefaultPersonas = (http: AxiosInstance) => () => {
-  return http.get<PersonaAPIData[]>('/api/v1/personas/default')
+export const getDefaultPersonas = () => {
+  return axios.get<{ data: PersonaAPIData[]; pagination: Pagination }>(
+    '/api/v1/personas/default'
+  )
 }
 
 export const getMePersonas = (http: AxiosInstance) => () => {
   return http.get<{ data: PersonaAPIData[]; pagination: Pagination }>(
     `/api/v1/personas`
+  )
+}
+
+export const getChatroomPersonas = (http: AxiosInstance) => () => {
+  return http.get<{ data: ChatroomPersonaAPIData[]; pagination: Pagination }>(
+    `/api/v1/chatrooms`
   )
 }
 

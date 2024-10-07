@@ -76,6 +76,7 @@ export default function EditPersona() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+      queryClient.invalidateQueries({ queryKey: ['getChatroomPersonas'] })
       navigate(-1)
     }
   })
@@ -88,6 +89,7 @@ export default function EditPersona() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+      queryClient.invalidateQueries({ queryKey: ['getChatroomPersonas'] })
       navigate(-1)
     }
   })

@@ -15,8 +15,8 @@ import {
   personaToneOptions
 } from '@/data/persona'
 import { PersonaLanguage, PersonaStyle, PersonaTone } from '@/enum/persona'
-import { createPersona, getMePersonas, updatePersona } from '@/apis/persona'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { createPersona, updatePersona } from '@/apis/persona'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { formatPersona } from '@/utils/persona'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import Chip from '@/components/Chip'
@@ -29,6 +29,7 @@ import MobileConversationPersonaNav from './conversation/MobileConversationPerso
 import PersonaItem from './PersonaItem'
 import SearchPersonaModal from './SearchPersonaModal'
 import clsx from 'clsx'
+import useGetPersonasQuery from '@/hooks/useGetPersonasQuery'
 
 interface SelectPersonaRoleProps {
   defaultPersona?: TempPersonaData
@@ -53,17 +54,9 @@ export default function SelectPersonaRole({
     defaultPersona
   )
 
-  const { data: mePersonasRes } = useQuery({
-    queryKey: ['getMePersonas', user_id, authAxios],
-    queryFn: () => {
-      if (!user_id || !authAxios) return
-      return getMePersonas(authAxios)()
-    },
-    enabled: !!authAxios
-  })
+  const { data: mePersonasRes } = useGetPersonasQuery()
 
-  const personasApiData = mePersonasRes?.data.data ?? []
-  const personasData = personasApiData.map((data) => formatPersona(data))
+  const personasData = mePersonasRes.map((data) => formatPersona(data))
 
   const createPersonaMutation = useMutation({
     mutationFn: (payload: CreatePersonaPayload) => {
@@ -102,6 +95,7 @@ export default function SelectPersonaRole({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
+      queryClient.invalidateQueries({ queryKey: ['getChatroomPersonas'] })
     }
   })
 
@@ -150,7 +144,7 @@ export default function SelectPersonaRole({
     }
   }
 
-  const personaTemplates = personasApiData
+  const personaTemplates = mePersonasRes
     .filter((item) => {
       return item.default_persona_id < 1
     })
