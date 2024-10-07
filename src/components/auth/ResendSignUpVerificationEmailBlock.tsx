@@ -17,7 +17,7 @@ export default function ResendSignUpVerificationEmailBlock({
 }: ResendSignUpVerificationEmailBlockProps) {
   const [searchParams] = useSearchParams()
   const email = searchParams.get('email') || ''
-  const { confirmSignUpMutation } = useAuth()
+  const { verifyEmailMutation } = useAuth()
 
   const {
     register,
@@ -26,7 +26,7 @@ export default function ResendSignUpVerificationEmailBlock({
   } = useForm<{ code: string }>()
 
   const onSubmit: SubmitHandler<{ code: string }> = async (data) => {
-    confirmSignUpMutation.mutate(
+    verifyEmailMutation.mutate(
       { email, confirmation_code: data.code },
       {
         onSuccess: () => {
@@ -37,7 +37,7 @@ export default function ResendSignUpVerificationEmailBlock({
   }
 
   const errorMessageDetail = (
-    confirmSignUpMutation.error as unknown as ErrorResponse
+    verifyEmailMutation.error as unknown as ErrorResponse
   )?.response?.data?.detail
 
   let errorMessage = ''
@@ -100,7 +100,7 @@ export default function ResendSignUpVerificationEmailBlock({
           <Button
             className="w-full"
             onClick={handleSubmit(onSubmit)}
-            isLoading={confirmSignUpMutation.isPending}
+            isLoading={verifyEmailMutation.isPending}
           >
             Continue
           </Button>

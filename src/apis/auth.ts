@@ -7,25 +7,25 @@ import {
   SignUpPayload
 } from './model/auth'
 
-// const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL
-const VITE_BACKEND_URL = ''
-
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+// const VITE_BACKEND_URL = ''
+// http://0.0.0.0:8000/api/v1/login
 const http = axios.create({
   baseURL: VITE_BACKEND_URL
 })
 
 export const signIn = (payload: SignInPayload) => {
-  return http.post<SignInResponse>('/api/v1/auth/login', payload)
+  return http.post<SignInResponse>('/api/v1/login', payload)
 }
 
 export const signUp = (payload: SignUpPayload) => {
-  return http.post<unknown>('/api/v1/auth/signup', payload)
+  return http.post<unknown>('/api/v1/signup', payload)
 }
 
-export const confirmSignUp = (payload: ConfirmPayload) => {
-  return http.post<unknown>('/api/v1/auth/confirm-signup', payload)
+export const verifyEmail = (payload: ConfirmPayload) => {
+  return http.post<unknown>('/api/v1/verify-email', payload)
 }
 
 export const forgetPassword = (payload: ForgetPasswordPayload) => {
-  return http.post<unknown>('/api/v1/auth/forgotpassword', payload)
+  return http.post<unknown>('/api/v1/forgotpassword', payload)
 }

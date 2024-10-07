@@ -32,9 +32,9 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
     formState: { errors }
   } = useForm<SignUpInputs>({
     defaultValues: {
-      // email: 'joelai1234567890+test@gmail.com',
-      // username: 'test',
-      // password: 'Test1234!'
+      email: 'joelai1234567890+local@gmail.com',
+      username: 'Joe',
+      password: 'Test1234!'
     }
   })
 
@@ -45,13 +45,18 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
   }
 
   const onSubmit: SubmitHandler<SignUpInputs> = async (data) => {
-    console.log('data', data)
-    signUpMutation.mutate(data, {
-      onSuccess: () => {
-        setSearchParamsEmail(data.email)
-        setAuthAction(AuthStatus.resendSignUpVerificationEmail)
+    signUpMutation.mutate(
+      {
+        ...data,
+        name: data.username
+      },
+      {
+        onSuccess: () => {
+          setSearchParamsEmail(data.email)
+          setAuthAction(AuthStatus.resendSignUpVerificationEmail)
+        }
       }
-    })
+    )
   }
 
   const errorMessageDetail = (signUpMutation.error as unknown as ErrorResponse)

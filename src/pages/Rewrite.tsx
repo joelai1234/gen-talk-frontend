@@ -71,7 +71,7 @@ export default function Rewrite() {
     queryKey: ['getMePersonas', user_id, authAxios],
     queryFn: () => {
       if (!user_id || !authAxios) return
-      return getMePersonas(authAxios!)({ user_id })
+      return getMePersonas(authAxios!)()
     },
     enabled: !!authAxios
   })

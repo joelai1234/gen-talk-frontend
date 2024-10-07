@@ -14,10 +14,10 @@ import { formatPersona } from '@/utils/persona'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { getMePersonas, getPersonaHistory, sendMessage } from '@/apis/persona'
 import { useChatHistoryStore } from '@/store/useChatHistoryStore'
+import { useSSEMutation } from '@/hooks/useSSEMutation' // 引入 useSSEMutation
 
 export default function ChatBot() {
-  const { authAxios, userData } = useAuth()
-  const user_id = userData?.me?.id
+  const { authAxios } = useAuth()
   const [selectedPersonaId, setSelectedPersonaId] = useState<
     number | undefined
   >()
@@ -25,7 +25,8 @@ export default function ChatBot() {
   const {
     chatHistoryList,
     addOrUpdateChatHistoryByPersonaId,
-    addMessageByPersonaId
+    addMessageByPersonaId,
+    addOrUpdateMessageByPersonaId
   } = useChatHistoryStore()
 
   const messages =
@@ -35,10 +36,10 @@ export default function ChatBot() {
   const [search, setSearch] = useState('')
 
   const { data: mePersonasRes } = useQuery({
-    queryKey: ['getMePersonas', user_id, authAxios],
+    queryKey: ['getMePersonas', authAxios],
     queryFn: () => {
-      if (!user_id || !authAxios) return
-      return getMePersonas(authAxios!)({ user_id })
+      if (!authAxios) return
+      return getMePersonas(authAxios!)()
     },
     enabled: !!authAxios
   })
@@ -47,21 +48,22 @@ export default function ChatBot() {
     queryKey: ['getPersonaHistory', authAxios, selectedPersonaId],
     queryFn: async () => {
       const res = await getPersonaHistory(authAxios!)({
-        persona_id: selectedPersonaId!
+        chatroom_id: selectedPersonaId!
       })
       const messages: ChatRoomMessage[] = []
-      res?.data.forEach((item) => {
-        messages.push({
-          id: `${item[0]}-user`,
-          sender: ChatRoomSender.User,
-          message: item[1]
+      res?.data.data
+        .sort((a, b) => {
+          return (
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          )
         })
-        messages.push({
-          id: `${item[0]}-bot`,
-          sender: ChatRoomSender.Bot,
-          message: item[2]
+        .forEach((item) => {
+          messages.push({
+            id: item.id,
+            sender: item.persona_id ? ChatRoomSender.Bot : ChatRoomSender.User,
+            message: item.content
+          })
         })
-      })
       addOrUpdateChatHistoryByPersonaId({
         personaId: selectedPersonaId!,
         messages: {
@@ -74,51 +76,62 @@ export default function ChatBot() {
     enabled: !!authAxios && !!selectedPersonaId
   })
 
-  const personasData = mePersonasRes?.data.map(formatPersona) ?? []
+  const personasData = mePersonasRes?.data.data.map(formatPersona) ?? []
 
   const persona = personasData.find(
     (persona) => persona.id === selectedPersonaId
   )
 
-  const sendMessageMutation = useMutation({
-    mutationFn: async ({
-      personaId,
-      message
-    }: {
-      message: string
-      personaId: number
-    }) => {
-      addMessageByPersonaId({
-        personaId,
-        message: {
-          id: uuidv4(),
-          sender: ChatRoomSender.User,
-          message
-        }
-      })
-      if (!user_id || !authAxios) return
-      return sendMessage(authAxios!)({
-        persona_id: personaId,
-        user_id,
+  const { mutate: sendMessageMutation, isLoading: isSendingMessage } =
+    useSSEMutation({
+      mutationFn: async ({
         message
-      })
-    },
-    onSuccess: (data, payload) => {
-      addMessageByPersonaId({
-        personaId: payload.personaId,
-        message: {
-          id: uuidv4(),
-          sender: ChatRoomSender.Bot,
-          message: data?.data.response ?? 'Sorry, I am not able to help you'
-        }
-      })
-    }
-  })
+      }: {
+        id: string | number // 使用相同的 id
+        message: string
+      }) => {
+        const res = await sendMessage(authAxios!)({
+          chatroom_id: selectedPersonaId!,
+          message
+        })
+        return res
+      },
+      onDownloadProgress: (value, { id }) => {
+        // 使用傳遞的 id
+        addOrUpdateMessageByPersonaId({
+          personaId: selectedPersonaId!,
+          message: {
+            id, // 使用相同的 id
+            sender: ChatRoomSender.Bot,
+            message: value
+          }
+        })
+      }
+    })
+
+  async function chatWithPersona({
+    chatroomId,
+    message
+  }: {
+    chatroomId: number
+    message: string
+  }) {
+    addMessageByPersonaId({
+      personaId: chatroomId,
+      message: {
+        id: uuidv4(),
+        sender: ChatRoomSender.User,
+        message
+      }
+    })
+    await sendMessageMutation({ message, id: uuidv4() }) // 使用 useSSEMutation 的 mutate 函數
+  }
 
   const handleSendMessage = (message: string) => {
     if (message.trim() === '') return
     if (selectedPersonaId === undefined) return
-    sendMessageMutation.mutate({ message, personaId: selectedPersonaId })
+    chatWithPersona({ chatroomId: selectedPersonaId, message })
+    // sendMessageMutation.mutate({ message, personaId: selectedPersonaId })
   }
 
   const personaOptionsData = personasData
@@ -148,13 +161,14 @@ export default function ChatBot() {
     }
   })
 
-  let isLoadingSendMessage = false
-  if (sendMessageMutation.isPending && messages.length >= 1) {
-    const lastMessage = messages[messages.length - 1]
-    if (lastMessage.sender === ChatRoomSender.User) {
-      isLoadingSendMessage = true
-    }
-  }
+  // let isLoadingSendMessage = false
+  // if (sendMessageMutation.isPending && messages.length >= 1) {
+  //   const lastMessage = messages[messages.length - 1]
+  //   if (lastMessage.sender === ChatRoomSender.User) {
+  //     isLoadingSendMessage = true
+  //   }
+  // }
+
   return (
     <div className="flex h-[calc(var(--vh)*100-60px)] pt-6 sm:px-16 sm:pb-16">
       <div
@@ -196,7 +210,7 @@ export default function ChatBot() {
               {persona && messages.length > 0 && (
                 <ChatRoom
                   messageColor={persona.messageColor}
-                  isLoadingAIMessage={isLoadingSendMessage}
+                  isLoadingAIMessage={isSendingMessage}
                   messages={messages}
                 />
               )}

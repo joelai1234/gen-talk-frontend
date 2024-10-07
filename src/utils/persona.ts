@@ -5,16 +5,16 @@ export const formatPersona: (personaAPIData: PersonaAPIData) => PersonaData = (
   personaAPIData
 ) => {
   return {
-    id: personaAPIData.persona_id,
+    id: personaAPIData.id,
     avatar: personaAPIData.icon,
-    name: personaAPIData.persona_name,
-    description: personaAPIData.persona_description,
+    name: personaAPIData.name,
+    description: personaAPIData.description,
     tone: personaAPIData.tone,
     language: personaAPIData.lang,
     style: personaAPIData.style,
     messageColor: personaAPIData.message_color ?? '#EBEBEB',
-    isPreset: personaAPIData.user_id == '-1',
-    createdAt: new Date(personaAPIData.time_created) ?? 0,
-    updatedAt: new Date(personaAPIData.time_updated) ?? 0
+    isPreset: personaAPIData.default_persona_id > 0,
+    createdAt: new Date(personaAPIData.created_at) ?? 0,
+    updatedAt: new Date(personaAPIData.updated_at) ?? 0
   }
 }

@@ -1,7 +1,9 @@
 import { AxiosInstance } from 'axios'
 import {
+  ChatHistoryResponse,
   ChatResponse,
   CreatePersonaPayload,
+  Pagination,
   PersonaAPIData,
   RewriteMessagePayload,
   UpdatePersonaPayload
@@ -15,11 +17,11 @@ export const getDefaultPersonas = (http: AxiosInstance) => () => {
   return http.get<PersonaAPIData[]>('/api/v1/personas/default')
 }
 
-export const getMePersonas =
-  (http: AxiosInstance) =>
-  ({ user_id }: { user_id: string }) => {
-    return http.get<PersonaAPIData[]>(`/api/v1/personas/${user_id}`)
-  }
+export const getMePersonas = (http: AxiosInstance) => () => {
+  return http.get<{ data: PersonaAPIData[]; pagination: Pagination }>(
+    `/api/v1/personas`
+  )
+}
 
 export const getOnePersona =
   (http: AxiosInstance) =>
@@ -58,28 +60,30 @@ export const deletePersona =
 
 export const getPersonaHistory =
   (http: AxiosInstance) =>
-  ({ persona_id }: { persona_id: number }) => {
-    return http.get<[number, string, string][]>(
-      `/api/v1/personas/chat-history/${persona_id}`
+  ({ chatroom_id }: { chatroom_id: number }) => {
+    return http.get<ChatHistoryResponse>(
+      `/api/v1/chatrooms/${chatroom_id}/history`
     )
   }
 
 export const sendMessage =
   (http: AxiosInstance) =>
-  ({
-    persona_id,
-    user_id,
-    message
-  }: {
-    persona_id: number
-    user_id: string
-    message: string
-  }) => {
-    return http.post<ChatResponse>(
-      `/api/v1/chat/chat-store/${user_id}/${persona_id}`,
+  ({ chatroom_id, message }: { chatroom_id: number; message: string }) => {
+    return http.post<any>(
+      `/api/v1/chatrooms/${chatroom_id}/chat`,
       {
-        query: message
+        message
+      },
+      {
+        headers: {
+          Accept: 'text/event-stream'
+        },
+        responseType: 'stream',
+        adapter: 'fetch' // <- this option can also be set in axios.create()
       }
+      // {
+      //   responseType: 'stream'
+      // }
     )
   }
 

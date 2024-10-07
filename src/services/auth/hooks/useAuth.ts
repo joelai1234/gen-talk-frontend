@@ -1,4 +1,4 @@
-import { confirmSignUp, signUp, signIn } from '@/apis/auth'
+import { verifyEmail, signUp, signIn } from '@/apis/auth'
 import { useMutation } from '@tanstack/react-query'
 import { useUserDataStore } from '../store/useUserDataStore'
 import { useAuthAxiosStore } from '../store/useAuthAxiosStroe'
@@ -10,7 +10,7 @@ export const useAuth = () => {
     mutationFn: signIn
   })
   const signUpMutation = useMutation({ mutationFn: signUp })
-  const confirmSignUpMutation = useMutation({ mutationFn: confirmSignUp })
+  const verifyEmailMutation = useMutation({ mutationFn: verifyEmail })
 
   const isLogin = !!userData
 
@@ -35,7 +35,7 @@ export const useAuth = () => {
     authAxios,
     signInMutation,
     signUpMutation,
-    confirmSignUpMutation,
+    verifyEmailMutation,
     isLogin,
     userData,
     setUserData,
