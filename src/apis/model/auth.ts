@@ -23,3 +23,7 @@ export interface SignInResponse {
   id_token: string
   refresh_token: string
 }
+
+export interface RefreshAccessTokenPayload {
+  refresh_token: string
+}

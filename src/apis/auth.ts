@@ -2,6 +2,7 @@ import axios from 'axios'
 import {
   ConfirmPayload,
   ForgetPasswordPayload,
+  RefreshAccessTokenPayload,
   SignInPayload,
   SignInResponse,
   SignUpPayload
@@ -26,4 +27,8 @@ export const verifyEmail = (payload: ConfirmPayload) => {
 
 export const forgetPassword = (payload: ForgetPasswordPayload) => {
   return http.post<unknown>('/api/v1/forgotpassword', payload)
+}
+
+export const refreshAccessToken = (payload: RefreshAccessTokenPayload) => {
+  return http.post<{ access_token: string }>('/api/v1/refresh-token', payload)
 }
