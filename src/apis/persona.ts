@@ -11,12 +11,17 @@ import {
   ChatroomPersonaAPIData
 } from './model/persona'
 
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+const http = axios.create({
+  baseURL: VITE_BACKEND_URL
+})
+
 export const getAllPersonas = (http: AxiosInstance) => () => {
   return http.get<PersonaAPIData[]>('/api/v1/personas/all')
 }
 
 export const getDefaultPersonas = () => {
-  return axios.get<{ data: PersonaAPIData[]; pagination: Pagination }>(
+  return http.get<{ data: PersonaAPIData[]; pagination: Pagination }>(
     '/api/v1/personas/default'
   )
 }
