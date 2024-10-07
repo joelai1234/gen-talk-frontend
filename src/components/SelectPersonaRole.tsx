@@ -62,7 +62,7 @@ export default function SelectPersonaRole({
     enabled: !!authAxios
   })
 
-  const personasApiData = mePersonasRes?.data ?? []
+  const personasApiData = mePersonasRes?.data.data ?? []
   const personasData = personasApiData.map((data) => formatPersona(data))
 
   const createPersonaMutation = useMutation({
@@ -71,7 +71,7 @@ export default function SelectPersonaRole({
     },
     onSuccess: (data) => {
       setPersona((prev) => {
-        if (prev) return { ...prev, id: data.data.persona_id }
+        if (prev) return { ...prev, id: data.data.id }
       })
       queryClient.invalidateQueries({ queryKey: ['getMePersonas'] })
     }
@@ -90,12 +90,11 @@ export default function SelectPersonaRole({
       return updatePersona(authAxios!)({
         persona_id: personaId,
         payload: {
-          persona_name: persona?.name,
+          name: persona?.name,
           tone: persona?.tone,
           lang: persona?.language,
           style: persona?.style,
-          persona_description: persona?.description,
-          user_id,
+          description: persona?.description,
           icon: persona?.avatar,
           message_color: persona?.messageColor
         }
@@ -131,12 +130,11 @@ export default function SelectPersonaRole({
         if (!user_id) return
         createPersonaMutation.mutate(
           {
-            persona_name: persona.name,
+            name: persona.name,
             tone: persona.tone,
             lang: persona.language,
             style: persona.style,
-            persona_description: persona.description,
-            user_id,
+            description: persona.description,
             icon: persona.avatar,
             message_color: persona.messageColor
           },
@@ -154,18 +152,13 @@ export default function SelectPersonaRole({
 
   const personaTemplates = personasApiData
     .filter((item) => {
-      return item.user_id == '-1'
+      return item.default_persona_id < 1
     })
     .map((data) => formatPersona(data))
 
-  const personaSearchOptionsData = personasData
-    .filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
-    .reverse()
-    .sort((a, b) => {
-      const aUpdatedAt = a.updatedAt?.getTime() ?? 0
-      const bUpdatedAt = b.updatedAt?.getTime() ?? 0
-      return bUpdatedAt - aUpdatedAt
-    })
+  const personaSearchOptionsData = personasData.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  )
 
   return (
     <div className="flex h-full flex-1 flex-col space-y-4">

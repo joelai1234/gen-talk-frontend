@@ -34,11 +34,6 @@ export type UpdatePersonaPayload = Partial<
   >
 >
 
-export interface ChatResponse {
-  response: string
-  query_id: number
-}
-
 export interface ChatHistoryResponse {
   data: {
     user_id?: number
@@ -55,4 +50,22 @@ export interface RewriteMessagePayload {
   persona_id: number
   message: string
   context: string
+}
+
+export interface SendConversationsPayload {
+  persona_id1: number
+  persona_id2: number
+  rounds: number
+  scenario: string
+}
+
+export type SendConversationsResponse = ConversationScenarioResponse[]
+
+export interface ConversationScenarioResponse {
+  updated_at: string
+  created_at: string
+  id: number
+  conversation_scenario_id: number
+  message: string
+  persona_id: number
 }

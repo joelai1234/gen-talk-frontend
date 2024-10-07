@@ -16,6 +16,10 @@ import { Button } from '@/components/ui/button'
 import { GrPowerReset } from 'react-icons/gr'
 import ChatRoom from '@/components/chatRoom/ChatRoom'
 import { ChatRoomSender } from '@/enum/persona'
+import { sendConversations } from '@/apis/persona'
+import { useMutation } from '@tanstack/react-query'
+import { useAuth } from '@/services/auth/hooks/useAuth'
+import { SendConversationsPayload } from '@/apis/model/persona'
 
 enum ConversationStep {
   Role1 = 'Role1',
@@ -25,6 +29,7 @@ enum ConversationStep {
 }
 
 export default function Conversation() {
+  const { authAxios } = useAuth()
   const [role1, setRole1] = useState<TempPersonaData>()
   const [role2, setRole2] = useState<TempPersonaData>()
   const [round, setRound] = useState(5)
@@ -32,6 +37,29 @@ export default function Conversation() {
   const [activeStep, setActiveStep] = useState<ConversationStep>(
     ConversationStep.Role1
   )
+  const [messages, setMessages] = useState<
+    {
+      id: number
+      sender: ChatRoomSender
+      message: string
+    }[]
+  >([])
+  const sendConversationsMutation = useMutation({
+    mutationFn: (payload: SendConversationsPayload) => {
+      return sendConversations(authAxios!)(payload)
+    },
+    onSuccess: (data) => {
+      const newMessages = data.data.map((item) => ({
+        id: item.id,
+        sender:
+          item.persona_id === role1?.id
+            ? ChatRoomSender.User
+            : ChatRoomSender.Bot,
+        message: item.message
+      }))
+      setMessages(newMessages)
+    }
+  })
 
   return (
     <div className="flex min-h-[calc(var(--vh)*100-60px)] flex-col pt-6 sm:px-16 sm:pb-16">
@@ -176,12 +204,24 @@ export default function Conversation() {
                     className="ml-auto mt-4 block px-4"
                     disabled={scenario.length === 0}
                     onClick={() => {
-                      setActiveStep(ConversationStep.Conversation)
+                      if (!role1 || !role2) {
+                        return
+                      }
+                      sendConversationsMutation.mutate(
+                        {
+                          persona_id1: role1.id!,
+                          persona_id2: role2.id!,
+                          rounds: round,
+                          scenario
+                        },
+                        {
+                          onSuccess: () => {
+                            setActiveStep(ConversationStep.Conversation)
+                          }
+                        }
+                      )
                     }}
-                    // isLoading={
-                    //   createPersonaMutation.isPending ||
-                    //   updatePersonaMutation.isPending
-                    // }
+                    isLoading={sendConversationsMutation.isPending}
                   >
                     Generate Conversation
                   </Button>
@@ -197,15 +237,28 @@ export default function Conversation() {
                   Back
                 </button>
                 <Button
-                  className="ml-auto mt-4 px-4 sm:block"
+                  className="ml-auto mt-4 px-4 sm:inline-block"
                   disabled={scenario.length === 0}
                   onClick={() => {
-                    setActiveStep(ConversationStep.Conversation)
+                    if (!role1 || !role2) {
+                      return
+                    }
+                    sendConversationsMutation.mutate(
+                      {
+                        persona_id1: role1.id!,
+                        persona_id2: role2.id!,
+                        rounds: round,
+                        scenario
+                      },
+                      {
+                        onSuccess: () => {
+                          setActiveStep(ConversationStep.Conversation)
+                        }
+                      }
+                    )
                   }}
-                  // isLoading={
-                  //   createPersonaMutation.isPending ||
-                  //   updatePersonaMutation.isPending
-                  // }
+                  // isLoading={true}
+                  isLoading={sendConversationsMutation.isPending}
                 >
                   Generate Conversation
                 </Button>
@@ -235,29 +288,7 @@ export default function Conversation() {
                       messageColor={role1?.messageColor ?? 'white'}
                       botMessageColor={role2?.messageColor}
                       isLoadingAIMessage={false}
-                      messages={[
-                        {
-                          id: 1,
-                          sender: ChatRoomSender.Bot,
-                          message: 'Hello'
-                        },
-                        {
-                          id: 2,
-                          sender: ChatRoomSender.User,
-                          message: 'Hello'
-                        },
-                        {
-                          id: 3,
-                          sender: ChatRoomSender.Bot,
-                          message:
-                            'Hello asdfasdf asdf asd fas dfasd fasd fasd fdasf asd Hello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asdHello asdfasdf asdf asd fas dfasd fasd fasd fdasf asd'
-                        },
-                        {
-                          id: 4,
-                          sender: ChatRoomSender.User,
-                          message: 'mock message'
-                        }
-                      ]}
+                      messages={messages}
                     />
                   </div>
                 </div>
@@ -265,14 +296,24 @@ export default function Conversation() {
               <Button
                 className="absolute bottom-5 left-1/2 ml-auto mt-4 flex -translate-x-1/2 gap-2 px-4 sm:static sm:translate-x-0"
                 disabled={scenario.length === 0}
-                // onClick={handleSave}
-                // isLoading={
-                //   createPersonaMutation.isPending ||
-                //   updatePersonaMutation.isPending
-                // }
+                onClick={() => {
+                  if (!role1 || !role2) {
+                    return
+                  }
+                  sendConversationsMutation.mutate({
+                    persona_id1: role1.id!,
+                    persona_id2: role2.id!,
+                    rounds: round,
+                    scenario
+                  })
+                }}
+                isLoading={sendConversationsMutation.isPending}
               >
-                <GrPowerReset />
-                <span>Restart</span>
+                <div className="flex items-center gap-2">
+                  {!sendConversationsMutation.isPending && <GrPowerReset />}
+
+                  <span>Restart</span>
+                </div>
               </Button>
             </div>
           )}

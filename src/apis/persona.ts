@@ -1,11 +1,12 @@
 import { AxiosInstance } from 'axios'
 import {
   ChatHistoryResponse,
-  ChatResponse,
   CreatePersonaPayload,
   Pagination,
   PersonaAPIData,
   RewriteMessagePayload,
+  SendConversationsResponse,
+  SendConversationsPayload,
   UpdatePersonaPayload
 } from './model/persona'
 
@@ -92,3 +93,11 @@ export const rewriteMessage =
 export const getRewriteContexts = (http: AxiosInstance) => () => {
   return http.get<string[]>('/api/v1/rewrites/contexts')
 }
+
+export const sendConversations =
+  (http: AxiosInstance) => (payload: SendConversationsPayload) => {
+    return http.post<SendConversationsResponse>(
+      '/api/v1/conversations/scenarios',
+      payload
+    )
+  }

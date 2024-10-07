@@ -14,7 +14,6 @@ export function useSSEMutation<T>({
     async (payload: T) => {
       setIsLoading(true) // Set loading to true
       const response = await mutationFn(payload)
-      console.log(response, 'response')
       const stream = response.data
 
       const reader = stream.pipeThrough(new TextDecoderStream()).getReader()
