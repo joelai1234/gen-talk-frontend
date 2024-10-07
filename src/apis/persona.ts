@@ -90,7 +90,7 @@ export const sendMessage =
 
 export const rewriteMessage =
   (http: AxiosInstance) => (payload: RewriteMessagePayload) => {
-    return http.post<ReadableStream<Uint8Array>>(`/api/v1/rewrites/`, payload, {
+    return http.post<ReadableStream<Uint8Array>>(`/api/v1/rewrites`, payload, {
       headers: {
         Accept: 'text/event-stream'
       },
