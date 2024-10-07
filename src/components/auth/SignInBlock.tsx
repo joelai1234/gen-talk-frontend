@@ -29,8 +29,8 @@ export default function SignInBlock({ setAuthAction }: SignInBlockProps) {
     formState: { errors }
   } = useForm<SignInInputs>({
     defaultValues: {
-      email: 'joelai1234567890+local2@gmail.com',
-      password: 'Test1234!'
+      // email: 'joelai1234567890+local2@gmail.com',
+      // password: 'Test1234!'
     }
   })
   const onSubmit: SubmitHandler<SignInInputs> = async (data) => {

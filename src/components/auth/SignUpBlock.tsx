@@ -32,9 +32,9 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
     formState: { errors }
   } = useForm<SignUpInputs>({
     defaultValues: {
-      email: 'joelai1234567890+local@gmail.com',
-      username: 'Joe',
-      password: 'Test1234!'
+      // email: 'joelai1234567890+local@gmail.com',
+      // username: 'Joe',
+      // password: 'Test1234!'
     }
   })
 
