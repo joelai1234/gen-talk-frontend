@@ -295,8 +295,10 @@ export default function EditPersona() {
                             className="mr-auto text-[#EA4663]"
                             variant="secondary"
                           >
-                            <RiDeleteBin5Line className="mr-1" />
-                            <span>Delete</span>
+                            <div className="flex items-center">
+                              <RiDeleteBin5Line className="mr-1" />
+                              <span>Delete</span>
+                            </div>
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="w-[414px]">

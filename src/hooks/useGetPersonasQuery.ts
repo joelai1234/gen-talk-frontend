@@ -4,6 +4,7 @@ import {
   getMePersonas
 } from '@/apis/persona'
 import { useAuth } from '@/services/auth/hooks/useAuth'
+import { formatPersona } from '@/utils/persona'
 import { useQuery } from '@tanstack/react-query'
 
 export default function useGetPersonasQuery() {
@@ -30,7 +31,7 @@ export default function useGetPersonasQuery() {
 
   if (!authAxios) {
     return {
-      data: defaultPersonasRes?.data.data ?? [],
+      data: defaultPersonasRes?.data.data.map(formatPersona) ?? [],
       isLoading: isLoadingDefaultPersonas
     }
   }
@@ -53,7 +54,12 @@ export default function useGetPersonasQuery() {
   })
 
   return {
-    data: sortedPersonas,
+    data: sortedPersonas.map((persona) => {
+      const chatroomPersona = chatroomPersonasRes.data.data.find(
+        (cp) => cp.persona_id === persona.id
+      )
+      return formatPersona({ ...persona, is_new: chatroomPersona?.is_new })
+    }),
     isLoading: isLoadingMePersonas || isLoadingChatroomPersonas
   }
 }

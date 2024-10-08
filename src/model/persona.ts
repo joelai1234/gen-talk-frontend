@@ -8,7 +8,6 @@ import {
 export interface PersonaData {
   createdAt?: Date
   updatedAt?: Date
-  // lastMessageSentAt?: Date
   id: number
   avatar: string
   name: string
@@ -18,6 +17,7 @@ export interface PersonaData {
   style: PersonaStyle
   messageColor: string
   isPreset?: boolean
+  isNew?: boolean
 }
 
 export type TempPersonaData = Omit<PersonaData, 'id'> & {

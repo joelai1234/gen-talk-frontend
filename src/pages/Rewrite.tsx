@@ -39,7 +39,6 @@ import {
   updatePersona
 } from '@/apis/persona'
 import { TempPersonaData } from '@/model/persona'
-import { formatPersona } from '@/utils/persona'
 import {
   CreatePersonaPayload,
   RewriteMessagePayload
@@ -72,9 +71,7 @@ export default function Rewrite() {
   const isMobile = useMedia('(max-width: 640px)')
   const [inputContext, setInputContext] = useState('TEXT')
 
-  const { data: personasApiData } = useGetPersonasQuery()
-
-  const personasData = personasApiData.map((data) => formatPersona(data))
+  const { data: personasData } = useGetPersonasQuery()
 
   const [persona, setPersona] = useState<TempPersonaData>({
     avatar: defaultPersonaIcon,
@@ -186,11 +183,9 @@ export default function Rewrite() {
     }
   }
 
-  const personaTemplates = personasApiData
-    .filter((item) => {
-      return item.default_persona_id > 0
-    })
-    .map((data) => formatPersona(data))
+  const personaTemplates = personasData.filter((item) => {
+    return item.isPreset
+  })
 
   const handleImportPersona = (id: number) => {
     setPersona({
@@ -479,10 +474,8 @@ export default function Rewrite() {
                   </div>
                 </div>
                 <div className="mt-10 flex justify-end space-x-4">
-                  {personasApiData.find(
-                    (_persona) =>
-                      _persona.id == persona.id &&
-                      _persona.default_persona_id < 1
+                  {personasData.find(
+                    (_persona) => _persona.id == persona.id && _persona.isPreset
                   ) && (
                     <AlertDialog
                       open={deleteDialogOpen}

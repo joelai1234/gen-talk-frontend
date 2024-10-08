@@ -11,14 +11,10 @@ import MobilePersonaNav from '@/components/chatRoom/MobilePersonaNav'
 import DesktopPersonaSider from '@/components/chatRoom/DesktopPersonaSider'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/services/auth/hooks/useAuth'
-import {
-  getChatroomPersonas,
-  getOnePersona,
-  getPersonaHistory,
-  sendMessage
-} from '@/apis/persona'
+import { getPersonaHistory, sendMessage } from '@/apis/persona'
 import { useChatHistoryStore } from '@/store/useChatHistoryStore'
 import { useSSEMutation } from '@/hooks/useSSEMutation' // 引入 useSSEMutation
+import useGetPersonasQuery from '@/hooks/useGetPersonasQuery'
 
 export default function ChatBot() {
   const queryClient = useQueryClient()
@@ -40,21 +36,7 @@ export default function ChatBot() {
 
   const [search, setSearch] = useState('')
 
-  // const { data: mePersonasRes } = useGetPersonasQuery()
-
-  const { data: chatroomPersonasRes } = useQuery({
-    queryKey: ['getChatroomPersonas', authAxios],
-    queryFn: () => getChatroomPersonas(authAxios!)(),
-    enabled: !!authAxios
-  })
-
-  const { data: personaRes, isLoading: isLoadingPersona } = useQuery({
-    queryKey: ['getOnePersona', selectedPersonaId],
-    queryFn: () => {
-      return getOnePersona(authAxios!)({ persona_id: selectedPersonaId! })
-    },
-    enabled: !!authAxios && !!selectedPersonaId
-  })
+  const { data: personasData } = useGetPersonasQuery()
 
   useQuery({
     queryKey: ['getPersonaHistory', authAxios, selectedPersonaId],
@@ -88,9 +70,9 @@ export default function ChatBot() {
     enabled: !!authAxios && !!selectedPersonaId
   })
 
-  const personasData = chatroomPersonasRes?.data.data ?? []
-
-  const persona = personaRes?.data
+  const persona = personasData.find(
+    (persona) => persona.id === selectedPersonaId
+  )
 
   const { mutate: sendMessageMutation, isLoading: isSendingMessage } =
     useSSEMutation({
@@ -154,9 +136,9 @@ export default function ChatBot() {
   const personaOptions = personaOptionsData.map((item) => {
     return {
       id: item.id,
-      avatar: item.icon,
+      avatar: item.avatar,
       name: item.name,
-      time: item.is_new ? 'New' : format(item.last_interaction, 'hh:mm a'),
+      time: item.isNew ? 'New' : format(item.updatedAt!, 'hh:mm a'),
       active: item.id === selectedPersonaId
     }
   })
@@ -188,16 +170,12 @@ export default function ChatBot() {
                 search={search}
                 onChangeSearch={setSearch}
               />
-              {isLoadingPersona && (
-                <div className="flex size-full items-center justify-center">
-                  <div className="size-10 animate-spin rounded-full border-y-2 border-earth-green"></div>
-                </div>
-              )}
-              {!selectedPersonaId && <WelcomeChatRoom />}
+
+              {!persona && <WelcomeChatRoom />}
               {persona && messages.length === 0 && (
                 <NewChatRoom
                   persona={{
-                    avatar: persona.icon,
+                    avatar: persona.avatar,
                     name: persona.name,
                     description: persona.description
                   }}
@@ -205,7 +183,7 @@ export default function ChatBot() {
               )}
               {persona && messages.length > 0 && (
                 <ChatRoom
-                  messageColor={persona.message_color ?? '#EBEBEB'}
+                  messageColor={persona.messageColor}
                   isLoadingAIMessage={isSendingMessage}
                   messages={messages}
                 />

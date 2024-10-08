@@ -54,9 +54,7 @@ export default function SelectPersonaRole({
     defaultPersona
   )
 
-  const { data: mePersonasRes } = useGetPersonasQuery()
-
-  const personasData = mePersonasRes.map((data) => formatPersona(data))
+  const { data: personasData } = useGetPersonasQuery()
 
   const createPersonaMutation = useMutation({
     mutationFn: (payload: CreatePersonaPayload) => {
@@ -144,11 +142,9 @@ export default function SelectPersonaRole({
     }
   }
 
-  const personaTemplates = mePersonasRes
-    .filter((item) => {
-      return item.default_persona_id < 1
-    })
-    .map((data) => formatPersona(data))
+  const personaTemplates = personasData.filter((item) => {
+    return item.isPreset
+  })
 
   const personaSearchOptionsData = personasData.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
