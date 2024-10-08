@@ -38,3 +38,9 @@ export interface SignInResponse {
 export interface RefreshAccessTokenPayload {
   refresh_token: string
 }
+
+export interface GetMeResponse {
+  id: string
+  name: string
+  email: string
+}
