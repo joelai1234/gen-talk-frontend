@@ -18,6 +18,12 @@ export interface ForgetPasswordPayload {
   email: string
 }
 
+export interface ResetPasswordPayload {
+  email: string
+  new_password: string
+  confirmation_code: string
+}
+
 export interface SignInResponse {
   access_token: string
   id_token: string

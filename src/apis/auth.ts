@@ -3,6 +3,7 @@ import {
   ConfirmPayload,
   ForgetPasswordPayload,
   RefreshAccessTokenPayload,
+  ResetPasswordPayload,
   SignInPayload,
   SignInResponse,
   SignUpPayload
@@ -26,7 +27,11 @@ export const verifyEmail = (payload: ConfirmPayload) => {
 }
 
 export const forgetPassword = (payload: ForgetPasswordPayload) => {
-  return http.post<unknown>('/api/v1/forgotpassword', payload)
+  return http.post<unknown>('/api/v1/forgot-password', payload)
+}
+
+export const resetPassword = (payload: ResetPasswordPayload) => {
+  return http.post<unknown>('/api/v1/reset-password', payload)
 }
 
 export const refreshAccessToken = (payload: RefreshAccessTokenPayload) => {

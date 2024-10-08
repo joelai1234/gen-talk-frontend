@@ -6,5 +6,6 @@ export enum AuthStatus {
   forgetPassword = 'forgetPassword',
   forgetPasswordSentEmail = 'forgetPasswordSentEmail',
   verifyEmailSuccess = 'verifyEmailSuccess',
-  resendVerifyEmail = 'resendVerifyEmail'
+  resendVerifyEmail = 'resendVerifyEmail',
+  resetPassword = 'resetPassword'
 }

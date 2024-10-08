@@ -40,6 +40,7 @@ import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
 import { MdConveyorBelt } from 'react-icons/md'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { MdArrowDropDown } from 'react-icons/md'
+import ResetPasswordBlock from './auth/ResetPasswordBlock'
 
 const getNavTitle = (pathname: string) => {
   if (pathname.includes('/persona')) return 'Chat'
@@ -232,6 +233,9 @@ export default function Header() {
               )}
               {authAction === AuthStatus.resendVerifyEmail && (
                 <ResendVerifyEmailBlock setAuthAction={setAuthAction} />
+              )}
+              {authAction === AuthStatus.resetPassword && (
+                <ResetPasswordBlock setAuthAction={setAuthAction} />
               )}
             </AlertDialogContent>
           </AlertDialog>

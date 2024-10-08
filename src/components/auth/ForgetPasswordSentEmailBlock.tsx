@@ -1,6 +1,7 @@
 import { AuthStatus } from '@/enum/auth'
 import { IoMdClose } from 'react-icons/io'
 import { Button } from '../ui/button'
+import { useSearchParams } from 'react-router-dom'
 
 interface ForgetPasswordSentEmailBlockProps {
   setAuthAction: (action: AuthStatus) => void
@@ -9,6 +10,9 @@ interface ForgetPasswordSentEmailBlockProps {
 export default function ForgetPasswordSentEmailBlock({
   setAuthAction
 }: ForgetPasswordSentEmailBlockProps) {
+  const [searchParams] = useSearchParams()
+  const email = searchParams.get('email') || ''
+
   return (
     <div className="flex flex-col">
       <button
@@ -34,7 +38,7 @@ export default function ForgetPasswordSentEmailBlock({
               We’ve sent instructions on how to reset your password to{' '}
             </span>
             <span className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base font-bold text-[#4c4c4c]">
-              john@email.com
+              {email}
             </span>
             <span className="w-[366px] shrink-0 grow-0 self-stretch text-center text-base text-[#4c4c4c]">
               .{' '}
@@ -44,7 +48,7 @@ export default function ForgetPasswordSentEmailBlock({
         <Button
           className="w-full"
           onClick={() => {
-            setAuthAction(AuthStatus.none)
+            setAuthAction(AuthStatus.resetPassword)
           }}
         >
           Got it

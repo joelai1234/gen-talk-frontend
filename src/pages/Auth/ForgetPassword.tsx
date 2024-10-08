@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 export default function ForgetPassword() {
   return (
-    <div className="flex h-[calc(calc(var(--vh)*100-60px)] items-center justify-center px-4 pb-16 pt-6 sm:px-16">
+    <div className="h-[calc(calc(var(--vh)*100-60px)] flex items-center justify-center px-4 pb-16 pt-6 sm:px-16">
       <div className="relative w-[414px] rounded-[28px] bg-white p-6">
         <div className="flex flex-col pt-6">
           <img
