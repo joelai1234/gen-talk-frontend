@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosInstance } from 'axios'
 import {
   ConfirmPayload,
   ForgetPasswordPayload,
@@ -6,7 +6,8 @@ import {
   ResetPasswordPayload,
   SignInPayload,
   SignInResponse,
-  SignUpPayload
+  SignUpPayload,
+  UpdatePasswordPayload
 } from './model/auth'
 
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL
@@ -37,3 +38,8 @@ export const resetPassword = (payload: ResetPasswordPayload) => {
 export const refreshAccessToken = (payload: RefreshAccessTokenPayload) => {
   return http.post<{ access_token: string }>('/api/v1/refresh-token', payload)
 }
+
+export const updatePassword =
+  (_http: AxiosInstance) => (payload: UpdatePasswordPayload) => {
+    return _http.post<unknown>('/api/v1/update-password', payload)
+  }

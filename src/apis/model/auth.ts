@@ -24,6 +24,11 @@ export interface ResetPasswordPayload {
   confirmation_code: string
 }
 
+export interface UpdatePasswordPayload {
+  old_password: string
+  new_password: string
+}
+
 export interface SignInResponse {
   access_token: string
   id_token: string

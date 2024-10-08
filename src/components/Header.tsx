@@ -41,6 +41,7 @@ import { MdConveyorBelt } from 'react-icons/md'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { MdArrowDropDown } from 'react-icons/md'
 import ResetPasswordBlock from './auth/ResetPasswordBlock'
+import UpdatePasswordBlock from './auth/UpdatePasswordBlock'
 
 const getNavTitle = (pathname: string) => {
   if (pathname.includes('/persona')) return 'Chat'
@@ -375,72 +376,9 @@ export default function Header() {
                 </div>
               )}
               {settingModalType === SettingModalType.updatePassword && (
-                <div className="flex flex-col">
-                  <button
-                    className="ml-auto flex size-8 items-center justify-center rounded-full border border-[#EBEBEB]"
-                    onClick={() => {
-                      setSettingModalType(SettingModalType.none)
-                    }}
-                  >
-                    <IoMdClose />
-                  </button>
-                  <div className="flex flex-col gap-4">
-                    <h4 className="text-center text-2xl font-medium text-[#4c4c4c]">
-                      Update Password
-                    </h4>
-                    <div className="mt-3 space-y-4">
-                      <div className="relative">
-                        <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <MdOutlinePassword className=" text-2xl text-[#4C4C4C]" />
-                        </div>
-                        <input
-                          className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-                          type="password"
-                          placeholder="Current password"
-                        />
-                      </div>
-                      <div className="relative">
-                        <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <MdOutlinePassword className=" text-2xl text-[#4C4C4C]" />
-                        </div>
-                        <input
-                          className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-                          type="password"
-                          placeholder="New password"
-                        />
-                      </div>
-                      <div className="relative">
-                        <div className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <MdOutlinePassword className=" text-2xl text-[#4C4C4C]" />
-                        </div>
-                        <input
-                          className="w-full rounded-lg border border-[#ebebeb] px-3 py-2 pl-11 text-base outline-none disabled:bg-[#ebebeb] disabled:text-[#9A9A9A]"
-                          type="password"
-                          placeholder="Confirm password"
-                        />
-                      </div>
-                    </div>
-                    <div className="ml-auto flex gap-4">
-                      <Button
-                        className="w-[100px]"
-                        variant="waring-secondary"
-                        onClick={() => {
-                          setSettingModalType(SettingModalType.setting)
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        className="w-[100px]"
-                        onClick={() => {
-                          setSettingModalType(SettingModalType.none)
-                        }}
-                      >
-                        Save
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                <UpdatePasswordBlock
+                  setSettingModalType={setSettingModalType}
+                />
               )}
             </AlertDialogContent>
           </AlertDialog>
