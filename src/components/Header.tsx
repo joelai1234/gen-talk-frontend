@@ -42,6 +42,8 @@ import { useAuth } from '@/services/auth/hooks/useAuth'
 import { MdArrowDropDown } from 'react-icons/md'
 import ResetPasswordBlock from './auth/ResetPasswordBlock'
 import UpdatePasswordBlock from './auth/UpdatePasswordBlock'
+import { getMeData } from '@/apis/auth'
+import { useQuery } from '@tanstack/react-query'
 
 const getNavTitle = (pathname: string) => {
   if (pathname.includes('/persona')) return 'Chat'
@@ -70,6 +72,14 @@ export default function Header() {
   const [settingModalType, setSettingModalType] = useState<SettingModalType>(
     SettingModalType.none
   )
+
+  const { authAxios } = useAuth()
+
+  const { data: meData } = useQuery({
+    queryKey: ['getMeData'],
+    queryFn: getMeData(authAxios!),
+    enabled: !!authAxios
+  })
 
   const [showPassword, setShowPassword] = useState(false)
 
@@ -257,7 +267,7 @@ export default function Header() {
                 </div>
                 <div>
                   <p className="w-[125px] overflow-hidden text-ellipsis text-base text-[#4c4c4c]">
-                    Name (dev)
+                    {meData?.data.name}
                   </p>
                   <p className="w-[125px] overflow-hidden text-ellipsis text-sm text-[#4c4c4c]">
                     {userData?.me?.email}
@@ -323,7 +333,9 @@ export default function Header() {
                           <p className="w-[100px] shrink-0 text-base text-[#9a9a9a]">
                             Username
                           </p>
-                          <p className="text-base text-[#4c4c4c]">Name (dev)</p>
+                          <p className="text-base text-[#4c4c4c]">
+                            {meData?.data.name}
+                          </p>
                         </div>
                       </div>
                       <div className="my-6 h-px w-full bg-[#ebebeb]" />

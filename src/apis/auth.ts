@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from 'axios'
 import {
   ConfirmPayload,
   ForgetPasswordPayload,
+  GetMeResponse,
   RefreshAccessTokenPayload,
   ResetPasswordPayload,
   SignInPayload,
@@ -43,3 +44,7 @@ export const updatePassword =
   (_http: AxiosInstance) => (payload: UpdatePasswordPayload) => {
     return _http.post<unknown>('/api/v1/update-password', payload)
   }
+
+export const getMeData = (_http: AxiosInstance) => () => {
+  return _http.get<GetMeResponse>('/api/v1/users/me')
+}
