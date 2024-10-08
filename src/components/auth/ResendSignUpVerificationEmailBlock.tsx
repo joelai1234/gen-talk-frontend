@@ -17,7 +17,8 @@ export default function ResendSignUpVerificationEmailBlock({
 }: ResendSignUpVerificationEmailBlockProps) {
   const [searchParams] = useSearchParams()
   const email = searchParams.get('email') || ''
-  const { verifyEmailMutation } = useAuth()
+  const { verifyEmailMutation, resendSignUpVerificationEmailMutation } =
+    useAuth()
 
   const {
     register,
@@ -112,7 +113,11 @@ export default function ResendSignUpVerificationEmailBlock({
           <span
             className="cursor-pointer text-earth-green"
             onClick={() => {
-              setAuthAction(AuthStatus.login)
+              resendSignUpVerificationEmailMutation.mutate(email, {
+                onSuccess: () => {
+                  alert('Email sent')
+                }
+              })
             }}
           >
             Resend

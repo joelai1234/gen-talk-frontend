@@ -50,3 +50,9 @@ export const updatePassword =
 export const getMeData = (_http: AxiosInstance) => () => {
   return _http.get<GetMeResponse>('/api/v1/users/me')
 }
+
+export const resendSignUpVerificationEmail = (email: string) => {
+  return http.post<unknown>('/api/v1/resend-verification-email', {
+    email
+  })
+}

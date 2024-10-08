@@ -3,7 +3,8 @@ import {
   signUp,
   signIn,
   forgetPassword,
-  resetPassword
+  resetPassword,
+  resendSignUpVerificationEmail
 } from '@/apis/auth'
 import { useMutation } from '@tanstack/react-query'
 import { useUserDataStore } from '../store/useUserDataStore'
@@ -19,6 +20,9 @@ export const useAuth = () => {
   const verifyEmailMutation = useMutation({ mutationFn: verifyEmail })
   const forgetPasswordMutation = useMutation({ mutationFn: forgetPassword })
   const resetPasswordMutation = useMutation({ mutationFn: resetPassword })
+  const resendSignUpVerificationEmailMutation = useMutation({
+    mutationFn: resendSignUpVerificationEmail
+  })
 
   const isLogin = !!userData
 
@@ -47,6 +51,7 @@ export const useAuth = () => {
     verifyEmailMutation,
     forgetPasswordMutation,
     resetPasswordMutation,
+    resendSignUpVerificationEmailMutation,
     isLogin,
     userData,
     setUserData,
