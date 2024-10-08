@@ -21,7 +21,7 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover'
 import { FaRegUser } from 'react-icons/fa'
-import { MdLogout, MdOutlinePassword } from 'react-icons/md'
+import { MdLogout } from 'react-icons/md'
 import { AuthStatus } from '@/enum/auth'
 import SignInBlock from './auth/SignInBlock'
 import SignUpBlock from './auth/SignUpBlock'
