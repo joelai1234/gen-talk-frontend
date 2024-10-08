@@ -37,7 +37,9 @@ export const resetPassword = (payload: ResetPasswordPayload) => {
 }
 
 export const refreshAccessToken = (payload: RefreshAccessTokenPayload) => {
-  return http.post<{ access_token: string }>('/api/v1/refresh-token', payload)
+  return http.post<{ access_token: string }>(
+    `/api/v1/refresh-token?refresh_token=${payload.refresh_token}`
+  )
 }
 
 export const updatePassword =
