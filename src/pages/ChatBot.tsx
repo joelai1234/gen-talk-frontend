@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { ChatRoomSender } from '@/enum/persona'
-import { ChatRoomMessage } from '@/model/persona'
 import { v4 as uuidv4 } from 'uuid'
 import WelcomeChatRoom from '@/components/chatRoom/WelcomeChatRoom'
 import NewChatRoom from '@/components/chatRoom/NewChatRoom'
@@ -9,12 +8,13 @@ import ChatRoom from '@/components/chatRoom/ChatRoom'
 import MessageTextarea from '@/components/MessageTextarea'
 import MobilePersonaNav from '@/components/chatRoom/MobilePersonaNav'
 import DesktopPersonaSider from '@/components/chatRoom/DesktopPersonaSider'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/services/auth/hooks/useAuth'
-import { getPersonaHistory, sendMessage } from '@/apis/persona'
+import { sendMessage } from '@/apis/persona'
 import { useChatHistoryStore } from '@/store/useChatHistoryStore'
 import { useSSEMutation } from '@/hooks/useSSEMutation' // 引入 useSSEMutation
 import useGetPersonasQuery from '@/hooks/useGetPersonasQuery'
+import usePersonaHistory from '@/hooks/usePersonaHistory'
 
 export default function ChatBot() {
   const queryClient = useQueryClient()
@@ -23,52 +23,14 @@ export default function ChatBot() {
     number | undefined
   >()
 
-  const {
-    chatHistoryList,
-    addOrUpdateChatHistoryByPersonaId,
-    addMessageByPersonaId,
-    addOrUpdateMessageByPersonaId
-  } = useChatHistoryStore()
+  const { addMessageByPersonaId, addOrUpdateMessageByPersonaId } =
+    useChatHistoryStore()
 
-  const messages =
-    chatHistoryList.find((item) => item.personaId === selectedPersonaId)
-      ?.messages ?? []
+  const messages = usePersonaHistory({ selectedPersonaId })
 
   const [search, setSearch] = useState('')
 
   const { data: personasData } = useGetPersonasQuery()
-
-  useQuery({
-    queryKey: ['getPersonaHistory', authAxios, selectedPersonaId],
-    queryFn: async () => {
-      const res = await getPersonaHistory(authAxios!)({
-        chatroom_id: selectedPersonaId!
-      })
-      const messages: ChatRoomMessage[] = []
-      res?.data.data
-        .sort((a, b) => {
-          return (
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-          )
-        })
-        .forEach((item) => {
-          messages.push({
-            id: item.id,
-            sender: item.persona_id ? ChatRoomSender.Bot : ChatRoomSender.User,
-            message: item.content
-          })
-        })
-      addOrUpdateChatHistoryByPersonaId({
-        personaId: selectedPersonaId!,
-        messages: {
-          personaId: selectedPersonaId!,
-          messages
-        }
-      })
-      return res
-    },
-    enabled: !!authAxios && !!selectedPersonaId
-  })
 
   const persona = personasData.find(
     (persona) => persona.id === selectedPersonaId
