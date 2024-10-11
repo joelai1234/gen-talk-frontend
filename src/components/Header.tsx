@@ -42,8 +42,9 @@ import { useAuth } from '@/services/auth/hooks/useAuth'
 import { MdArrowDropDown } from 'react-icons/md'
 import ResetPasswordBlock from './auth/ResetPasswordBlock'
 import UpdatePasswordBlock from './auth/UpdatePasswordBlock'
-import { getMeData } from '@/apis/auth'
-import { useQuery } from '@tanstack/react-query'
+import { getMeData, uploadUserAvatar } from '@/apis/auth'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
 
 const getNavTitle = (pathname: string) => {
   if (pathname.includes('/persona')) return 'Chat'
@@ -63,6 +64,7 @@ const getNavTitle = (pathname: string) => {
 export default function Header() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const queryClient = useQueryClient()
   const { isLogin, signOut, userData } = useAuth()
   const [searchParams] = useSearchParams()
   const action = searchParams.get('action') as AuthStatus
@@ -82,6 +84,24 @@ export default function Header() {
   })
 
   const [showPassword, setShowPassword] = useState(false)
+
+  const uploadUserAvatarMutation = useMutation({
+    mutationFn: (file: File) => {
+      if (!authAxios)
+        return Promise.reject(new Error('authAxios is not available'))
+      return uploadUserAvatar(authAxios!)(file)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['getMeData'] })
+    }
+  })
+
+  const handleUploadUserAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null
+    if (file) {
+      uploadUserAvatarMutation.mutate(file)
+    }
+  }
 
   return (
     <header className="flex h-[60px] items-center justify-between px-4 py-2 sm:px-6">
@@ -321,11 +341,40 @@ export default function Header() {
                       Settings
                     </h4>
                     <div className="flex flex-col items-center gap-2">
-                      <FaUserCircle className="size-20 text-earth-green" />
-                      <button className="flex items-center gap-2 text-sm text-earth-green">
-                        <LuUpload />
-                        <span>Upload image</span>
+                      {!meData?.data.avatar_url && (
+                        <FaUserCircle className="size-20 text-earth-green" />
+                      )}
+                      {meData?.data.avatar_url && (
+                        <img
+                          src={meData?.data.avatar_url}
+                          alt="avatar"
+                          className="size-20 rounded-full object-cover"
+                        />
+                      )}
+                      <button
+                        className="flex items-center gap-2 text-sm text-earth-green"
+                        onClick={() => {
+                          document.getElementById('avatarInput')?.click()
+                        }}
+                        disabled={uploadUserAvatarMutation.isPending}
+                      >
+                        {uploadUserAvatarMutation.isPending ? (
+                          <Loader2 className="size-4 animate-spin" />
+                        ) : (
+                          <LuUpload />
+                        )}
+                        <span>
+                          {uploadUserAvatarMutation.isPending
+                            ? 'Uploading...'
+                            : 'Upload image'}
+                        </span>
                       </button>
+                      <input
+                        id="avatarInput"
+                        type="file"
+                        className="hidden"
+                        onChange={handleUploadUserAvatar}
+                      />
                     </div>
                     <div className="mt-5">
                       <div>

@@ -56,3 +56,13 @@ export const resendSignUpVerificationEmail = (email: string) => {
     email
   })
 }
+
+export const uploadUserAvatar = (_http: AxiosInstance) => (file: File) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return _http.post<unknown>('/api/v1/users/avatar', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data' // 設定為表單資料
+    }
+  })
+}
