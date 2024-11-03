@@ -5,7 +5,6 @@ import {
   Pagination,
   PersonaAPIData,
   RewriteMessagePayload,
-  SendConversationsResponse,
   SendConversationsPayload,
   UpdatePersonaPayload,
   ChatroomPersonaAPIData
@@ -110,8 +109,15 @@ export const getRewriteContexts = (http: AxiosInstance) => () => {
 
 export const sendConversations =
   (http: AxiosInstance) => (payload: SendConversationsPayload) => {
-    return http.post<SendConversationsResponse>(
+    return http.post<ReadableStream<Uint8Array>>(
       '/api/v1/conversations/scenarios',
-      payload
+      payload,
+      {
+        headers: {
+          Accept: 'text/event-stream'
+        },
+        responseType: 'stream',
+        adapter: 'fetch'
+      }
     )
   }

@@ -17,9 +17,9 @@ import { GrPowerReset } from 'react-icons/gr'
 import ChatRoom from '@/components/chatRoom/ChatRoom'
 import { ChatRoomSender } from '@/enum/persona'
 import { sendConversations } from '@/apis/persona'
-import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { SendConversationsPayload } from '@/apis/model/persona'
+import { useConversationSSEMutation } from '@/hooks/useConversationSSEMutation'
 
 enum ConversationStep {
   Role1 = 'Role1',
@@ -44,21 +44,66 @@ export default function Conversation() {
       message: string
     }[]
   >([])
-  const sendConversationsMutation = useMutation({
+
+  const sendConversationsMutation = useConversationSSEMutation({
     mutationFn: (payload: SendConversationsPayload) => {
       return sendConversations(authAxios!)(payload)
     },
-    onSuccess: (data) => {
-      const newMessages = data.data.map((item) => ({
-        id: item.id,
-        sender:
-          item.persona_id === role1?.id
-            ? ChatRoomSender.User
-            : ChatRoomSender.Bot,
-        message: item.message
-      }))
-      setMessages(newMessages)
+    onDownloadProgress: (value) => {
+      const newMessages: {
+        id: number
+        persona: number
+        message: string
+      }[] = []
+      value.forEach((item) => {
+        if (item.type === 'message') {
+          const latestMessage = newMessages.at(-1)
+          if (latestMessage) {
+            if (item.persona === latestMessage.persona) {
+              if (item.content !== '[DONE]') {
+                latestMessage.message += ` ${item.content}`
+              }
+            } else {
+              newMessages.push({
+                id: Math.random(),
+                persona: item.persona,
+                message: item.content
+              })
+            }
+          } else {
+            newMessages.push({
+              id: Math.random(),
+              persona: item.persona,
+              message: item.content
+            })
+          }
+          // setActiveStep(ConversationStep.Conversation)
+        }
+      })
+
+      setMessages(
+        newMessages.map((item) => ({
+          id: item.id,
+          sender:
+            item.persona === role1?.id
+              ? ChatRoomSender.User
+              : ChatRoomSender.Bot,
+          message: item.message
+        }))
+      )
+      console.log(newMessages)
     }
+    // onSuccess: (data) => {
+    //   const newMessages = data.data.map((item) => ({
+    //     id: item.id,
+    //     sender:
+    //       item.persona_id === role1?.id
+    //         ? ChatRoomSender.User
+    //         : ChatRoomSender.Bot,
+    //     message: item.message
+    //   }))
+    //   setMessages(newMessages)
+    // }
   })
 
   return (
@@ -207,21 +252,16 @@ export default function Conversation() {
                       if (!role1 || !role2) {
                         return
                       }
-                      sendConversationsMutation.mutate(
-                        {
-                          persona_id1: role1.id!,
-                          persona_id2: role2.id!,
-                          rounds: round,
-                          scenario
-                        },
-                        {
-                          onSuccess: () => {
-                            setActiveStep(ConversationStep.Conversation)
-                          }
-                        }
-                      )
+                      sendConversationsMutation.mutate({
+                        persona_id1: role1.id!,
+                        persona_id2: role2.id!,
+                        rounds: round,
+                        scenario
+                      })
+                      setMessages([])
+                      setActiveStep(ConversationStep.Conversation)
                     }}
-                    isLoading={sendConversationsMutation.isPending}
+                    isLoading={sendConversationsMutation.isLoading}
                   >
                     Generate Conversation
                   </Button>
@@ -249,16 +289,16 @@ export default function Conversation() {
                         persona_id2: role2.id!,
                         rounds: round,
                         scenario
-                      },
-                      {
-                        onSuccess: () => {
-                          setActiveStep(ConversationStep.Conversation)
-                        }
                       }
+                      // {
+                      //   onSuccess: () => {
+                      //     setActiveStep(ConversationStep.Conversation)
+                      //   }
+                      // }
                     )
                   }}
                   // isLoading={true}
-                  isLoading={sendConversationsMutation.isPending}
+                  isLoading={sendConversationsMutation.isLoading}
                 >
                   Generate Conversation
                 </Button>
@@ -307,10 +347,10 @@ export default function Conversation() {
                     scenario
                   })
                 }}
-                isLoading={sendConversationsMutation.isPending}
+                isLoading={sendConversationsMutation.isLoading}
               >
                 <div className="flex items-center gap-2">
-                  {!sendConversationsMutation.isPending && <GrPowerReset />}
+                  {!sendConversationsMutation.isLoading && <GrPowerReset />}
 
                   <span>Restart</span>
                 </div>
