@@ -5,7 +5,6 @@ import { MdOutlineVerifiedUser } from 'react-icons/md'
 import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { ErrorResponse } from '@/apis/model/commen'
 import { handleEnterKeyPress } from '@/utils' // 新增這行
 
 interface ResendSignUpVerificationEmailBlockProps {
@@ -37,19 +36,7 @@ export default function ResendSignUpVerificationEmailBlock({
     )
   }
 
-  const errorMessageDetail = (
-    verifyEmailMutation.error as unknown as ErrorResponse
-  )?.response?.data?.detail
-
-  let errorMessage = ''
-  if (typeof errorMessageDetail === 'string') {
-    errorMessage = errorMessageDetail
-  } else if (
-    Array.isArray(errorMessageDetail) &&
-    errorMessageDetail.every((item) => typeof item.msg === 'string')
-  ) {
-    errorMessage = errorMessageDetail[0].msg
-  }
+  const errorMessage = verifyEmailMutation.error?.message
 
   return (
     <div className="flex flex-col">

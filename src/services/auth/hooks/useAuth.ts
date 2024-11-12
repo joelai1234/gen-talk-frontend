@@ -1,14 +1,15 @@
-import {
-  verifyEmail,
-  signUp,
-  signIn,
-  forgetPassword,
-  resetPassword,
-  resendSignUpVerificationEmail
-} from '@/apis/auth'
 import { useMutation } from '@tanstack/react-query'
 import { useUserDataStore } from '../store/useUserDataStore'
 import { useAuthAxiosStore } from '../store/useAuthAxiosStroe'
+import {
+  confirmSignUp,
+  forgetPassword,
+  resendSignUpVerificationEmail,
+  resetPassword,
+  signIn,
+  signUp
+} from '@/lib/cogniti'
+import { SignUpPayload } from '@/apis/model/auth'
 
 export const useAuth = () => {
   const { authAxios } = useAuthAxiosStore()
@@ -16,8 +17,10 @@ export const useAuth = () => {
   const signInMutation = useMutation({
     mutationFn: signIn
   })
-  const signUpMutation = useMutation({ mutationFn: signUp })
-  const verifyEmailMutation = useMutation({ mutationFn: verifyEmail })
+  const signUpMutation = useMutation({
+    mutationFn: (payload: SignUpPayload) => signUp(payload)
+  })
+  const verifyEmailMutation = useMutation({ mutationFn: confirmSignUp })
   const forgetPasswordMutation = useMutation({ mutationFn: forgetPassword })
   const resetPasswordMutation = useMutation({ mutationFn: resetPassword })
   const resendSignUpVerificationEmailMutation = useMutation({

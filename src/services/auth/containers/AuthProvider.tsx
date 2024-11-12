@@ -2,7 +2,7 @@ import { useEffect, useCallback } from 'react'
 import { createAuthAxios } from '../utils/http'
 import { useAuthAxiosStore } from '../store/useAuthAxiosStroe'
 import { useUserDataStore } from '../store/useUserDataStore'
-import { refreshAccessToken } from '../../../apis/auth'
+import { refreshAccessToken } from '@/lib/cogniti'
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -22,8 +22,10 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         const response = await refreshAccessToken({
           refresh_token: refreshToken
         })
-        const newAccessToken = response.data.access_token
-        setUserData({ ...userData, accessToken: newAccessToken })
+        const newAccessToken = response.AuthenticationResult?.AccessToken
+        if (newAccessToken) {
+          setUserData({ ...userData, accessToken: newAccessToken })
+        }
         return newAccessToken
       } catch (error) {
         console.error('Failed to refresh token:', error)

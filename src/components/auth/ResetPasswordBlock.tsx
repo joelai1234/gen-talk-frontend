@@ -9,7 +9,6 @@ import { Button } from '../ui/button'
 import { useSearchParams } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useAuth } from '@/services/auth/hooks/useAuth'
-import { ErrorResponse } from '@/apis/model/commen'
 import { handleEnterKeyPress } from '@/utils'
 
 type ResetPasswordBlockInputs = {
@@ -35,7 +34,7 @@ export default function ResetPasswordBlock({
   } = useForm<ResetPasswordBlockInputs>({
     defaultValues: {
       email: email,
-      password: 'Test1234!'
+      password: ''
     }
   })
 
@@ -61,19 +60,7 @@ export default function ResetPasswordBlock({
     )
   }
 
-  const errorMessageDetail = (
-    resetPasswordMutation.error as unknown as ErrorResponse
-  )?.response?.data?.detail
-
-  let errorMessage = ''
-  if (typeof errorMessageDetail === 'string') {
-    errorMessage = errorMessageDetail
-  } else if (
-    Array.isArray(errorMessageDetail) &&
-    errorMessageDetail.every((item) => typeof item.msg === 'string')
-  ) {
-    errorMessage = errorMessageDetail[0].msg
-  }
+  const errorMessage = resetPasswordMutation.error?.message
 
   return (
     <div className="flex flex-col">

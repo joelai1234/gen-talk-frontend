@@ -5,10 +5,9 @@ import { IoMdClose } from 'react-icons/io'
 import { MdOutlinePassword } from 'react-icons/md'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
-import { updatePassword } from '@/apis/auth'
-import { useAuth } from '@/services/auth/hooks/useAuth'
 import { UpdatePasswordPayload } from '@/apis/model/auth'
-import { ErrorResponse } from '@/apis/model/commen'
+import { updatePassword } from '@/lib/cogniti'
+import { useUserDataStore } from '@/services/auth/store/useUserDataStore'
 
 interface UpdatePasswordBlockProps {
   setSettingModalType: (type: SettingModalType) => void
@@ -23,10 +22,11 @@ type UpdatePasswordInputs = {
 export default function UpdatePasswordBlock({
   setSettingModalType
 }: UpdatePasswordBlockProps) {
-  const { authAxios } = useAuth()
+  const { userData } = useUserDataStore()
+  const accessToken = userData?.accessToken ?? ''
   const updatePasswordMutation = useMutation({
     mutationFn: (payload: UpdatePasswordPayload) => {
-      return updatePassword(authAxios!)(payload)
+      return updatePassword({ ...payload, access_token: accessToken })
     }
   })
 
@@ -50,19 +50,7 @@ export default function UpdatePasswordBlock({
     )
   }
 
-  const errorMessageDetail = (
-    updatePasswordMutation.error as unknown as ErrorResponse
-  )?.response?.data?.detail
-
-  let errorMessage = ''
-  if (typeof errorMessageDetail === 'string') {
-    errorMessage = errorMessageDetail
-  } else if (
-    Array.isArray(errorMessageDetail) &&
-    errorMessageDetail.every((item) => typeof item.msg === 'string')
-  ) {
-    errorMessage = errorMessageDetail[0].msg
-  }
+  const errorMessage = updatePasswordMutation.error?.message
 
   return (
     <div className="flex flex-col">

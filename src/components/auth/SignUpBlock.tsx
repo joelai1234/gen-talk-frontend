@@ -9,7 +9,6 @@ import { Button } from '../ui/button'
 import { useSearchParams } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useAuth } from '@/services/auth/hooks/useAuth'
-import { ErrorResponse } from '@/apis/model/commen'
 import { handleEnterKeyPress } from '@/utils'
 
 type SignUpInputs = {
@@ -32,9 +31,9 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
     formState: { errors }
   } = useForm<SignUpInputs>({
     defaultValues: {
-      // email: 'joelai1234567890+local@gmail.com',
-      // username: 'Joe',
-      // password: 'Test1234!'
+      email: 'joelai1234567890+1@gmail.com',
+      username: 'Joe',
+      password: 'Test1234!'
     }
   })
 
@@ -59,18 +58,7 @@ export default function SignUpBlock({ setAuthAction }: SignUpBlockProps) {
     )
   }
 
-  const errorMessageDetail = (signUpMutation.error as unknown as ErrorResponse)
-    ?.response?.data?.detail
-
-  let errorMessage = ''
-  if (typeof errorMessageDetail === 'string') {
-    errorMessage = errorMessageDetail
-  } else if (
-    Array.isArray(errorMessageDetail) &&
-    errorMessageDetail.every((item) => typeof item.msg === 'string')
-  ) {
-    errorMessage = errorMessageDetail[0].msg
-  }
+  const errorMessage = signUpMutation.error?.message
 
   return (
     <div className="flex flex-col">

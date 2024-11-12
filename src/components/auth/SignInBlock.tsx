@@ -4,9 +4,6 @@ import { MdOutlineEmail, MdOutlinePassword } from 'react-icons/md'
 import { Button } from '../ui/button'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useAuth } from '@/services/auth/hooks/useAuth'
-import { ErrorResponse } from '@/apis/model/commen'
-import axios, { AxiosResponse } from 'axios'
-import { jwtDecode } from 'jwt-decode'
 import { handleEnterKeyPress } from '@/utils'
 import { useSearchParams } from 'react-router-dom'
 
@@ -29,8 +26,8 @@ export default function SignInBlock({ setAuthAction }: SignInBlockProps) {
     formState: { errors }
   } = useForm<SignInInputs>({
     defaultValues: {
-      // email: 'joelai1234567890+local6@gmail.com',
-      // password: 'Test1234!'
+      email: 'joelai1234567890+local6@gmail.com',
+      password: 'Test1234!'
     }
   })
 
@@ -43,44 +40,29 @@ export default function SignInBlock({ setAuthAction }: SignInBlockProps) {
   const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
     signInMutation.mutate(data, {
       onSuccess: (data) => {
+        console.log(data)
         setAuthAction(AuthStatus.none)
-        const accessToken = data.data.access_token
-        const decoded = jwtDecode<{ username: string }>(accessToken)
         setUserData({
-          accessToken: data.data.access_token,
-          refreshToken: data.data.refresh_token,
-          idToken: data.data.id_token,
+          accessToken: data.AuthenticationResult?.AccessToken ?? '',
+          refreshToken: data.AuthenticationResult?.RefreshToken ?? '',
+          idToken: data.AuthenticationResult?.IdToken ?? '',
           me: {
-            id: decoded.username,
+            id: data.AuthenticationResult?.IdToken ?? '',
             name: 'name (dev)',
             email: getValues('email')
           }
         })
       },
       onError: (error) => {
-        if (axios.isAxiosError(error) && error.response) {
-          error.response as AxiosResponse<ErrorResponse>
-          if (error.response.data.detail === 'Email not verified') {
-            setAuthAction(AuthStatus.resendSignUpVerificationEmail)
-            setSearchParamsEmail(getValues('email'))
-          }
+        console.log(error.message)
+        if (error.message === 'User is not confirmed.') {
+          setAuthAction(AuthStatus.resendSignUpVerificationEmail)
+          setSearchParamsEmail(getValues('email'))
         }
       }
     })
   }
-
-  const errorMessageDetail = (signInMutation.error as unknown as ErrorResponse)
-    ?.response?.data?.detail
-
-  let errorMessage = ''
-  if (typeof errorMessageDetail === 'string') {
-    errorMessage = errorMessageDetail
-  } else if (
-    Array.isArray(errorMessageDetail) &&
-    errorMessageDetail.every((item) => typeof item.msg === 'string')
-  ) {
-    errorMessage = errorMessageDetail[0].msg
-  }
+  const errorMessage = signInMutation.error?.message
 
   return (
     <div className="flex flex-col">
