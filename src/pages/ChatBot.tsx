@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ChatRoomSender } from '@/enum/persona'
 import { v4 as uuidv4 } from 'uuid'
 import WelcomeChatRoom from '@/components/chatRoom/WelcomeChatRoom'
@@ -66,6 +66,13 @@ export default function ChatBot() {
         queryClient.invalidateQueries({ queryKey: ['getChatroomPersonas'] })
       }
     })
+
+  useEffect(() => {
+    if (!authAxios) {
+      queryClient.invalidateQueries({ queryKey: ['getPersonaHistory'] })
+      setSelectedPersonaId(undefined)
+    }
+  }, [authAxios, queryClient])
 
   async function chatWithPersona({
     chatroomId,

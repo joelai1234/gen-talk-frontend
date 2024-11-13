@@ -6,6 +6,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { useAuth } from '@/services/auth/hooks/useAuth'
 import { handleEnterKeyPress } from '@/utils'
 import { useSearchParams } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 
 type SignInInputs = {
   email: string
@@ -40,7 +41,6 @@ export default function SignInBlock({ setAuthAction }: SignInBlockProps) {
   const onSubmit: SubmitHandler<SignInInputs> = async (data) => {
     signInMutation.mutate(data, {
       onSuccess: (data) => {
-        console.log(data)
         setAuthAction(AuthStatus.none)
         setUserData({
           accessToken: data.AuthenticationResult?.AccessToken ?? '',
@@ -48,13 +48,12 @@ export default function SignInBlock({ setAuthAction }: SignInBlockProps) {
           idToken: data.AuthenticationResult?.IdToken ?? '',
           me: {
             id: data.AuthenticationResult?.IdToken ?? '',
-            name: 'name (dev)',
+            name: '',
             email: getValues('email')
           }
         })
       },
       onError: (error) => {
-        console.log(error.message)
         if (error.message === 'User is not confirmed.') {
           setAuthAction(AuthStatus.resendSignUpVerificationEmail)
           setSearchParamsEmail(getValues('email'))
