@@ -14,7 +14,8 @@ import {
   ConfirmSignUpCommand,
   ForgotPasswordCommand,
   ConfirmForgotPasswordCommand,
-  ChangePasswordCommand
+  ChangePasswordCommand,
+  GetUserCommand
 } from '@aws-sdk/client-cognito-identity-provider'
 
 const AWS_REGION = 'us-east-2'
@@ -114,6 +115,14 @@ export async function updatePassword(
     AccessToken: payload.access_token,
     PreviousPassword: payload.old_password,
     ProposedPassword: payload.new_password
+  })
+  const response = await client.send(command)
+  return response
+}
+
+export async function getUserData(payload: { access_token: string }) {
+  const command = new GetUserCommand({
+    AccessToken: payload.access_token
   })
   const response = await client.send(command)
   return response
